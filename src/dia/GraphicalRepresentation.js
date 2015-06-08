@@ -10,3 +10,9 @@ dia.GraphicalRepresentation = function(element){
 dia.GraphicalRepresentation.prototype.addPrimitive = function(primitive){
 	this.primitives.push(primitive);
 };
+
+dia.GraphicalRepresentation.prototype.render = function(ctx){
+	for(var i = 0 ; i < this.primitives.length ; i++){
+		this.primitives[i].render(ctx);
+	}
+};

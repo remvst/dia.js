@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Example 1</title>
+		
+		<script src="../dist/dia.js"></script>
+	</head>
+	
+	<body>
+		<canvas id="can" width="600" height="600"></canvas>
+		
+		<script>
+			window.addEventListener('load', function(){
+				console.log('Load');
+				
+				var canvas = document.getElementById('can');
+				var ctx = canvas.getContext('2d');
+				
+				ctx.fillStyle = 'silver';
+				ctx.fillRect(0,0, canvas.width, canvas.height);
+				
+				var sheet = new dia.Sheet();
+				
+				var rectType = new dia.ElementType();
+				rectType.addProperty(new dia.Property({
+					id: 'x',
+					type: dia.DataType.INTEGET,
+					default: 50
+				}));
+				rectType.addProperty(new dia.Property({
+					id: 'y',
+					type: dia.DataType.INTEGET,
+					default: 100
+				}));
+				rectType.addProperty(new dia.Property({
+					id: 'width',
+					type: dia.DataType.INTEGET,
+					default: 100
+				}));
+				rectType.addProperty(new dia.Property({
+					id: 'height',
+					type: dia.DataType.INTEGET,
+					default: 200
+				}));
+				rectType.setRepresentationFactory(function(element){
+					var representation = new dia.GraphicalRepresentation(element);
+
+					var primitive = new dia.RectanglePrimitive(representation);
+					primitive.bind('x', 'x');
+					primitive.bind('y', 'y');
+					primitive.bind('width', 'width');
+					primitive.bind('height', 'height');
+					
+					representation.addPrimitive(primitive);
+					
+					return representation;
+				});
+				
+				
+				var relationType = new dia.ElementType();
+				relationType.addProperty(new dia.Property({
+					id: 'from',
+					type: dia.DataType.ANY,
+					default: null
+				}));
+				relationType.addProperty(new dia.Property({
+					id: 'to',
+					type: dia.DataType.ANY,
+					default: null
+				}));
+				relationType.setRepresentationFactory(function(element){
+					var representation = new dia.GraphicalRepresentation(element);
+
+					var primitive = new dia.LinePrimitive(representation);
+					primitive.bind(function(element){
+						return element.getProperty('from').getProperty('x');
+					}, 'p1.x');
+					primitive.bind(function(element){
+						return element.getProperty('from').getProperty('y');
+					}, 'p1.y');
+					primitive.bind(function(element){
+						return element.getProperty('to').getProperty('x');
+					}, 'p2.x');
+					primitive.bind(function(element){
+						return element.getProperty('to').getProperty('y');
+					}, 'p2.y');
+					
+					representation.addPrimitive(primitive);
+					
+					return representation;
+				});
+				
+
+				var element = rectType.emptyElement();
+				sheet.addElement(element);
+				
+				var element2 = rectType.emptyElement();
+				element2.setProperty('x', 300);
+				element2.setProperty('y', 120);
+				sheet.addElement(element2);
+				
+				var relation = relationType.emptyElement();
+				relation.setProperty('from', element);
+				relation.setProperty('to', element2);
+				sheet.addElement(relation);
+				
+				sheet.render(ctx);
+			}, false);
+		</script>
+	</body>
+</html>

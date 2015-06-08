@@ -2,7 +2,7 @@ var dia = {};
 
 // https://gist.github.com/kaizhu256/2853704
 dia.uuid4 = function() {
-	return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(){
+	return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(cc){
 		var rr = Math.random() * 16 | 0; 
 		return (cc === 'x' ? rr : (rr & 0x3 | 0x8)).toString(16);
 	});
@@ -173,6 +173,10 @@ dia.Element.prototype.getRepresentation = function(){
 	return this.representation;
 };
 
+dia.Element.prototype.render = function(ctx){
+	this.getRepresentation().render(ctx);
+};
+
 dia.Element.fromJSON = function(json){
 	var type = dia.ElementType.lookupType(json.type);
 	if(type === null){
@@ -202,7 +206,7 @@ dia.ElementType = function(options){
 	this.id = options.id || null;
 	this.properties = [];
 	this.propertyMap = {};
-	this.representationFactory = null;
+	this.representationFactory = options.representation || null;
 	
 	if(this.id){
 		dia.ElementType.register(this);
@@ -278,6 +282,7 @@ dia.DataType = function(options){
 };
 
 dia.DataType.prototype.validateValue = function(value){
+	//console.log('validating ' + value + ' -> ' + this.validate(value));
 	return this.validate(value);
 };
 
@@ -288,6 +293,13 @@ dia.DataType.prototype.fromJSON = function(value){
 dia.DataType.prototype.toJSON = function(value){
 	return this.export(value);
 };
+
+dia.DataType.ANY = new dia.DataType({
+	label: 'any',
+	validate: function(value){
+		return true;
+	}
+});
 
 dia.DataType.STRING = new dia.DataType({
 	label: 'string',
@@ -340,6 +352,12 @@ dia.GraphicalRepresentation.prototype.addPrimitive = function(primitive){
 	this.primitives.push(primitive);
 };
 
+dia.GraphicalRepresentation.prototype.render = function(ctx){
+	for(var i = 0 ; i < this.primitives.length ; i++){
+		this.primitives[i].render(ctx);
+	}
+};
+
 dia.Primitive = function(representation){
 	this.representation = representation;
 	this.bindings = {};
@@ -351,7 +369,7 @@ dia.Primitive.prototype.setDefault = function(property, value){
 };
 
 dia.Primitive.prototype.bind = function(objectProperty, primitiveProperty){
-	if(!this.representation.element.type.hasPropertyId(objectProperty)){
+	if(!objectProperty.call && !this.representation.element.type.hasPropertyId(objectProperty)){
 		throw new Error('Cannot bind a property that is not set by the element type');
 	}
 	this.bindings[primitiveProperty] = objectProperty;
@@ -416,11 +434,35 @@ dia.RectanglePrimitive.prototype.render = function(ctx){
 
 	ctx.strokeStyle = this.getPropertyValue('borderColor');
 	ctx.strokeRect(
-		this.getPropertyValue('x'),
-		this.getPropertyValue('y'),
-		this.getPropertyValue('width'),
-		this.getPropertyValue('height')
+		this.getPropertyValue('x') - .5,
+		this.getPropertyValue('y') - .5,
+		this.getPropertyValue('width') + 1,
+		this.getPropertyValue('height') + 1
 	);
+};
+
+dia.LinePrimitive = function(representation){
+	dia.Primitive.call(this, representation);
+	
+	this.requiresBinding('p1.x');
+	this.requiresBinding('p1.y');
+	this.requiresBinding('p2.x');
+	this.requiresBinding('p2.y');
+	
+	this.setDefault('color', '#000');
+	this.setDefault('thickness', 2);
+};
+
+extend(dia.LinePrimitive, dia.Primitive);
+
+dia.LinePrimitive.prototype.render = function(ctx){
+	ctx.strokeStyle = this.getPropertyValue('color');
+	ctx.lineWidth = this.getPropertyValue('thickness');
+	
+	ctx.beginPath();
+	ctx.moveTo(this.getPropertyValue('p1.x'), this.getPropertyValue('p1.y'));
+	ctx.lineTo(this.getPropertyValue('p2.x'), this.getPropertyValue('p2.y'));
+	ctx.stroke();
 };
 
 dia.Generic = {};

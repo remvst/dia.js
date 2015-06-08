@@ -54,6 +54,10 @@ dia.Element.prototype.getRepresentation = function(){
 	return this.representation;
 };
 
+dia.Element.prototype.render = function(ctx){
+	this.getRepresentation().render(ctx);
+};
+
 dia.Element.fromJSON = function(json){
 	var type = dia.ElementType.lookupType(json.type);
 	if(type === null){

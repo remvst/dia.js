@@ -3,22 +3,22 @@ describe('a rectangle primitive', function(){
 		var rectType = new dia.ElementType();
 		rectType.addProperty(new dia.Property({
 			id: 'e.x',
-			type: dia.DataType.STRING,
+			type: dia.DataType.INTEGER,
 			default: 0
 		}));
 		rectType.addProperty(new dia.Property({
 			id: 'e.y',
-			type: dia.DataType.STRING,
+			type: dia.DataType.INTEGER,
 			default: 1
 		}));
 		rectType.addProperty(new dia.Property({
 			id: 'e.width',
-			type: dia.DataType.STRING,
+			type: dia.DataType.INTEGER,
 			default: 2
 		}));
 		rectType.addProperty(new dia.Property({
 			id: 'e.height',
-			type: dia.DataType.STRING,
+			type: dia.DataType.INTEGER,
 			default: 3
 		}));
 		var element = rectType.emptyElement();
@@ -36,14 +36,11 @@ describe('a rectangle primitive', function(){
 			fillRect: function(){
 				args.push(Array.prototype.slice.call(arguments));
 			},
-			strokeRect: function(){
-				args.push(Array.prototype.slice.call(arguments));
-			}
+			strokeRect: function(){}
 		};
 		
 		primitive.render(fakeCtx);
 		
 		expect(args[0]).toEqual([0,1,2,3]);
-		expect(args[1]).toEqual([0,1,2,3]);
 	});
 });

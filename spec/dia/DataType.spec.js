@@ -32,6 +32,18 @@ describe('a data type', function(){
 	});
 });
 
+describe('built in any data type', function(){
+	it('validates correctly', function(){
+		expect(dia.DataType.ANY.validateValue('hello')).toBe(true);
+		expect(dia.DataType.ANY.validateValue(123)).toBe(true);
+		expect(dia.DataType.ANY.validateValue(123.54)).toBe(true);
+		expect(dia.DataType.ANY.validateValue('')).toBe(true);
+		expect(dia.DataType.ANY.validateValue(null)).toBe(true);
+		expect(dia.DataType.ANY.validateValue(false)).toBe(true);
+		expect(dia.DataType.ANY.validateValue(NaN)).toBe(true);
+	});
+});
+
 describe('built in string data type', function(){
 	it('validates correctly', function(){
 		expect(dia.DataType.STRING.validateValue('hello')).toBe(true);

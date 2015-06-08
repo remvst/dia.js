@@ -23,9 +23,9 @@ dia.RectanglePrimitive.prototype.render = function(ctx){
 
 	ctx.strokeStyle = this.getPropertyValue('borderColor');
 	ctx.strokeRect(
-		this.getPropertyValue('x'),
-		this.getPropertyValue('y'),
-		this.getPropertyValue('width'),
-		this.getPropertyValue('height')
+		this.getPropertyValue('x') - .5,
+		this.getPropertyValue('y') - .5,
+		this.getPropertyValue('width') + 1,
+		this.getPropertyValue('height') + 1
 	);
 };

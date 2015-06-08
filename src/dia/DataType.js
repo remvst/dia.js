@@ -8,6 +8,7 @@ dia.DataType = function(options){
 };
 
 dia.DataType.prototype.validateValue = function(value){
+	//console.log('validating ' + value + ' -> ' + this.validate(value));
 	return this.validate(value);
 };
 
@@ -18,6 +19,13 @@ dia.DataType.prototype.fromJSON = function(value){
 dia.DataType.prototype.toJSON = function(value){
 	return this.export(value);
 };
+
+dia.DataType.ANY = new dia.DataType({
+	label: 'any',
+	validate: function(value){
+		return true;
+	}
+});
 
 dia.DataType.STRING = new dia.DataType({
 	label: 'string',
