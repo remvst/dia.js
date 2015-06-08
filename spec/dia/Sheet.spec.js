@@ -48,4 +48,25 @@ describe('a sheet', function(){
 		expect(sheet.elements).toEqual([element]);
 		expect(element.sheet).toBe(sheet);
 	});
+	
+	it('renders all elements', function(){
+		var element1 = new dia.Element(new dia.ElementType());
+		var element2 = new dia.Element(new dia.ElementType());
+		
+		var render1 = false;
+		var render2 = false;
+		
+		element1.render = function(){ render1 = true; };
+		element2.render = function(){ render2 = true; };
+		
+		var sheet = new dia.Sheet();
+		
+		sheet.addElement(element1);
+		sheet.addElement(element2);
+		
+		sheet.render();
+		
+		expect(render1).toBe(true);
+		expect(render2).toBe(true);
+	});
 });

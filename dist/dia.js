@@ -111,6 +111,12 @@ dia.Sheet.prototype.removeElement = function(element){
 	element.sheet = null;
 };
 
+dia.Sheet.prototype.render = function(ctx){
+	for(var i = 0 ; i < this.elements.length ; i++){
+		this.elements[i].render(ctx);
+	}
+};
+
 dia.Element = function(type){
 	if(!type){
 		throw new Error('Cannot initialize element without a type.');
