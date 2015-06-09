@@ -32,11 +32,15 @@ describe('a primitive', function(){
 		var repr = new dia.GraphicalRepresentation(element);
 		var primitive = new dia.Primitive(repr);
 
-		primitive.bind('primprop', function(){
+		var functionScope;
+		
+		primitive.bind('primprop', function(scope){
+			functionScope = scope;
 			return 1234;
 		});
 		
 		expect(primitive.getPropertyValue('primprop')).toBe(1234);
+		expect(functionScope).toBe(element);
 	});
 
 	it('can be bound to raw values', function(){
