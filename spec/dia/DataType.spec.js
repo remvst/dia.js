@@ -18,13 +18,20 @@ describe('a data type', function(){
 	
 	it('can handle JSON imports/exports', function(){
 		var type = new dia.DataType({
-			label: 'datatype',
 			fromJSON: function(v){
 				return 'imported';
 			},
 			toJSON: function(v){
 				return 'exported';
-			},
+			}
+		});
+		
+		expect(type.toJSON('onevalue')).toEqual('exported');
+		expect(type.fromJSON('onevalue')).toEqual('imported');
+	});
+	
+	it('can create customized HTML input', function(){
+		var type = new dia.DataType({
 			toHTML: function(){
 				return 'tohtml';
 			},
@@ -33,13 +40,11 @@ describe('a data type', function(){
 			}
 		});
 		
-		expect(type.toJSON('onevalue')).toEqual('exported');
-		expect(type.fromJSON('onevalue')).toEqual('imported');
 		expect(type.createHTMLInput()).toEqual('tohtml');
 		expect(type.getValueFromHTMLInput()).toEqual('fromhtml');
 	});
 	
-	it('can create an HTML input', function(){
+	it('can create a default input', function(){
 		var inputType,
 			inputValue,
 			document = {
