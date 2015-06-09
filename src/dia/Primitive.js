@@ -13,11 +13,11 @@ dia.Primitive.prototype.bind = function(primitiveProperty, objectProperty){
 };
 
 dia.Primitive.prototype.getPropertyValue = function(property){
-	if(!(property in this.bindings) && !(property in this.defaults)){
+	if(this.bindings[property] === undefined && !(property in this.defaults)){
 		throw new Error('Property ' + property + ' was not bound for primitive');
 	}
 	
-	if(!(property in this.bindings)){
+	if(this.bindings[property] === undefined){
 		return this.defaults[property];
 	}
 	
