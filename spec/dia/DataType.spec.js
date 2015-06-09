@@ -24,11 +24,19 @@ describe('a data type', function(){
 			},
 			toJSON: function(v){
 				return 'exported';
+			},
+			toHTML: function(){
+				return 'tohtml';
+			},
+			fromHTML: function(){
+				return 'fromhtml';
 			}
 		});
 		
 		expect(type.toJSON('onevalue')).toEqual('exported');
 		expect(type.fromJSON('onevalue')).toEqual('imported');
+		expect(type.createHTMLInput()).toEqual('tohtml');
+		expect(type.getValueFromHTMLInput()).toEqual('fromhtml');
 	});
 	
 	it('can create an HTML input', function(){
