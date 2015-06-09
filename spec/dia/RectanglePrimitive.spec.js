@@ -25,10 +25,10 @@ describe('a rectangle primitive', function(){
 		var repr = new dia.GraphicalRepresentation(element);
 		
 		var primitive = new dia.RectanglePrimitive(repr);
-		primitive.bind('e.x', 'x');
-		primitive.bind('e.y', 'y');
-		primitive.bind('e.width', 'width');
-		primitive.bind('e.height', 'height');
+		primitive.bind('x', 'e.x');
+		primitive.bind('y', 'e.y');
+		primitive.bind('width', 'e.width');
+		primitive.bind('height', 'e.height');
 		
 		// Mocking fillRect
 		var args = [];

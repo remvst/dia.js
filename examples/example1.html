@@ -72,18 +72,18 @@
 					var representation = new dia.GraphicalRepresentation(element);
 
 					var primitive = new dia.LinePrimitive(representation);
-					primitive.bind(function(element){
+					primitive.bind('p1.x', function(element){
 						return element.getProperty('from').getProperty('x');
-					}, 'p1.x');
-					primitive.bind(function(element){
+					});
+					primitive.bind('p1.y', function(element){
 						return element.getProperty('from').getProperty('y');
-					}, 'p1.y');
-					primitive.bind(function(element){
+					});
+					primitive.bind('p2.x', function(element){
 						return element.getProperty('to').getProperty('x');
-					}, 'p2.x');
-					primitive.bind(function(element){
+					});
+					primitive.bind('p2.y', function(element){
 						return element.getProperty('to').getProperty('y');
-					}, 'p2.y');
+					});
 					
 					representation.addPrimitive(primitive);
 					

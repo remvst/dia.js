@@ -21,7 +21,7 @@ describe('a primitive', function(){
 		var repr = new dia.GraphicalRepresentation(element);
 		
 		var primitive = new dia.Primitive(repr);
-		primitive.bind('title', 'primprop');
+		primitive.bind('primprop', 'title');
 		
 		expect(primitive.getPropertyValue('primprop')).toEqual('mytitle');
 	});
@@ -61,7 +61,7 @@ describe('a primitive', function(){
 		var repr = new dia.GraphicalRepresentation(element);
 		
 		var primitive = new dia.Primitive(repr);
-		primitive.bind('title1', 'req1');
+		primitive.bind('req1', 'title1');
 		
 		primitive.requiresBinding('req1');
 		
@@ -69,7 +69,7 @@ describe('a primitive', function(){
 		
 		expect(primitive.fullyBound()).toBe(false);
 
-		primitive.bind('title2', 'req2');
+		primitive.bind('req2', 'title2');
 		
 		expect(primitive.fullyBound()).toBe(true);
 		expect(primitive.getPropertyValue('req1')).toEqual('empty1');
