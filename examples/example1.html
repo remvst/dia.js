@@ -24,34 +24,51 @@
 				var rectType = new dia.ElementType();
 				rectType.addProperty(new dia.Property({
 					id: 'x',
-					type: dia.DataType.INTEGET,
+					type: dia.DataType.INTEGER,
 					default: 50
 				}));
 				rectType.addProperty(new dia.Property({
 					id: 'y',
-					type: dia.DataType.INTEGET,
+					type: dia.DataType.INTEGER,
 					default: 100
 				}));
 				rectType.addProperty(new dia.Property({
 					id: 'width',
-					type: dia.DataType.INTEGET,
+					type: dia.DataType.INTEGER,
 					default: 100
 				}));
 				rectType.addProperty(new dia.Property({
 					id: 'height',
-					type: dia.DataType.INTEGET,
+					type: dia.DataType.INTEGER,
 					default: 200
+				}));
+				rectType.addProperty(new dia.Property({
+					id: 'content',
+					type: dia.DataType.STRING,
+					default: 'mycontent'
 				}));
 				rectType.setRepresentationFactory(function(element){
 					var representation = new dia.GraphicalRepresentation(element);
 
-					var primitive = new dia.RectanglePrimitive(representation);
-					primitive.bind('x', 'x');
-					primitive.bind('y', 'y');
-					primitive.bind('width', 'width');
-					primitive.bind('height', 'height');
+					var rectPrimitive = new dia.RectanglePrimitive(representation);
+					rectPrimitive.bind('x', 'x');
+					rectPrimitive.bind('y', 'y');
+					rectPrimitive.bind('width', 'width');
+					rectPrimitive.bind('height', 'height');
 					
-					representation.addPrimitive(primitive);
+					representation.addPrimitive(rectPrimitive);
+					
+					var textPrimitive = new dia.TextPrimitive(representation);
+					textPrimitive.bind('align', 'center');
+					textPrimitive.bind('x', function(element){
+						return element.getProperty('x') + element.getProperty('width') / 2;
+					});
+					textPrimitive.bind('y', function(element){
+						return element.getProperty('y') + element.getProperty('height') / 2 - this.getPropertyValue('lineHeight') / 2;
+					});
+					textPrimitive.bind('text', 'content');
+					
+					representation.addPrimitive(textPrimitive);
 					
 					return representation;
 				});
@@ -97,6 +114,7 @@
 				var element2 = rectType.emptyElement();
 				element2.setProperty('x', 300);
 				element2.setProperty('y', 120);
+				element2.setProperty('content', 'class A');
 				sheet.addElement(element2);
 				
 				var relation = relationType.emptyElement();
