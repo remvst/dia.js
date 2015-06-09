@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Example 2</title>
+		
+		<script src="../dist/dia.js"></script>
+	</head>
+	
+	<body>
+		<canvas id="can" width="600" height="600"></canvas>
+		
+		<script>
+			window.addEventListener('load', function(){
+				var canvas = document.getElementById('can');
+				var ctx = canvas.getContext('2d');
+				
+				ctx.fillStyle = 'silver';
+				ctx.fillRect(0,0, canvas.width, canvas.height);
+				
+				var sheet = new dia.Sheet();
+				
+				var classType = new dia.ElementType({
+					id: 'uml.class'
+				});
+				classType.addProperty(new dia.Property({
+					id: 'x',
+					type: dia.DataType.INTEGER,
+					default: 50
+				}));
+				classType.addProperty(new dia.Property({
+					id: 'y',
+					type: dia.DataType.INTEGER,
+					default: 100
+				}));
+				classType.addProperty(new dia.Property({
+					id: 'width',
+					type: dia.DataType.INTEGER,
+					default: 100
+				}));
+				classType.addProperty(new dia.Property({
+					id: 'height',
+					type: dia.DataType.INTEGER,
+					default: 200
+				}));
+				classType.addProperty(new dia.Property({
+					id: 'title',
+					type: dia.DataType.STRING,
+					default: 'class'
+				}));
+				classType.addProperty(new dia.Property({
+					id: 'attributes',
+					type: dia.DataType.STRING_ARRAY,
+					default: ['+hello', '+suce']
+				}));
+				classType.addProperty(new dia.Property({
+					id: 'methods',
+					type: dia.DataType.STRING_ARRAY,
+					default: ['do()', 'close()', 'fail()', 'open()']
+				}));
+				classType.setRepresentationFactory(function(element){
+					var representation = new dia.GraphicalRepresentation(element);
+
+					// Top
+					var upperRect = new dia.RectanglePrimitive(representation);
+					upperRect.bind('x', 'x');
+					upperRect.bind('y', 'y');
+					upperRect.bind('width', 'width');
+					upperRect.bind('height', 20);
+					
+					representation.addPrimitive(upperRect);
+					
+					var title = new dia.TextPrimitive(representation);
+					title.bind('align', 'center');
+					title.bind('x', function(element){
+						return element.getProperty('x') + element.getProperty('width') / 2;
+					});
+					title.bind('y', function(element){
+						return element.getProperty('y');
+					});
+					title.bind('lineHeight', 20);
+					title.bind('text', 'title');
+					title.bind('size', 10);
+					
+					representation.addPrimitive(title);
+					
+					// Middle
+					var middleRect = new dia.RectanglePrimitive(representation);
+					middleRect.bind('x', 'x');
+					middleRect.bind('y', function(element){
+						return element.getProperty('y') + 20;
+					});
+					middleRect.bind('width', 'width');
+					middleRect.bind('height', function(element){
+						return element.getProperty('attributes').length * 20;
+					});
+					
+					representation.addPrimitive(middleRect);
+					
+					var attributes = new dia.TextPrimitive(representation);
+					attributes.bind('x', function(element){
+						return element.getProperty('x') + 5;
+					});
+					attributes.bind('y', function(element){
+						return element.getProperty('y') + 20;
+					});
+					attributes.bind('lineHeight', 20);
+					attributes.bind('text', function(element){
+						return element.getProperty('attributes').join("\n");
+					});
+					attributes.bind('size', 10);
+					
+					representation.addPrimitive(attributes);
+					
+					// Lower
+					var lowerRect = new dia.RectanglePrimitive(representation);
+					lowerRect.bind('x', 'x');
+					lowerRect.bind('y', function(element){
+						return middleRect.getPropertyValue('y') + middleRect.getPropertyValue('height');
+					});
+					lowerRect.bind('width', 'width');
+					lowerRect.bind('height', function(element){
+						return element.getProperty('methods').length * 20;
+					});
+					
+					representation.addPrimitive(lowerRect);
+					
+					var methods = new dia.TextPrimitive(representation);
+					methods.bind('x', function(element){
+						return element.getProperty('x') + 5;
+					});
+					methods.bind('y', function(element){
+						return lowerRect.getPropertyValue('y');
+					});
+					methods.bind('lineHeight', 20);
+					methods.bind('text', function(element){
+						return element.getProperty('methods').join("\n");
+					});
+					methods.bind('size', 10);
+					
+					representation.addPrimitive(methods);
+					
+					return representation;
+				});
+				
+				var c = classType.emptyElement();
+				c.setProperty('x', 100);
+				c.setProperty('y', 100);
+				c.setProperty('title', 'Object');
+				c.setProperty('attributes', ['+id', '+length']);
+				sheet.addElement(c);
+				
+				sheet.render(ctx);
+			}, false);
+		</script>
+	</body>
+</html>
