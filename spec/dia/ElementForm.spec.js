@@ -43,6 +43,9 @@ describe('an element form', function(){
 
 		expect(labels[0].title).toContain('description1');
 		expect(labels[1].title).toContain('description2');
+		
+		expect(inputs[0].value).toEqual('value1');
+		expect(inputs[1].value).toEqual('value2');
 	});
 	
 	it('does not create its root twice', function(){
