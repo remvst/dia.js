@@ -1,4 +1,5 @@
 describe('a data type', function(){
+	
 	it('is initialized correctly', function(){
 		var type = new dia.DataType();
 		
@@ -45,38 +46,14 @@ describe('a data type', function(){
 	});
 	
 	it('can create a default input', function(){
-		var inputType,
-			inputValue,
-			document = {
-				createElement: function(){
-					return {
-						setAttribute : function(key, value){
-							if(key === 'value'){
-								inputValue = value;
-							}else if(key === 'type'){
-								inputType = value;
-							}
-						}
-					};
-				}
-			};
-		
 		var type = new dia.DataType();
 		var html = type.createHTMLInput(document, 'myval');
 		
-		expect(inputType).toEqual('text');
-		expect(inputValue).toEqual('myval');
+		expect(html.getAttribute('type')).toEqual('text');
+		expect(html.value).toEqual('myval');
 	});
 	
 	it('can parse from an HTML input', function(){
-		var document = {
-			createElement: function(){
-				return {
-					setAttribute : function(){}
-				};
-			}
-		};
-		
 		var type = new dia.DataType();
 		var html = type.createHTMLInput(document, 'myval');
 		html.value = 'newval';
