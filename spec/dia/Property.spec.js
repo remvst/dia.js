@@ -3,7 +3,7 @@ describe('a property', function(){
 		var property = new dia.Property();
 		
 		expect(property.label).toBe(null);
-		expect(property.type).toBe(null);
+		expect(property.type).toBe(dia.DataType.ANY);
 		expect(property.description).toBe(null);
 		expect(property.default).toBe(null);
 		expect(property.id).toBe(null);
