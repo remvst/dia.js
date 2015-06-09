@@ -57,22 +57,22 @@ describe('an element type', function(){
 		var rectType = new dia.ElementType();
 		rectType.addProperty(new dia.Property({
 			id: 'e.x',
-			type: dia.DataType.STRING,
+			type: dia.DataType.INTEGER,
 			default: 0
 		}));
 		rectType.addProperty(new dia.Property({
 			id: 'e.y',
-			type: dia.DataType.STRING,
+			type: dia.DataType.INTEGER,
 			default: 1
 		}));
 		rectType.addProperty(new dia.Property({
 			id: 'e.width',
-			type: dia.DataType.STRING,
+			type: dia.DataType.INTEGER,
 			default: 2
 		}));
 		rectType.addProperty(new dia.Property({
 			id: 'e.height',
-			type: dia.DataType.STRING,
+			type: dia.DataType.INTEGER,
 			default: 3
 		}));
 		rectType.setRepresentationFactory(function(element){

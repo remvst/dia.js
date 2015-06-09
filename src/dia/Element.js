@@ -26,7 +26,11 @@ dia.Element.prototype.getProperty = function(id){
 
 dia.Element.prototype.setProperty = function(id, value){
 	if(this.type.hasPropertyId(id)){
-		this.properties[id] = value;
+		if(this.type.getProperty(id).type.validate(value)){
+			this.properties[id] = value;
+		}else{
+			throw new Error('Validation error: Property ' + id + ' cannot have value ' + value);
+		}
 	}else{
 		throw new Error('Property ' + id + ' does not exist for type ' + this.type.id);
 	}

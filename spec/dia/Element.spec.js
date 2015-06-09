@@ -34,6 +34,9 @@ describe('an element', function(){
 		element.setProperty('title', 'myval');
 		
 		expect(element.getProperty('title')).toEqual('myval');
+		expect(function(){
+			element.setProperty('title', 1);
+	   }).toThrow();
 	});
 	
 	it('cannot be set properties that are not defined in the type', function(){
