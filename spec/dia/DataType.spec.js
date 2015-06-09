@@ -47,7 +47,7 @@ describe('a data type', function(){
 	
 	it('can create a default input', function(){
 		var type = new dia.DataType();
-		var html = type.createHTMLInput(document, 'myval');
+		var html = type.createHTMLInput('myval');
 		
 		expect(html.getAttribute('type')).toEqual('text');
 		expect(html.value).toEqual('myval');

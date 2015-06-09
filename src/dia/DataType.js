@@ -5,7 +5,7 @@ dia.DataType = function(options){
 	this.validate = options.validate || function(){ return true; };
 	this.import = options.fromJSON || function(v){ return v; };
 	this.export = options.toJSON || function(v){ return v; };
-	this.toHTML = options.toHTML || function(document, currentValue){
+	this.toHTML = options.toHTML || function(currentValue){
 		var input = document.createElement('input');
 		input.setAttribute('type', 'text');
 		input.setAttribute('value', currentValue);
@@ -28,8 +28,8 @@ dia.DataType.prototype.toJSON = function(value){
 	return this.export(value);
 };
 
-dia.DataType.prototype.createHTMLInput = function(document, currentValue){
-	return this.toHTML.call(this, document, currentValue);
+dia.DataType.prototype.createHTMLInput = function(currentValue){
+	return this.toHTML.call(this, currentValue);
 };
 
 dia.DataType.prototype.getValueFromHTMLInput = function(input){
