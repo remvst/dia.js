@@ -30,6 +30,48 @@ describe('a data type', function(){
 		expect(type.toJSON('onevalue')).toEqual('exported');
 		expect(type.fromJSON('onevalue')).toEqual('imported');
 	});
+	
+	it('can create an HTML input', function(){
+		var inputType,
+			inputValue,
+			document = {
+				createElement: function(){
+					return {
+						setAttribute : function(key, value){
+							if(key === 'value'){
+								inputValue = value;
+							}else if(key === 'type'){
+								inputType = value;
+							}
+						}
+					};
+				}
+			};
+		
+		var type = new dia.DataType();
+		var html = type.createHTMLInput(document, 'myval');
+		
+		expect(inputType).toEqual('text');
+		expect(inputValue).toEqual('myval');
+	});
+	
+	it('can parse from an HTML input', function(){
+		var document = {
+			createElement: function(){
+				return {
+					setAttribute : function(){}
+				};
+			}
+		};
+		
+		var type = new dia.DataType();
+		var html = type.createHTMLInput(document, 'myval');
+		html.value = 'newval';
+		
+		var retrieved = type.getValueFromHTMLInput(html);
+		
+		expect(retrieved).toEqual('newval');
+	});
 });
 
 describe('built in any data type', function(){

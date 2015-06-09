@@ -283,10 +283,18 @@ dia.DataType = function(options){
 	this.validate = options.validate || function(){ return true; };
 	this.import = options.fromJSON || function(v){ return v; };
 	this.export = options.toJSON || function(v){ return v; };
+	this.toHTML = options.toHTML || function(document, currentValue){
+		var input = document.createElement('input');
+		input.setAttribute('type', 'text');
+		input.setAttribute('value', currentValue);
+		return input;
+	};
+	this.fromHTML = options.fromHTML || function(html){
+		return html.value;
+	};
 };
 
 dia.DataType.prototype.validateValue = function(value){
-	//console.log('validating ' + value + ' -> ' + this.validate(value));
 	return this.validate(value);
 };
 
@@ -296,6 +304,14 @@ dia.DataType.prototype.fromJSON = function(value){
 
 dia.DataType.prototype.toJSON = function(value){
 	return this.export(value);
+};
+
+dia.DataType.prototype.createHTMLInput = function(document, currentValue){
+	return this.toHTML.call(this, document, currentValue);
+};
+
+dia.DataType.prototype.getValueFromHTMLInput = function(input){
+	return this.fromHTML.call(this, input);
 };
 
 dia.DataType.ANY = new dia.DataType({
