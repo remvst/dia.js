@@ -25,6 +25,30 @@ describe('a primitive', function(){
 		
 		expect(primitive.getPropertyValue('primprop')).toEqual('mytitle');
 	});
+
+	it('can be bound to functions', function(){
+		var type = new dia.ElementType();
+		var element = new dia.Element(type);
+		var repr = new dia.GraphicalRepresentation(element);
+		var primitive = new dia.Primitive(repr);
+
+		primitive.bind('primprop', function(){
+			return 1234;
+		});
+		
+		expect(primitive.getPropertyValue('primprop')).toBe(1234);
+	});
+
+	it('can be bound to raw values', function(){
+		var type = new dia.ElementType();
+		var element = new dia.Element(type);
+		var repr = new dia.GraphicalRepresentation(element);
+		var primitive = new dia.Primitive(repr);
+
+		primitive.bind('primprop', 1234);
+		
+		expect(primitive.getPropertyValue('primprop')).toBe(1234);
+	});
 	
 	it('cannot get properties that are not bound', function(){
 		var type = new dia.ElementType();

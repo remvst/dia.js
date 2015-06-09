@@ -9,9 +9,6 @@ dia.Primitive.prototype.setDefault = function(property, value){
 };
 
 dia.Primitive.prototype.bind = function(primitiveProperty, objectProperty){
-	if(!objectProperty.call && !this.representation.element.type.hasPropertyId(objectProperty)){
-		throw new Error('Cannot bind a property that is not set by the element type');
-	}
 	this.bindings[primitiveProperty] = objectProperty;
 };
 
@@ -27,8 +24,10 @@ dia.Primitive.prototype.getPropertyValue = function(property){
 	var binding = this.bindings[property];
 	if(binding.call){
 		return binding.call(this, this.representation.element);
-	}else{
+	}else if(this.representation.element.type.hasPropertyId(binding)){
 		return this.representation.element.getProperty(binding);
+	}else{
+		return binding;
 	}
 };
 
