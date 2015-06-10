@@ -22,6 +22,7 @@ module.exports = function(grunt) {
 					'src/dia/TextPrimitive.js',
 					'src/dia/Generic.js',
 					'src/dia/DragHandle.js',
+					'src/dia/MoveElementDragHandle.js',
 					'src/dia/ElementForm.js'
 				],
 			dest: 'dist/<%= pkg.name %>.js'
