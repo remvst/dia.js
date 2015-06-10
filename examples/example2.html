@@ -14,8 +14,12 @@
 				var canvas = document.getElementById('can');
 				var ctx = canvas.getContext('2d');
 				
-				ctx.fillStyle = 'silver';
-				ctx.fillRect(0,0, canvas.width, canvas.height);
+				var render = function(){
+					ctx.fillStyle = 'silver';
+					ctx.fillRect(0,0, canvas.width, canvas.height);
+					
+					sheet.render(ctx);
+				};
 				
 				var sheet = new dia.Sheet();
 				
@@ -59,12 +63,23 @@
 				}));
 				classType.setRepresentationFactory(function(element){
 					var representation = new dia.GraphicalRepresentation(element);
+					
+					var getRequiredWidth = function(){
+						var maxLength = element.getProperty('title').length;
+						element.getProperty('attributes').forEach(function(attr){
+							maxLength = Math.max(maxLength, attr.length);
+						});
+						element.getProperty('methods').forEach(function(attr){
+							maxLength = Math.max(maxLength, attr.length);
+						});
+						return maxLength * 10;
+					};
 
 					// Top
 					var upperRect = new dia.RectanglePrimitive(representation);
 					upperRect.bind('x', 'x');
 					upperRect.bind('y', 'y');
-					upperRect.bind('width', 'width');
+					upperRect.bind('width', getRequiredWidth);
 					upperRect.bind('height', 20);
 					
 					representation.addPrimitive(upperRect);
@@ -72,7 +87,7 @@
 					var title = new dia.TextPrimitive(representation);
 					title.bind('align', 'center');
 					title.bind('x', function(element){
-						return element.getProperty('x') + element.getProperty('width') / 2;
+						return element.getProperty('x') + getRequiredWidth() / 2;
 					});
 					title.bind('y', function(element){
 						return element.getProperty('y');
@@ -89,7 +104,7 @@
 					middleRect.bind('y', function(element){
 						return element.getProperty('y') + 20;
 					});
-					middleRect.bind('width', 'width');
+					middleRect.bind('width', getRequiredWidth);
 					middleRect.bind('height', function(element){
 						return element.getProperty('attributes').length * 20;
 					});
@@ -117,7 +132,7 @@
 					lowerRect.bind('y', function(element){
 						return middleRect.getPropertyValue('y') + middleRect.getPropertyValue('height');
 					});
-					lowerRect.bind('width', 'width');
+					lowerRect.bind('width', getRequiredWidth);
 					lowerRect.bind('height', function(element){
 						return element.getProperty('methods').length * 20;
 					});
@@ -149,12 +164,21 @@
 				c.setProperty('attributes', ['+id', '+length']);
 				sheet.addElement(c);
 				
-				sheet.render(ctx);
-				
 				var form = new dia.ElementForm(c);
 				var root = form.getHTMLRoot();
 				
 				document.body.appendChild(root);
+				
+				render();
+				
+				document.body.addEventListener('change', function(){
+					var valid = form.isValid();
+					console.log('is form valid? ' + valid);
+					
+					form.submit();
+					
+					render();
+				}, false);
 			}, false);
 		</script>
 	</body>
