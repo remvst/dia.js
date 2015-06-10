@@ -75,9 +75,11 @@ describe('an element form', function(){
 		
 		input.value = 'blah';
 		expect(form.isValid()).toBe(false);
+		expect(form.validMap['prop']).toBe(false);
 		
 		input.value = '123';
 		expect(form.isValid()).toBe(true);
+		expect(form.validMap['prop']).toBe(true);
 	});
 	
 	it('does not submit if not valid', function(){

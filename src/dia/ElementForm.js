@@ -6,6 +6,7 @@ dia.ElementForm = function(element){
 	this.element = element;
 	this.htmlRoot = null;
 	this.inputMap = {};
+	this.validMap = {};
 };
 
 dia.ElementForm.prototype.getHTMLRoot = function(){
@@ -34,6 +35,8 @@ dia.ElementForm.prototype.createHTMLRoot = function(){
 		
 		// Let's store the input so we can parse it later
 		form.inputMap[property.id] = input;
+		
+		form.validMap[property.id] = true;
 	});
 	
 	return root;
@@ -52,6 +55,9 @@ dia.ElementForm.prototype.isValid = function(){
 		
 		if(!property.type.validateValue(newValue)){
 			valid = false;
+			form.validMap[property.id] = false;
+		}else{
+			form.validMap[property.id] = true;
 		}
 	});
 	

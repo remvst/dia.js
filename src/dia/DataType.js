@@ -84,5 +84,8 @@ dia.DataType.STRING_ARRAY = new dia.DataType({
 			}
 		}
 		return true;
+	},
+	fromHTML: function(html){
+		return html.value.split(',');
 	}
 });
