@@ -581,7 +581,7 @@ dia.ElementForm.prototype.createHTMLRoot = function(){
 		var propertyRoot = document.createElement('div');
 		
 		var label = document.createElement('label');
-		label.innerHTML = property.label;
+		label.innerHTML = property.label || property.id;
 		label.title = property.description;
 		propertyRoot.appendChild(label);
 		
