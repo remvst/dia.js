@@ -150,6 +150,11 @@
 				sheet.addElement(c);
 				
 				sheet.render(ctx);
+				
+				var form = new dia.ElementForm(c);
+				var root = form.getHTMLRoot();
+				
+				document.body.appendChild(root);
 			}, false);
 		</script>
 	</body>
