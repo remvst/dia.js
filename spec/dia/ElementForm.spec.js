@@ -58,4 +58,67 @@ describe('an element form', function(){
 		
 		expect(root1).toBe(root2);
 	});
+	
+	it('can check for validation', function(){
+		var type = new dia.ElementType();
+		type.addProperty(new dia.Property({
+			id: 'prop',
+			type: dia.DataType.INTEGER,
+			default: 1
+		}));
+		var element = type.emptyElement();
+		
+		var form = new dia.ElementForm(element);
+		var root = form.getHTMLRoot();
+		
+		var input = root.querySelector('input');
+		
+		input.value = 'blah';
+		expect(form.isValid()).toBe(false);
+		
+		input.value = '123';
+		expect(form.isValid()).toBe(true);
+	});
+	
+	it('does not submit if not valid', function(){
+		var type = new dia.ElementType();
+		type.addProperty(new dia.Property({
+			id: 'prop',
+			type: dia.DataType.INTEGER,
+			default: 1
+		}));
+		var element = type.emptyElement();
+		
+		var form = new dia.ElementForm(element);
+		var root = form.getHTMLRoot();
+		
+		var input = root.querySelector('input');
+		
+		input.value = 'blah';
+		expect(function(){
+			form.submit();
+		}).toThrow();
+		
+		expect(element.getProperty('prop')).toEqual(1);
+	});
+	
+	it('updates the element on submission', function(){
+		var type = new dia.ElementType();
+		type.addProperty(new dia.Property({
+			id: 'prop',
+			type: dia.DataType.INTEGER,
+			default: 1
+		}));
+		var element = type.emptyElement();
+		
+		var form = new dia.ElementForm(element);
+		var root = form.getHTMLRoot();
+		
+		var input = root.querySelector('input');
+		input.value = '12345';
+		
+		form.submit();
+		
+		expect(element.getProperty('prop')).toBe(12345);
+	});
 });

@@ -55,6 +55,9 @@ dia.DataType.INTEGER = new dia.DataType({
 	validate: function(value){
 		var parsed = parseInt(value);
 		return parsed !== NaN && parsed === value;
+	},
+	fromHTML: function(html){
+		return parseInt(html.value);
 	}
 });
 
@@ -63,6 +66,9 @@ dia.DataType.FLOAT = new dia.DataType({
 	validate: function(value){
 		var parsed = parseFloat(value);
 		return parsed !== NaN && parsed === value;
+	},
+	fromHTML: function(html){
+		return parseFloat(html.value);
 	}
 });
 
