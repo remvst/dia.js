@@ -5,6 +5,7 @@ dia.GraphicalRepresentation = function(element){
 	
 	this.element = element;
 	this.primitives = [];
+	this.handles = [];
 };
 
 dia.GraphicalRepresentation.prototype.addPrimitive = function(primitive){
@@ -15,4 +16,8 @@ dia.GraphicalRepresentation.prototype.render = function(ctx){
 	for(var i = 0 ; i < this.primitives.length ; i++){
 		this.primitives[i].render(ctx);
 	}
+};
+
+dia.GraphicalRepresentation.prototype.addHandle = function(handle){
+	this.handles.push(handle);
 };
