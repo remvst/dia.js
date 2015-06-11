@@ -1,5 +1,5 @@
-dia.MoveElementDragHandle = function(element){
-	dia.DragHandle.call(this, element);
+dia.MoveElementDragHandle = function(element, area){
+	dia.DragHandle.call(this, element, area);
 	
 	if(!this.element.type.hasPropertyId('x') || !this.element.type.hasPropertyId('y')){
 		throw new Error('Cannot bind a MoveElementDragHandle to an element that has no x or y');
