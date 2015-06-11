@@ -23,6 +23,8 @@ module.exports = function(grunt) {
 					'src/dia/Generic.js',
 					'src/dia/DragHandle.js',
 					'src/dia/MoveElementDragHandle.js',
+					'src/dia/Area.js',
+					'src/dia/RectangleArea.js',
 					'src/dia/ElementForm.js'
 				],
 			dest: 'dist/<%= pkg.name %>.js'
