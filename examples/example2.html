@@ -154,6 +154,17 @@
 					
 					representation.addPrimitive(methods);
 					
+					
+					var area = new dia.RectangleArea({
+						x: function(){ return element.getProperty('x'); },
+						y: function(){ return element.getProperty('y'); },
+						width: function(){ return upperRect.getPropertyValue('width'); },
+						height: function(){ return lowerRect.getPropertyValue('y') + lowerRect.getPropertyValue('height') }
+					});
+					
+					var moveHandle = new dia.MoveElementDragHandle(element, area);
+					representation.addHandle(moveHandle);
+					
 					return representation;
 				});
 				
@@ -169,6 +180,8 @@
 				
 				document.body.appendChild(root);
 				
+				var im = new dia.InteractionManager(sheet);
+				
 				render();
 				
 				document.body.addEventListener('change', function(){
@@ -177,6 +190,29 @@
 					
 					form.submit();
 					
+					render();
+				}, false);
+				
+				var getPosition = function(event){
+					var rect = canvas.getBoundingClientRect();
+					return {
+						x: event.pageX - rect.left,
+						y: event.pageY - rect.top
+					};
+				};
+				document.body.addEventListener('mousedown', function(e){
+					var position = getPosition(e);
+					im.mouseDown(position.x, position.y);
+					render();
+				}, false);
+				document.body.addEventListener('mousemove', function(e){
+					var position = getPosition(e);
+					im.mouseMove(position.x, position.y);
+					render();
+				}, false);
+				document.body.addEventListener('mouseup', function(e){
+					var position = getPosition(e);
+					im.mouseUp(position.x, position.y);
 					render();
 				}, false);
 			}, false);

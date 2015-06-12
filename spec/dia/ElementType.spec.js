@@ -77,14 +77,14 @@ describe('an element type', function(){
 		}));
 		rectType.setRepresentationFactory(function(element){
 			var repr = new dia.GraphicalRepresentation(element);
-			repr.addPrimitive(new dia.RectanglePrimitive(repr));
+			repr.addRenderable(new dia.RectanglePrimitive(repr));
 			return repr;
 		});
 		
 		var element = rectType.emptyElement();
 		var repr = element.getRepresentation();
 		
-		expect(repr.primitives[0].render).toBe(dia.RectanglePrimitive.prototype.render);
+		expect(repr.renderables[0].render).toBe(dia.RectanglePrimitive.prototype.render);
 	});
 	
 	it('is automatically registered upon instanciation', function(){

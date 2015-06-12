@@ -1,8 +1,11 @@
 dia.Primitive = function(representation){
+	dia.Renderable.call(this, this.render.bind(this));
 	this.representation = representation;
 	this.bindings = {};
 	this.defaults = {};
 };
+
+extend(dia.Primitive, dia.Renderable);
 
 dia.Primitive.prototype.setDefault = function(property, value){
 	this.defaults[property] = value;

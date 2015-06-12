@@ -4,17 +4,17 @@ dia.GraphicalRepresentation = function(element){
 	}
 	
 	this.element = element;
-	this.primitives = [];
+	this.renderables = [];
 	this.handles = [];
 };
 
-dia.GraphicalRepresentation.prototype.addPrimitive = function(primitive){
-	this.primitives.push(primitive);
+dia.GraphicalRepresentation.prototype.addRenderable = function(renderable){
+	this.renderables.push(renderable);
 };
 
 dia.GraphicalRepresentation.prototype.render = function(ctx){
-	for(var i = 0 ; i < this.primitives.length ; i++){
-		this.primitives[i].render(ctx);
+	for(var i = 0 ; i < this.renderables.length ; i++){
+		this.renderables[i].render(ctx);
 	}
 };
 

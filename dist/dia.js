@@ -374,17 +374,17 @@ dia.GraphicalRepresentation = function(element){
 	}
 	
 	this.element = element;
-	this.primitives = [];
+	this.renderables = [];
 	this.handles = [];
 };
 
-dia.GraphicalRepresentation.prototype.addPrimitive = function(primitive){
-	this.primitives.push(primitive);
+dia.GraphicalRepresentation.prototype.addRenderable = function(renderable){
+	this.renderables.push(renderable);
 };
 
 dia.GraphicalRepresentation.prototype.render = function(ctx){
-	for(var i = 0 ; i < this.primitives.length ; i++){
-		this.primitives[i].render(ctx);
+	for(var i = 0 ; i < this.renderables.length ; i++){
+		this.renderables[i].render(ctx);
 	}
 };
 
@@ -392,11 +392,22 @@ dia.GraphicalRepresentation.prototype.addHandle = function(handle){
 	this.handles.push(handle);
 };
 
+dia.Renderable = function(render){
+	this.renderFunction = render;
+};
+
+dia.Renderable.prototype.render = function(ctx){
+	this.renderFunction.call(this, ctx);
+};
+
 dia.Primitive = function(representation){
+	dia.Renderable.call(this, this.render.bind(this));
 	this.representation = representation;
 	this.bindings = {};
 	this.defaults = {};
 };
+
+extend(dia.Primitive, dia.Renderable);
 
 dia.Primitive.prototype.setDefault = function(property, value){
 	this.defaults[property] = value;

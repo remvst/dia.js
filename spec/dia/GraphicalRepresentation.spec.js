@@ -3,7 +3,7 @@ describe('a graphical representation', function(){
 		var element = new dia.Element(new dia.ElementType());
 		var repr = new dia.GraphicalRepresentation(element);
 		
-		expect(repr.primitives).toEqual([]);
+		expect(repr.renderables).toEqual([]);
 	});
 	
 	it('cannot be initialized without an element', function(){
@@ -17,9 +17,9 @@ describe('a graphical representation', function(){
 		var repr = new dia.GraphicalRepresentation(element);
 		
 		var primitive = new dia.Primitive(repr);
-		repr.addPrimitive(primitive);
+		repr.addRenderable(primitive);
 		
-		expect(repr.primitives).toEqual([primitive]);
+		expect(repr.renderables).toEqual([primitive]);
 	});
 	
 	it('can be added drag handles', function(){
