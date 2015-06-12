@@ -11,10 +11,40 @@ dia.RectangleArea = function(options){
 extend(dia.RectangleArea, dia.Area);
 
 dia.RectangleArea.prototype.contains = function(x, y){
+	var bounds = this.getBounds();
+	
+	return x >= bounds.x1 && y >= bounds.y1 && x <= bounds.x2 && y <= bounds.y2;
+};
+
+dia.RectangleArea.prototype.getBounds = function(){
 	var areaX = this.getX();
 	var areaY = this.getY();
 	var areaWidth = this.getWidth();
 	var areaHeight = this.getHeight();
 	
-	return x >= areaX && y >= areaY && x <= areaX + areaWidth && y <= areaY + areaHeight;
+	if(areaWidth < 0){
+		areaX += areaWidth;
+		areaWidth *= -1;
+	}
+	if(areaHeight < 0){
+		areaY += areaHeight;
+		areaHeight *= -1;
+	}
+	
+	return {
+		x1: areaX,
+		x2: areaX + areaWidth,
+		y1: areaY,
+		y2: areaY + areaHeight
+	};
+};
+
+dia.RectangleArea.prototype.intersectsWith = function(otherArea){
+	// Let's assume it's another rectangle area
+	var a = this.getBounds();
+	var b = otherArea.getBounds();
+	
+	// Taken from http://stackoverflow.com/questions/306316/determine-if-two-rectangles-overlap-each-other
+	return a.x1 < b.x2 && a.x2 > b.x1 &&
+    	   a.y1 < b.y2 && a.y2 > b.y1;
 };

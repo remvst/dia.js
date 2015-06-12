@@ -103,4 +103,43 @@ describe('an element', function(){
 		expect(parsed.type).toEqual(element.type);
 		expect(parsed.properties).toEqual(element.properties);
 	});
+	
+	it('cannot be contained if no area is specified in the representation', function(){
+		var type = new dia.ElementType();
+		type.setRepresentationFactory(function(element){
+			return new dia.GraphicalRepresentation(element);
+		});
+		var element = type.emptyElement();
+		
+		var area = new dia.RectangleArea({
+			x: function(){ return 0; },
+			y: function(){ return 0; },
+			width: function(){ return 100; },
+			height: function(){ return 100; }
+		});
+		
+		expect(element.isContainedIn(area)).toBe(false);
+	});
+	
+	it('can be contained if an area is specified in the representation', function(){
+		var type = new dia.ElementType();
+		type.setRepresentationFactory(function(element){
+			var repr = new dia.GraphicalRepresentation(element);
+			repr.area = new dia.Area();
+			repr.area.intersectsWith = function(otherArea){
+				return true;
+			};
+			return repr;
+		});
+		var element = type.emptyElement();
+		
+		var area = new dia.RectangleArea({
+			x: function(){ return 0; },
+			y: function(){ return 0; },
+			width: function(){ return 100; },
+			height: function(){ return 100; }
+		});
+		
+		expect(element.isContainedIn(area)).toBe(true);
+	});
 });

@@ -6,6 +6,8 @@ dia.GraphicalRepresentation = function(element){
 	this.element = element;
 	this.renderables = [];
 	this.handles = [];
+	
+	this.area = null;
 };
 
 dia.GraphicalRepresentation.prototype.addRenderable = function(renderable){

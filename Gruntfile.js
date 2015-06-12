@@ -30,6 +30,7 @@ module.exports = function(grunt) {
 					'src/dia/InteractionManager.js',
 					'src/dia/Tool.js',
 					'src/dia/CreateTool.js',
+					'src/dia/SelectionTool.js',
 					'src/dia/ElementForm.js'
 				],
 			dest: 'dist/<%= pkg.name %>.js'

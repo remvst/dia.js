@@ -62,6 +62,15 @@ dia.Element.prototype.render = function(ctx){
 	this.getRepresentation().render(ctx);
 };
 
+dia.Element.prototype.isContainedIn = function(rectangleArea){
+	var repr = this.getRepresentation();
+	if(repr.area){
+		return repr.area.intersectsWith(rectangleArea);
+	}else{
+		return false;
+	}
+};
+
 dia.Element.fromJSON = function(json){
 	var type = dia.ElementType.lookupType(json.type);
 	if(type === null){

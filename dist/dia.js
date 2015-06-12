@@ -181,6 +181,15 @@ dia.Element.prototype.render = function(ctx){
 	this.getRepresentation().render(ctx);
 };
 
+dia.Element.prototype.isContainedIn = function(rectangleArea){
+	var repr = this.getRepresentation();
+	if(repr.area){
+		return repr.area.intersectsWith(rectangleArea);
+	}else{
+		return false;
+	}
+};
+
 dia.Element.fromJSON = function(json){
 	var type = dia.ElementType.lookupType(json.type);
 	if(type === null){
@@ -446,6 +455,8 @@ dia.GraphicalRepresentation = function(element){
 	this.element = element;
 	this.renderables = [];
 	this.handles = [];
+	
+	this.area = null;
 };
 
 dia.GraphicalRepresentation.prototype.addRenderable = function(renderable){
@@ -725,6 +736,10 @@ dia.Area.prototype.contains = function(x, y){
 	return false;	
 };
 
+dia.Area.prototype.intersectsWith = function(otherArea){
+	return false;	
+};
+
 dia.RectangleArea = function(options){
 	dia.Area.call(this);
 	
@@ -738,12 +753,42 @@ dia.RectangleArea = function(options){
 extend(dia.RectangleArea, dia.Area);
 
 dia.RectangleArea.prototype.contains = function(x, y){
+	var bounds = this.getBounds();
+	
+	return x >= bounds.x1 && y >= bounds.y1 && x <= bounds.x2 && y <= bounds.y2;
+};
+
+dia.RectangleArea.prototype.getBounds = function(){
 	var areaX = this.getX();
 	var areaY = this.getY();
 	var areaWidth = this.getWidth();
 	var areaHeight = this.getHeight();
 	
-	return x >= areaX && y >= areaY && x <= areaX + areaWidth && y <= areaY + areaHeight;
+	if(areaWidth < 0){
+		areaX += areaWidth;
+		areaWidth *= -1;
+	}
+	if(areaHeight < 0){
+		areaY += areaHeight;
+		areaHeight *= -1;
+	}
+	
+	return {
+		x1: areaX,
+		x2: areaX + areaWidth,
+		y1: areaY,
+		y2: areaY + areaHeight
+	};
+};
+
+dia.RectangleArea.prototype.intersectsWith = function(otherArea){
+	// Let's assume it's another rectangle area
+	var a = this.getBounds();
+	var b = otherArea.getBounds();
+	
+	// Taken from http://stackoverflow.com/questions/306316/determine-if-two-rectangles-overlap-each-other
+	return a.x1 < b.x2 && a.x2 > b.x1 &&
+    	   a.y1 < b.y2 && a.y2 > b.y1;
 };
 
 dia.InteractionManager = function(sheet){
@@ -828,6 +873,14 @@ dia.Tool.prototype.mouseUp = function(sheet, x, y){
 	
 };
 
+dia.Tool.prototype.keyDown = function(sheet, keyCode){
+	
+};
+
+dia.Tool.prototype.keyUp = function(sheet, keyCode){
+	
+};
+
 dia.CreateTool = function(options){
 	dia.Tool.call(this);
 	
@@ -855,6 +908,57 @@ dia.CreateTool.prototype.mouseUp = function(sheet, x, y){
 	this.onMouseUp.call(this, sheet, x, y);
 	
 	this.currentElement = null;
+};
+
+dia.SelectionTool = function(){
+	dia.Tool.call(this);
+	
+	this.selectionStart = null;
+	this.selectionEnd = null;
+	this.currentSelection = [];
+};
+
+extend(dia.SelectionTool, dia.Tool);
+
+dia.SelectionTool.prototype.mouseDown = function(sheet, x, y){
+	this.selectionStart = { x: x, y: y };
+	this.selectionEnd = { x: x, y: y };
+};
+
+dia.SelectionTool.prototype.mouseMove = function(sheet, x, y){
+	if(this.selectionStart){
+		this.selectionEnd = { x: x, y: y };
+	}
+};
+
+dia.SelectionTool.prototype.mouseUp = function(sheet, x, y){
+	if(this.selectionStart){
+		var tool = this;
+		var area = new dia.RectangleArea({
+			x: function(){ return tool.selectionStart.x; },
+			y: function(){ return tool.selectionStart.y; },
+			width: function(){ return tool.selectionEnd.x - tool.selectionStart.x; },
+			height: function(){ return tool.selectionEnd.y - tool.selectionStart.y; }
+		});
+
+		this.currentSelection = [];
+
+		for(var i in sheet.elements){
+			if(sheet.elements[i].isContainedIn(area)){
+				this.currentSelection.push(sheet.elements[i]);
+			}
+		}	
+	}
+	this.selectionStart = null;
+	this.selectionEnd = null;
+};
+
+dia.SelectionTool.prototype.keyDown = function(sheet, keyCode){
+	// TODO
+};
+
+dia.SelectionTool.prototype.keyUp = function(sheet, keyCode){
+	// TODO
 };
 
 dia.ElementForm = function(element){
