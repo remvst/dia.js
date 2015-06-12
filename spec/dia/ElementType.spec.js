@@ -5,6 +5,7 @@ describe('an element type', function(){
 		expect(type.id).toBe(null);
 		expect(type.properties).toEqual([]);
 		expect(type.propertyMap).toEqual({});
+		expect(type.creator).toBe(null);
 	});
 	
 	it('is initialized correctly with options', function(){

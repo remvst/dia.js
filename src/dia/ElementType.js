@@ -5,6 +5,7 @@ dia.ElementType = function(options){
 	this.properties = [];
 	this.propertyMap = {};
 	this.representationFactory = options.representation || null;
+	this.creator = null;
 	
 	if(this.id){
 		dia.ElementType.register(this);

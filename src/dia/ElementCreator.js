@@ -7,8 +7,6 @@ dia.ElementCreator = function(options){
 	this.onMouseUp = options.mouseUp || new Function();
 	
 	this.currentElement = null;
-	
-	console.log(this.onMouseDown === options.mouseDown);
 };
 
 dia.ElementCreator.prototype.mouseDown = function(sheet, x, y){
