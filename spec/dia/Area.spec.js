@@ -1,8 +1,4 @@
 describe('an area', function(){
-	it('is initialized properly', function(){
-		var area = new dia.Area();
-	});
-	
 	it('contains nothing by default', function(){
 		var area = new dia.Area();
 		
