@@ -397,7 +397,9 @@ dia.Renderable = function(render){
 };
 
 dia.Renderable.prototype.render = function(ctx){
+	ctx.save();
 	this.renderFunction.call(this, ctx);
+	ctx.restore();
 };
 
 dia.Primitive = function(representation){

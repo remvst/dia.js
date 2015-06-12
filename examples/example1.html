@@ -33,16 +33,6 @@
 					default: 100
 				}));
 				rectType.addProperty(new dia.Property({
-					id: 'width',
-					type: dia.DataType.INTEGER,
-					default: 100
-				}));
-				rectType.addProperty(new dia.Property({
-					id: 'height',
-					type: dia.DataType.INTEGER,
-					default: 200
-				}));
-				rectType.addProperty(new dia.Property({
 					id: 'content',
 					type: dia.DataType.STRING,
 					default: 'mycontent'
@@ -56,7 +46,7 @@
 					rectPrimitive.bind('width', 'width');
 					rectPrimitive.bind('height', 'height');
 					
-					representation.addPrimitive(rectPrimitive);
+					representation.addRenderable(rectPrimitive);
 					
 					var textPrimitive = new dia.TextPrimitive(representation);
 					textPrimitive.bind('align', 'center');
@@ -68,7 +58,7 @@
 					});
 					textPrimitive.bind('text', 'content');
 					
-					representation.addPrimitive(textPrimitive);
+					representation.addRenderable(textPrimitive);
 					
 					return representation;
 				});
@@ -102,7 +92,7 @@
 						return element.getProperty('to').getProperty('y');
 					});
 					
-					representation.addPrimitive(primitive);
+					representation.addRenderable(primitive);
 					
 					return representation;
 				});

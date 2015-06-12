@@ -64,6 +64,9 @@
 				classType.setRepresentationFactory(function(element){
 					var representation = new dia.GraphicalRepresentation(element);
 					
+					var lineHeight = 20;
+					var padding = 10;
+					
 					var getRequiredWidth = function(){
 						var maxLength = element.getProperty('title').length;
 						element.getProperty('attributes').forEach(function(attr){
@@ -72,94 +75,54 @@
 						element.getProperty('methods').forEach(function(attr){
 							maxLength = Math.max(maxLength, attr.length);
 						});
-						return maxLength * 10;
+						return maxLength * 10 + 2 * padding;
 					};
-
-					// Top
-					var upperRect = new dia.RectanglePrimitive(representation);
-					upperRect.bind('x', 'x');
-					upperRect.bind('y', 'y');
-					upperRect.bind('width', getRequiredWidth);
-					upperRect.bind('height', 20);
 					
-					representation.addRenderable(upperRect);
+					var getRequiredHeight = function(){
+						return lineHeight * (1 + element.getProperty('methods').length
+											 + element.getProperty('attributes').length)
+					};
 					
-					var title = new dia.TextPrimitive(representation);
-					title.bind('align', 'center');
-					title.bind('x', function(element){
-						return element.getProperty('x') + getRequiredWidth() / 2;
-					});
-					title.bind('y', function(element){
-						return element.getProperty('y');
-					});
-					title.bind('lineHeight', 20);
-					title.bind('text', 'title');
-					title.bind('size', 10);
-					
-					representation.addRenderable(title);
-					
-					// Middle
-					var middleRect = new dia.RectanglePrimitive(representation);
-					middleRect.bind('x', 'x');
-					middleRect.bind('y', function(element){
-						return element.getProperty('y') + 20;
-					});
-					middleRect.bind('width', getRequiredWidth);
-					middleRect.bind('height', function(element){
-						return element.getProperty('attributes').length * 20;
-					});
-					
-					representation.addRenderable(middleRect);
-					
-					var attributes = new dia.TextPrimitive(representation);
-					attributes.bind('x', function(element){
-						return element.getProperty('x') + 5;
-					});
-					attributes.bind('y', function(element){
-						return element.getProperty('y') + 20;
-					});
-					attributes.bind('lineHeight', 20);
-					attributes.bind('text', function(element){
-						return element.getProperty('attributes').join("\n");
-					});
-					attributes.bind('size', 10);
-					
-					representation.addRenderable(attributes);
-					
-					// Lower
-					var lowerRect = new dia.RectanglePrimitive(representation);
-					lowerRect.bind('x', 'x');
-					lowerRect.bind('y', function(element){
-						return middleRect.getPropertyValue('y') + middleRect.getPropertyValue('height');
-					});
-					lowerRect.bind('width', getRequiredWidth);
-					lowerRect.bind('height', function(element){
-						return element.getProperty('methods').length * 20;
-					});
-					
-					representation.addRenderable(lowerRect);
-					
-					var methods = new dia.TextPrimitive(representation);
-					methods.bind('x', function(element){
-						return element.getProperty('x') + 5;
-					});
-					methods.bind('y', function(element){
-						return lowerRect.getPropertyValue('y');
-					});
-					methods.bind('lineHeight', 20);
-					methods.bind('text', function(element){
-						return element.getProperty('methods').join("\n");
-					});
-					methods.bind('size', 10);
-					
-					representation.addRenderable(methods);
-					
+					representation.addRenderable(new dia.Renderable(function(c){
+						c.translate(element.getProperty('x'), element.getProperty('y'));
+						
+						var width = getRequiredWidth();
+						var height = getRequiredHeight();
+						
+						c.fillStyle = '#ffffff';
+						c.fillRect(0, 0, width, height);
+						
+						c.fillStyle = '#000';
+						
+						c.fillRect(0, 0, width, 1);
+						c.fillRect(0, height - 1, width, 1);
+						c.fillRect(0, lineHeight, width, 1);
+						c.fillRect(0, lineHeight * (element.getProperty('attributes').length + 1), width, 1);
+						
+						c.fillRect(0, 0, 1, height);
+						c.fillRect(width - 1, 0, 1, height);
+						
+						c.textBaseline = 'middle';
+						c.font = '10pt Arial';
+						
+						c.textAlign = 'center';
+						c.fillText(element.getProperty('title'), width / 2, lineHeight / 2);
+								   
+						c.textAlign = 'left';
+						
+						var y = 1.5 * lineHeight;
+						var lines = element.getProperty('attributes').concat(element.getProperty('methods'));
+						for(var i = 0 ; i < lines.length ; i++){
+							c.fillText(lines[i], padding, y);
+							y += lineHeight;
+						}
+					}));
 					
 					var area = new dia.RectangleArea({
 						x: function(){ return element.getProperty('x'); },
 						y: function(){ return element.getProperty('y'); },
-						width: function(){ return upperRect.getPropertyValue('width'); },
-						height: function(){ return lowerRect.getPropertyValue('y') + lowerRect.getPropertyValue('height') }
+						width: getRequiredWidth,
+						height: getRequiredHeight
 					});
 					
 					var moveHandle = new dia.MoveElementDragHandle(element, area);
