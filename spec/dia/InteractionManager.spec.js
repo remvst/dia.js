@@ -87,7 +87,7 @@ describe('an interaction manager', function(){
 			up = false;
 		
 		var type = new dia.ElementType();
-		type.creator = new dia.ElementCreator({
+		type.creator = new dia.CreateTool({
 			mouseDown: function(){ down = true; },
 			mouseMove: function(){ move = true; },
 			mouseUp: function(){ up = true; }
@@ -113,7 +113,7 @@ describe('an interaction manager', function(){
 			up = false;
 		
 		var type = new dia.ElementType();
-		type.creator = new dia.ElementCreator({
+		type.creator = new dia.CreateTool({
 			mouseDown: function(){ down = true; },
 			mouseMove: function(){ move = true; },
 			mouseUp: function(){ up = true; }

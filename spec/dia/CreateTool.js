@@ -1,6 +1,6 @@
-describe('an element creator', function(){
+describe('an create tool', function(){
 	it('is initialized correctly', function(){
-		var creator = new dia.ElementCreator();
+		var creator = new dia.CreateTool();
 		
 		expect(creator.currentElement).toBe(null);
 	});
@@ -9,7 +9,7 @@ describe('an element creator', function(){
 		var downArgs, moveArgs, upArgs;
 		
 		var sheet = new dia.Sheet();
-		var creator = new dia.ElementCreator({
+		var creator = new dia.CreateTool({
 			mouseDown: function(){
 				downArgs = Array.prototype.slice.call(arguments, 0);
 			},
@@ -33,7 +33,7 @@ describe('an element creator', function(){
 	it('resets the current element on mouse up', function(){
 		var element = new dia.Element(new dia.ElementType());
 		
-		var creator = new dia.ElementCreator({
+		var creator = new dia.CreateTool({
 			mouseDown: function(){
 				this.currentElement = element;
 			}

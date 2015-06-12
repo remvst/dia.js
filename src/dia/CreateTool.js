@@ -1,4 +1,6 @@
-dia.ElementCreator = function(options){
+dia.CreateTool = function(options){
+	dia.Tool.call(this);
+	
 	options = options || {};
 	
 	this.type = options.type || null;
@@ -9,15 +11,17 @@ dia.ElementCreator = function(options){
 	this.currentElement = null;
 };
 
-dia.ElementCreator.prototype.mouseDown = function(sheet, x, y){
+extend(dia.CreateTool, dia.Tool);
+
+dia.CreateTool.prototype.mouseDown = function(sheet, x, y){
 	this.onMouseDown.call(this, sheet, x, y);
 };
 
-dia.ElementCreator.prototype.mouseMove = function(sheet, x, y){
+dia.CreateTool.prototype.mouseMove = function(sheet, x, y){
 	this.onMouseMove.call(this, sheet, x, y);
 };
 
-dia.ElementCreator.prototype.mouseUp = function(sheet, x, y){
+dia.CreateTool.prototype.mouseUp = function(sheet, x, y){
 	this.onMouseUp.call(this, sheet, x, y);
 	
 	this.currentElement = null;
