@@ -363,8 +363,56 @@ dia.DataType.STRING_ARRAY = new dia.DataType({
 		}
 		return true;
 	},
+	toHTML: function(currentValue){
+		var add = function(value){
+			var inputContainer = document.createElement('div');
+			inputsContainer.appendChild(inputContainer);
+			
+			var input = document.createElement('input');
+			input.setAttribute('type', 'text');
+			input.setAttribute('value', value);
+			inputContainer.appendChild(input);
+			
+			var remover = document.createElement('button');
+			remover.innerHTML = 'X';
+			remover.addEventListener('click', function(){
+				inputContainer.parentNode.removeChild(inputContainer);
+			}, false);
+			inputContainer.appendChild(remover);
+			
+			return input;
+		};
+		var remove = function(index){
+			container.removeChild(container.children[index]);
+		};
+		
+		var container = document.createElement('div');
+		
+		var inputsContainer = document.createElement('div');
+		container.appendChild(inputsContainer);
+		
+		for(var i = 0 ; i < currentValue.length ; i++){
+			add(currentValue[i]);
+		}
+		
+		var nextIndex = currentValue.length;
+		
+		var adder = document.createElement('button');
+		adder.innerHTML = 'Add';
+		adder.addEventListener('click', function(){
+			add('');
+		}, false);
+		container.appendChild(adder);
+		
+		return container;
+	},
 	fromHTML: function(html){
-		return html.value.split(',');
+		var inputs = html.querySelectorAll('input');
+		var value = [];
+		for(var i = 0 ; i < inputs.length ; i++){
+			value.push(inputs[i].value);
+		}
+		return value;
 	}
 });
 
