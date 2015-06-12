@@ -1,0 +1,10 @@
+{
+  "name": "Dia.js",
+  "version": "0.0.1",
+  "authors": [
+    "remvst <remvst@gmail.com>"
+  ],
+  "dependencies": {
+    "bootstrap": "~3.3.4"
+  }
+}
