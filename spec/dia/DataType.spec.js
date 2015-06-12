@@ -113,21 +113,3 @@ describe('built in float data type', function(){
 		expect(dia.DataType.FLOAT.validateValue(NaN)).toBe(false);
 	});
 });
-
-describe('built in string array data type', function(){
-	it('validates correctly', function(){
-		expect(dia.DataType.STRING_ARRAY.validateValue('hello')).toBe(false);
-		expect(dia.DataType.STRING_ARRAY.validateValue(123)).toBe(false);
-		expect(dia.DataType.STRING_ARRAY.validateValue(-123)).toBe(false);
-		expect(dia.DataType.STRING_ARRAY.validateValue(123.54)).toBe(false);
-		expect(dia.DataType.STRING_ARRAY.validateValue('')).toBe(false);
-		expect(dia.DataType.STRING_ARRAY.validateValue(null)).toBe(false);
-		expect(dia.DataType.STRING_ARRAY.validateValue(false)).toBe(false);
-		expect(dia.DataType.STRING_ARRAY.validateValue(NaN)).toBe(false);
-		expect(dia.DataType.STRING_ARRAY.validateValue({'hey': 'lo'})).toBe(false);
-		
-		expect(dia.DataType.STRING_ARRAY.validateValue([1, 2, 3])).toBe(false);
-		expect(dia.DataType.STRING_ARRAY.validateValue(['1', 2, 3])).toBe(false);
-		expect(dia.DataType.STRING_ARRAY.validateValue(['1', '2', '3'])).toBe(true);
-	});
-});
