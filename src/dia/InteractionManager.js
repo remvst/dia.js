@@ -1,16 +1,15 @@
-dia.InteractionManager = function(sheet){
-	if(!sheet){
-		throw new Error('Cannot instantiate InteractionManager without a sheet');
-	}
-	
-	this.sheet = sheet;
-	
+dia.InteractionManager = function(){
+	this.sheet = null;
 	this.tool = null;
 	this.currentPosition = {x: 0, y: 0};
 };
 
 dia.InteractionManager.prototype.setTool = function(tool){
 	this.tool = tool;
+};
+
+dia.InteractionManager.prototype.setSheet = function(sheet){
+	this.sheet = sheet;
 };
 
 dia.InteractionManager.prototype.mouseDown = function(x, y){

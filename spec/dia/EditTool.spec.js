@@ -38,27 +38,24 @@ describe('an edit tool', function(){
 		
 		var tool = new dia.EditTool();
 		
-		var im = new dia.InteractionManager(sheet);
-		im.setTool(tool);
-		
-		im.mouseDown(200,200);
+		tool.mouseDown(sheet, 200, 200);
 		expect(tool.currentHandle).toBe(null);
 		
-		im.mouseDown(50, 50);
+		tool.mouseDown(sheet, 50, 50);
 		expect(tool.currentHandle.element).toBe(element);
 		expect(tool.currentPosition).toEqual({x: 50, y: 50});
 		
-		im.mouseMove(100, 120);
+		tool.mouseMove(sheet, 100, 120);
 		expect(element.getProperty('x')).toBe(50);
 		expect(element.getProperty('y')).toBe(70);
 		expect(tool.currentPosition).toEqual({x: 100, y: 120});
 		
-		im.mouseMove(50, 50);
+		tool.mouseMove(sheet, 50, 50);
 		expect(element.getProperty('x')).toBe(0);
 		expect(element.getProperty('y')).toBe(0);
 		expect(tool.currentPosition).toEqual({x: 50, y: 50});
 		
-		im.mouseUp();
+		tool.mouseUp(sheet, 50, 50);
 		expect(element.getProperty('x')).toBe(0);
 		expect(element.getProperty('y')).toBe(0);
 		expect(tool.currentHandle).toBe(null);

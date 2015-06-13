@@ -1,22 +1,24 @@
 describe('an interaction manager', function(){
 	it('is initialized properly', function(){
-		var sheet = new dia.Sheet();
-		var im = new dia.InteractionManager(sheet);
+		var im = new dia.InteractionManager();
 		
-		expect(im.sheet).toBe(sheet);
+		expect(im.sheet).toBe(null);
 		expect(im.tool).toBe(null);
 		expect(im.currentPosition).toEqual({ x: 0, y: 0 });
 	});
 	
-	it('cannot be instantiated without a sheet', function(){
-		expect(function(){
-			new dia.InteractionManager();
-		}).toThrow();
+	it('can be set a sheet', function(){
+		var sheet = new dia.Sheet();
+		var im = new dia.InteractionManager();
+		
+		im.setSheet(sheet);
+		
+		expect(im.sheet).toBe(sheet);
 	});
 	
 	it('updates the current position even when not dragging', function(){
-		var sheet = new dia.Sheet();
-		var im = new dia.InteractionManager(sheet);
+		var im = new dia.InteractionManager();
+		im.setSheet(new dia.Sheet());
 		
 		expect(im.currentPosition).toEqual({x: 0, y: 0});
 		
@@ -36,8 +38,7 @@ describe('an interaction manager', function(){
 			mouseUp: function(){ up = true; }
 		});
 		
-		var sheet = new dia.Sheet();
-		var im = new dia.InteractionManager(sheet);
+		var im = new dia.InteractionManager();
 		
 		im.setTool(tool);
 		
