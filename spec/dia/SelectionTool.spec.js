@@ -121,7 +121,7 @@ describe('a selection tool', function(){
 		var tool = new dia.SelectionTool();
 		
 		var event;
-		tool.listen('doubleclick', function(e){
+		tool.listen('click', function(e){
 			event = e;
 		});
 		
@@ -132,15 +132,16 @@ describe('a selection tool', function(){
 		tool.mouseUp(sheet, 5, 5);
 		
 		expect(event.element).toBe(element);
+		expect(event.clickCount).toBe(2);
 	});
 	
 	it('does not perform slow double clicks', function(){
 		var sheet = new dia.Sheet();
 		var tool = new dia.SelectionTool();
 		
-		var double = false;
-		tool.listen('doubleclick', function(){
-		 	double = true;
+		var event;
+		tool.listen('click', function(e){
+		 	event = e;
 		});
 		
 		Date.now = function(){ return 0; };
@@ -151,16 +152,16 @@ describe('a selection tool', function(){
 		tool.mouseDown(sheet, 5, 5);
 		tool.mouseUp(sheet, 5, 5);
 		
-		expect(double).toBe(false);
+		expect(event.clickCount).toBe(1);
 	});
 	
 	it('does not perform double clicks when moving the mouse', function(){
 		var sheet = new dia.Sheet();
 		var tool = new dia.SelectionTool();
 		
-		var double = false;
-		tool.listen('doubleclick', function(){
-		 	double = true;
+		var event;
+		tool.listen('click', function(e){
+		 	event = e;
 		});
 		
 		tool.mouseDown(sheet, 5, 5);
@@ -170,6 +171,6 @@ describe('a selection tool', function(){
 		tool.mouseDown(sheet, 5, 5);
 		tool.mouseUp(sheet, 5, 5);
 		
-		expect(double).toBe(false);
+		expect(event.clickCount).toBe(1);
 	});
 });

@@ -926,6 +926,7 @@ dia.SelectionTool = function(){
 	this.selectionEnd = null;
 	this.previousClick = null;
 	this.currentSelection = [];
+	this.clickCount = 0;
 };
 
 extend(dia.SelectionTool, dia.Tool);
@@ -941,7 +942,7 @@ dia.SelectionTool.prototype.mouseMove = function(sheet, x, y){
 	}
 	
 	// Cancel double click
-	this.previousClick = null;
+	this.clickCount = 0;
 };
 
 dia.SelectionTool.prototype.mouseUp = function(sheet, x, y){
@@ -965,17 +966,19 @@ dia.SelectionTool.prototype.mouseUp = function(sheet, x, y){
 	
 	if(this.selectionStart.x === this.selectionEnd.x && this.selectionStart.y == this.selectionEnd.y){
 		// It's a click
-		if(this.previousClick 
-		   && this.selectionStart.x == this.previousClick.x
+		if(!this.previousClick 
+		   || this.selectionStart.x == this.previousClick.x
 		   && this.selectionStart.y == this.previousClick.y
 		   && Date.now() - this.previousClick.time < 500){
 			
-			// It's a double click
-			this.dispatch('doubleclick', { element: this.currentSelection[0] || null });
-		}else{
-			this.previousClick = this.selectionStart;
-			this.previousClick.time = Date.now();
+			this.clickCount++;
+			this.dispatch('click', { clickCount: this.clickCount, element: this.currentSelection[0] || null });
+			
+			this.previousClick = null;
 		}
+		
+		this.previousClick = this.selectionStart;
+		this.previousClick.time = Date.now();
 	}
 	
 	this.selectionStart = null;
