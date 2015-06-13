@@ -825,6 +825,18 @@ dia.InteractionManager.prototype.mouseUp = function(){
 	}
 };
 
+dia.InteractionManager.prototype.keyDown = function(keyCode){
+	if(this.tool){
+		this.tool.keyDown(keyCode);
+	}
+};
+
+dia.InteractionManager.prototype.keyUp = function(keyUp){
+	if(this.tool){
+		this.tool.keyUp(keyCode);
+	}
+};
+
 dia.Tool = function(){
 
 };

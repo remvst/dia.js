@@ -31,3 +31,15 @@ dia.InteractionManager.prototype.mouseUp = function(){
 		this.tool.mouseUp(this.sheet, this.currentPosition.x, this.currentPosition.y);
 	}
 };
+
+dia.InteractionManager.prototype.keyDown = function(keyCode){
+	if(this.tool){
+		this.tool.keyDown(keyCode);
+	}
+};
+
+dia.InteractionManager.prototype.keyUp = function(keyUp){
+	if(this.tool){
+		this.tool.keyUp(keyCode);
+	}
+};
