@@ -9,6 +9,7 @@ module.exports = function(grunt) {
 					'src/dia/start.js',
 					'src/dia/uuid4.js',
 					'src/dia/extend.js',
+					'src/dia/EventDispatcher.js',
 					'src/dia/Sheet.js',
 					'src/dia/Element.js',
 					'src/dia/ElementType.js',
