@@ -962,6 +962,8 @@ dia.SelectionTool.prototype.mouseUp = function(sheet, x, y){
 				this.currentSelection.push(sheet.elements[i]);
 			}
 		}	
+		
+		this.dispatch('selectionchange', { selection: this.currentSelection });
 	}
 	
 	if(this.selectionStart.x === this.selectionEnd.x && this.selectionStart.y == this.selectionEnd.y){

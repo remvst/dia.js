@@ -54,28 +54,38 @@ describe('a selection tool', function(){
 		
 		var tool = new dia.SelectionTool();
 		
+		var eventFired = 0;
+		tool.listen('selectionchange', function(){
+			eventFired++;
+		});
+		
 		tool.mouseDown(sheet, 0, 0);
 		tool.mouseUp(sheet, 0, 0);
 		expect(tool.currentSelection).toEqual([]);
+		expect(eventFired).toBe(1);
 		
 		tool.mouseDown(sheet, 0, 0);
 		tool.mouseMove(sheet, 15, 15);
 		tool.mouseUp(sheet, 15, 15);
 		expect(tool.currentSelection).toEqual([element1]);
+		expect(eventFired).toBe(2);
 		
 		tool.mouseDown(sheet, 0, 0);
 		tool.mouseUp(sheet, 0, 0);
 		expect(tool.currentSelection).toEqual([]);
+		expect(eventFired).toBe(3);
 		
 		tool.mouseDown(sheet, 0, 0);
 		tool.mouseMove(sheet, 200, 200);
 		tool.mouseUp(sheet, 200, 200);
 		expect(tool.currentSelection).toEqual([element1, element2]);
+		expect(eventFired).toBe(4);
 		
 		tool.mouseDown(sheet, 0, 100);
 		tool.mouseMove(sheet, 200, 200);
 		tool.mouseUp(sheet, 200, 200);
 		expect(tool.currentSelection).toEqual([element2]);
+		expect(eventFired).toBe(5);
 	});
 	
 	it('can perform double clicks', function(){
