@@ -1,6 +1,8 @@
 dia.Tool = function(){
-
+	dia.EventDispatcher.call(this);
 };
+
+extend(dia.Tool, dia.EventDispatcher);
 
 dia.Tool.prototype.mouseDown = function(sheet, x, y){
 	

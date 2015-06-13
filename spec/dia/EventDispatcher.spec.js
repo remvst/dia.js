@@ -9,17 +9,20 @@ describe('an event dispatcher', function(){
 		var dispatcher = new dia.EventDispatcher();
 		
 		var called = false,
-			data;
+			data,
+			scope;
 		
 		dispatcher.listen('foo', function(p){
 			called = true;
 			data = p;
+			scope = this;
 		});
 		
 		dispatcher.dispatch('foo', 'yoyo');
 		
 		expect(called).toBe(true);
 		expect(data).toEqual('yoyo');
+		expect(scope).toBe(dispatcher);
 	});
 	
 	it('can stop listening to events', function(){

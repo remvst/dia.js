@@ -3,6 +3,7 @@ dia.SelectionTool = function(){
 	
 	this.selectionStart = null;
 	this.selectionEnd = null;
+	this.previousClick = null;
 	this.currentSelection = [];
 };
 
@@ -17,6 +18,9 @@ dia.SelectionTool.prototype.mouseMove = function(sheet, x, y){
 	if(this.selectionStart){
 		this.selectionEnd = { x: x, y: y };
 	}
+	
+	// Cancel double click
+	this.previousClick = null;
 };
 
 dia.SelectionTool.prototype.mouseUp = function(sheet, x, y){
@@ -37,6 +41,22 @@ dia.SelectionTool.prototype.mouseUp = function(sheet, x, y){
 			}
 		}	
 	}
+	
+	if(this.selectionStart.x === this.selectionEnd.x && this.selectionStart.y == this.selectionEnd.y){
+		// It's a click
+		if(this.previousClick 
+		   && this.selectionStart.x == this.previousClick.x
+		   && this.selectionStart.y == this.previousClick.y
+		   && Date.now() - this.previousClick.time < 500){
+			
+			// It's a double click
+			this.dispatch('doubleclick', { element: this.currentSelection[0] || null });
+		}else{
+			this.previousClick = this.selectionStart;
+			this.previousClick.time = Date.now();
+		}
+	}
+	
 	this.selectionStart = null;
 	this.selectionEnd = null;
 };
