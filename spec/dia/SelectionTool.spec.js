@@ -153,4 +153,23 @@ describe('a selection tool', function(){
 		
 		expect(double).toBe(false);
 	});
+	
+	it('does not perform double clicks when moving the mouse', function(){
+		var sheet = new dia.Sheet();
+		var tool = new dia.SelectionTool();
+		
+		var double = false;
+		tool.listen('doubleclick', function(){
+		 	double = true;
+		});
+		
+		tool.mouseDown(sheet, 5, 5);
+		tool.mouseUp(sheet, 5, 5);
+		tool.mouseMove(sheet, 10, 10);
+		
+		tool.mouseDown(sheet, 5, 5);
+		tool.mouseUp(sheet, 5, 5);
+		
+		expect(double).toBe(false);
+	});
 });
