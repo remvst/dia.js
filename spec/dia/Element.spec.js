@@ -50,6 +50,30 @@ describe('an element', function(){
 		expect(event.to).toBe('myval');
 	});
 	
+	it('does not fire propertychange event when setting to the same value', function(){
+		var type = new dia.ElementType();
+		
+		var property = new dia.Property({
+			id: 'title',
+			type: dia.DataType.STRING,
+			label: 'title',
+			description: 'title of the element',
+			default: 'empty'
+		});
+		type.addProperty(property);
+		
+		var element = type.emptyElement();
+		
+		var fired = false;
+		element.listen('propertychange', function(e){
+			fired = true;
+		});
+		
+		element.setProperty('title', 'empty');
+		
+		expect(fired).toBe(false);
+	});
+	
 	it('cannot be set properties that are not defined in the type', function(){
 		var element = new dia.Element(new dia.ElementType());
 		
