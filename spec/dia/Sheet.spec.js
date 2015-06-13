@@ -69,4 +69,25 @@ describe('a sheet', function(){
 		expect(render1).toBe(true);
 		expect(render2).toBe(true);
 	});
+	
+	it('can be saved to JSON', function(){
+		var type = new dia.ElementType({
+			id: 'foo'
+		});
+		
+		var sheet = new dia.Sheet();
+		sheet.title = 'bar';
+		
+		sheet.addElement(type.emptyElement());
+		sheet.addElement(type.emptyElement());
+		sheet.addElement(type.emptyElement());
+		
+		var json = sheet.toJSON();
+		
+		expect(json.title).toEqual('bar');
+		expect(json.elements.length).toBe(3);
+		
+		var loaded = dia.Sheet.fromJSON(json);
+		expect(loaded).toEqual(sheet);
+	});
 });

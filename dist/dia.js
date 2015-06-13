@@ -145,6 +145,30 @@ dia.Sheet.prototype.render = function(ctx){
 	}
 };
 
+dia.Sheet.prototype.toJSON = function(){
+	var json = {
+		title: this.title,
+		elements: []
+	};
+	for(var i = 0 ; i < this.elements.length ; i++){
+		json.elements.push(this.elements[i].toJSON());
+	}
+	return json;
+};
+
+dia.Sheet.fromJSON = function(json){
+	var sheet = new dia.Sheet();
+	sheet.title = json.title || this.title;
+	
+	var element;
+	for(var i = 0 ; i < json.elements.length ; i++){
+		element = dia.Element.fromJSON(json.elements[i]);
+		sheet.addElement(element);
+	}
+	
+	return sheet;
+};
+
 dia.Element = function(type){
 	dia.EventDispatcher.call(this);
 	
