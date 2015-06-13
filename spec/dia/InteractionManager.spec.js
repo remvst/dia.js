@@ -81,13 +81,12 @@ describe('an interaction manager', function(){
 		expect(im.currentPosition).toEqual({x: 50, y: 50});
 	});
 	
-	it('can create new elements', function(){
+	it('can use tools', function(){
 		var down = false,
 			move = false,
 			up = false;
 		
-		var type = new dia.ElementType();
-		type.creator = new dia.CreateTool({
+		var tool = new dia.CreateTool({
 			mouseDown: function(){ down = true; },
 			mouseMove: function(){ move = true; },
 			mouseUp: function(){ up = true; }
@@ -96,7 +95,7 @@ describe('an interaction manager', function(){
 		var sheet = new dia.Sheet();
 		var im = new dia.InteractionManager(sheet);
 		
-		im.startCreateType(type);
+		im.setTool(tool);
 		
 		im.mouseDown(0,0);
 		im.mouseMove(1,1);
@@ -105,32 +104,5 @@ describe('an interaction manager', function(){
 		expect(down).toBe(true);
 		expect(move).toBe(true);
 		expect(up).toBe(true);
-	});
-	
-	it('can cancel creating new elements', function(){
-		var down = false,
-			move = false,
-			up = false;
-		
-		var type = new dia.ElementType();
-		type.creator = new dia.CreateTool({
-			mouseDown: function(){ down = true; },
-			mouseMove: function(){ move = true; },
-			mouseUp: function(){ up = true; }
-		});
-		
-		var sheet = new dia.Sheet();
-		var im = new dia.InteractionManager(sheet);
-		
-		im.startCreateType(type);
-		im.cancelCreateType();
-		
-		im.mouseDown(0,0);
-		im.mouseMove(1,1);
-		im.mouseUp();
-		
-		expect(down).toBe(false);
-		expect(move).toBe(false);
-		expect(up).toBe(false);
 	});
 });
