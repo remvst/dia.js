@@ -22,14 +22,21 @@ describe('an element', function(){
 	it('can be set properties', function(){
 		var type = new dia.ElementType();
 		
-		type.addProperty(new dia.Property({
+		var property = new dia.Property({
 			id: 'title',
 			type: dia.DataType.STRING,
 			label: 'title',
 			description: 'title of the element',
 			default: 'empty'
-		}));
-		var element = new dia.Element(type);
+		});
+		type.addProperty(property);
+		
+		var element = type.emptyElement();
+		
+		var event;
+		element.listen('propertychange', function(e){
+			event = e;
+		});
 		
 		element.setProperty('title', 'myval');
 		
@@ -37,6 +44,10 @@ describe('an element', function(){
 		expect(function(){
 			element.setProperty('title', 1);
 	   }).toThrow();
+		
+		expect(event.property).toBe(property);
+		expect(event.from).toBe('empty');
+		expect(event.to).toBe('myval');
 	});
 	
 	it('cannot be set properties that are not defined in the type', function(){

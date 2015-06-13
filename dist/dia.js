@@ -146,6 +146,8 @@ dia.Sheet.prototype.render = function(ctx){
 };
 
 dia.Element = function(type){
+	dia.EventDispatcher.call(this);
+	
 	if(!type){
 		throw new Error('Cannot initialize element without a type.');
 	}
@@ -156,6 +158,8 @@ dia.Element = function(type){
 	this.properties = {};
 	this.representation = null;
 };
+
+extend(dia.Element, dia.EventDispatcher);
 
 dia.Element.prototype.remove = function(){
 	if(this.sheet){
@@ -172,9 +176,19 @@ dia.Element.prototype.getProperty = function(id){
 };
 
 dia.Element.prototype.setProperty = function(id, value){
+	var tmp;
 	if(this.type.hasPropertyId(id)){
 		if(this.type.getProperty(id).type.validate(value)){
+			tmp = this.properties[id];
 			this.properties[id] = value;
+			
+			if(tmp !== value){
+				this.dispatch('propertychange', {
+					property: this.type.getProperty(id),
+					from: tmp,
+					to: value
+				});
+			}
 		}else{
 			throw new Error('Validation error: Property ' + id + ' cannot have value ' + value);
 		}
