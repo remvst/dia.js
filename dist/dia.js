@@ -288,18 +288,7 @@ dia.Element.fromJSON = function(json){
 		throw new Error('Type could not be found');
 	}
 	
-	var element = type.emptyElement(),
-		property,
-		value;
-	
-	for(var id in json.properties){
-		property = type.getProperty(id);
-		if(property){
-			value = property.type.fromJSON(json.properties[id]);
-			element.setProperty(id, value);
-		}
-	}
-	
+	var element = type.create(json.properties);
 	element.id = json.id;
 	
 	return element;
@@ -326,10 +315,18 @@ dia.ElementType.prototype.addProperty = function(property){
 };
 
 dia.ElementType.prototype.emptyElement = function(){
+	return this.create({});
+};
+
+dia.ElementType.prototype.create = function(properties){
 	var element = new dia.Element(this);
 	
 	this.properties.forEach(function(p){
-		element.setProperty(p.id, p.default);
+		if(p.id in properties){
+			element.setProperty(p.id, properties[p.id]);
+		}else{
+			element.setProperty(p.id, p.default);
+		}
 	});
 	
 	return element;

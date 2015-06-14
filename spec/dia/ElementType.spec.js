@@ -106,4 +106,24 @@ describe('an element type', function(){
 			dia.ElementType.register(type);
 		}).toThrow();
 	});
+	
+	it('can generate an element with properties', function(){
+		var type = new dia.ElementType();
+		type.addProperty(new dia.Property({
+			id: 'prop',
+			type: dia.DataType.INTEGER,
+			default: null
+		}));
+		
+		// Let's just check emptyElement() fails
+		expect(function(){
+			type.emptyElement();
+		}).toThrow();
+		
+		var element = type.create({
+			prop: 123
+		});
+		
+		expect(element.getProperty('prop')).toBe(123);
+	});
 });

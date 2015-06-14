@@ -19,10 +19,18 @@ dia.ElementType.prototype.addProperty = function(property){
 };
 
 dia.ElementType.prototype.emptyElement = function(){
+	return this.create({});
+};
+
+dia.ElementType.prototype.create = function(properties){
 	var element = new dia.Element(this);
 	
 	this.properties.forEach(function(p){
-		element.setProperty(p.id, p.default);
+		if(p.id in properties){
+			element.setProperty(p.id, properties[p.id]);
+		}else{
+			element.setProperty(p.id, p.default);
+		}
 	});
 	
 	return element;

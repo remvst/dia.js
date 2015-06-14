@@ -92,18 +92,7 @@ dia.Element.fromJSON = function(json){
 		throw new Error('Type could not be found');
 	}
 	
-	var element = type.emptyElement(),
-		property,
-		value;
-	
-	for(var id in json.properties){
-		property = type.getProperty(id);
-		if(property){
-			value = property.type.fromJSON(json.properties[id]);
-			element.setProperty(id, value);
-		}
-	}
-	
+	var element = type.create(json.properties);
 	element.id = json.id;
 	
 	return element;
