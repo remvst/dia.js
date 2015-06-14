@@ -870,7 +870,7 @@ dia.MoveAnchorDragHandle.prototype.dragMove = function(dx, dy, x, y){
 };
 
 dia.Area = function(){
-	
+	this.type = null;
 };
 
 dia.Area.prototype.contains = function(x, y){
@@ -878,7 +878,7 @@ dia.Area.prototype.contains = function(x, y){
 };
 
 dia.Area.prototype.intersectsWith = function(otherArea){
-	return false;	
+	return dia.Area.intersect(this, otherArea);
 };
 
 dia.Area.prototype.render = function(c){
@@ -889,8 +889,29 @@ dia.Area.prototype.surface = function(){
 	return 0;
 };
 
+dia.Area.intersectionMap = {};
+
+dia.Area.defineIntersection = function(type1, type2, func){
+	// Let's add it to both ways
+	dia.Area.intersectionMap[type1 + '-' + type2] = func;
+	dia.Area.intersectionMap[type2 + '-' + type1] = function(a, b){
+		return func(b, a);
+	};
+};
+
+dia.Area.intersect = function(area1, area2){
+	var func = dia.Area.intersectionMap[area1.type + '-' + area2.type];
+	if(!func){
+		return false;
+	}else{
+		return func(area1, area2);
+	}
+};
+
 dia.RectangleArea = function(options){
 	dia.Area.call(this);
+	
+	this.type = 'rectangle';
 	
 	options = options || {};
 	this.getX = options.x;
@@ -930,16 +951,6 @@ dia.RectangleArea.prototype.getBounds = function(){
 	};
 };
 
-dia.RectangleArea.prototype.intersectsWith = function(otherArea){
-	// Let's assume it's another rectangle area
-	var a = this.getBounds();
-	var b = otherArea.getBounds();
-	
-	// Taken from http://stackoverflow.com/questions/306316/determine-if-two-rectangles-overlap-each-other
-	return a.x1 < b.x2 && a.x2 > b.x1 &&
-    	   a.y1 < b.y2 && a.y2 > b.y1;
-};
-
 dia.RectangleArea.prototype.render = function(c){
 	var areaX = this.getX();
 	var areaY = this.getY();
@@ -954,8 +965,20 @@ dia.RectangleArea.prototype.surface = function(){
 	return this.getWidth() * this.getHeight();
 };
 
+dia.Area.defineIntersection('rectangle', 'rectangle', function(a, b){
+	// Let's assume it's another rectangle area
+	var boundsA = a.getBounds();
+	var boundsB = b.getBounds();
+	
+	// Taken from http://stackoverflow.com/questions/306316/determine-if-two-rectangles-overlap-each-other
+	return boundsA.x1 < boundsB.x2 && boundsA.x2 > boundsB.x1 &&
+    	   boundsA.y1 < boundsB.y2 && boundsA.y2 > boundsB.y1;
+});
+
 dia.LineArea = function(options){
 	dia.Area.call(this);
+	
+	this.type = 'line';
 	
 	options = options || {};
 	this.getX1 = options.x1;
