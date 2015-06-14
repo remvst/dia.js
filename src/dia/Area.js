@@ -13,3 +13,7 @@ dia.Area.prototype.intersectsWith = function(otherArea){
 dia.Area.prototype.render = function(c){
 	
 };
+
+dia.Area.prototype.surface = function(){
+	return 0;
+};

@@ -78,4 +78,15 @@ describe('a rectangle area', function(){
 		expect(area2.intersectsWith(area3)).toBe(true);
 		expect(area3.intersectsWith(area2)).toBe(true);
 	});
+	
+	it('has a correct surface', function(){
+		var area = new dia.RectangleArea({
+			x: function(){ return 0; },
+			y: function(){ return 0; },
+			width: function(){ return 2; },
+			height: function(){ return 5; }
+		});
+		
+		expect(area.surface()).toBe(10);
+	});
 });

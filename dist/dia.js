@@ -881,6 +881,10 @@ dia.Area.prototype.render = function(c){
 	
 };
 
+dia.Area.prototype.surface = function(){
+	return 0;
+};
+
 dia.RectangleArea = function(options){
 	dia.Area.call(this);
 	
@@ -940,6 +944,10 @@ dia.RectangleArea.prototype.render = function(c){
 	
 	c.strokeStyle = 'red';
 	c.strokeRect(areaX, areaY, areaWidth, areaHeight);
+};
+
+dia.RectangleArea.prototype.surface = function(){
+	return this.getWidth() * this.getHeight();
 };
 
 dia.InteractionManager = function(){
@@ -1159,7 +1167,7 @@ dia.EditTool.prototype.mouseDown = function(sheet, x, y){
 	var repr;
 	for(var i = 0 ; i < sheet.elements.length && !this.currentHandle ; i++){
 		repr = sheet.elements[i].getRepresentation();
-		for(var j = repr.handles.length - 1 ; j >= 0 && !this.currentHandle ; j--){
+		for(var j = 0 ; j < repr.handles.length && !this.currentHandle ; j++){
 			if(repr.handles[j].area.contains(x, y)){
 				this.currentHandle = repr.handles[j];
 			}

@@ -11,4 +11,10 @@ describe('an area', function(){
 		
 		expect(area.intersectsWith(area)).toBe(false);
 	});
+	
+	it('has no surface', function(){
+		var area = new dia.Area();
+		
+		expect(area.surface()).toBe(0);
+	});
 });
