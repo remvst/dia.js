@@ -467,7 +467,7 @@ dia.ArrayDataType.prototype.toJSON = function(value){
 dia.ArrayDataType.prototype.createHTMLInput = function(currentValue){
 	var add = function(value){
 		var inputContainer = document.createElement('div');
-		inputContainer.className = 'input-group';
+		inputContainer.className = 'input-group form-group';
 		inputsContainer.appendChild(inputContainer);
 
 		var input = this.containedType.createHTMLInput(value);
