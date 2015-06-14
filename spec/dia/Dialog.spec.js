@@ -1,11 +1,5 @@
-jasmine.getFixtures().fixturesPath = 'spec/html';
-
 describe('a dialog', function(){
-	beforeEach(function() {
-		loadFixtures('dialog.html');
-	});
-	
-	afterEach(function(){
+	beforeEach(function(){
 		$('.modal').remove();
 	});
 	

@@ -72,7 +72,7 @@ dia.ArrayDataType.prototype.createHTMLInput = function(currentValue){
 	adder.className = 'btn btn-default';
 	adder.innerHTML = 'Add an item';
 	adder.addEventListener('click', function(){
-		add(null);
+		add('');
 	}, false);
 	container.appendChild(adder);
 

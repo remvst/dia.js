@@ -501,7 +501,7 @@ dia.ArrayDataType.prototype.createHTMLInput = function(currentValue){
 	adder.className = 'btn btn-default';
 	adder.innerHTML = 'Add an item';
 	adder.addEventListener('click', function(){
-		add(null);
+		add('');
 	}, false);
 	container.appendChild(adder);
 
@@ -1121,10 +1121,24 @@ dia.Dialog.prototype.hide = function(){
 };
 
 dia.Dialog.getTemplate = function(){
-	if(!this.template){
-		this.template = $('#popup-template').html();
-	}
-	return this.template;
+	return '\
+<div class="modal fade" role="dialog">\
+		<div class="modal-dialog">\
+			<div class="modal-content">\
+				<div class="modal-header">\
+					<button type="button" class="close" data-dismiss="modal">&times;</button>\
+					<h4 class="modal-title">{{ title }}</h4>\
+				</div>\
+				<div class="modal-body">\
+					{{ content }}\
+				</div>\
+				<div class="modal-footer">\
+					<button type="button" class="btn btn-default" data-dismiss="modal">{{ cancelLabel }}</button>\
+					<button type="button" class="btn btn-primary" data-dismiss="modal">{{ okLabel }}</button>\
+				</div>\
+			</div>\
+		</div>\
+	</div>';
 };
 
 dia.ElementForm = function(element){
