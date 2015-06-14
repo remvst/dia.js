@@ -20,22 +20,34 @@ describe('a sheet', function(){
 		var element = new dia.Element(new dia.ElementType());
 		var sheet = new dia.Sheet();
 		
+		var event;
+		sheet.listen('elementadded', function(e){
+			event = e;
+		});
+		
 		sheet.addElement(element);
 		sheet.addElement(element);
 		
 		expect(sheet.elements).toEqual([element]);
 		expect(element.sheet).toBe(sheet);
+		expect(event.element).toBe(element);
 	});
 	
 	it('can remove an element', function(){
 		var element = new dia.Element(new dia.ElementType());
 		var sheet = new dia.Sheet();
 		
+		var event;
+		sheet.listen('elementremoved', function(e){
+			event = e;
+		});
+		
 		sheet.addElement(element);
 		sheet.removeElement(element);
 		
 		expect(sheet.elements).toEqual([]);
 		expect(element.sheet).toBe(null);
+		expect(event.element).toBe(element);
 	});
 	
 	it('does not remove anything if the element is not in the sheet', function(){

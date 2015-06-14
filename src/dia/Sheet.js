@@ -1,7 +1,11 @@
 dia.Sheet = function(){
+	dia.EventDispatcher.call(this);
+	
 	this.title = null;
 	this.elements = [];
 };
+
+extend(dia.Sheet, dia.EventDispatcher);
 
 dia.Sheet.prototype.addElement = function(element){
 	if(element.sheet === this){
@@ -11,6 +15,8 @@ dia.Sheet.prototype.addElement = function(element){
 	element.remove();
 	this.elements.push(element);
 	element.sheet = this;
+	
+	this.dispatch('elementadded', { element: element });
 };
 
 dia.Sheet.prototype.removeElement = function(element){
@@ -21,9 +27,10 @@ dia.Sheet.prototype.removeElement = function(element){
 	var index = this.elements.indexOf(element);
 	if(index >= 0){
 		this.elements.splice(index, 1);
+		element.sheet = null;
+		
+		this.dispatch('elementremoved', { element: element });
 	}
-	
-	element.sheet = null;
 };
 
 dia.Sheet.prototype.render = function(ctx){
