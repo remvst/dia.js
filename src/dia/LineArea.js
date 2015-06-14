@@ -14,7 +14,7 @@ dia.LineArea = function(options){
 extend(dia.LineArea, dia.Area);
 
 dia.LineArea.prototype.contains = function(x, y){
-	if(this.distance(x, y) > this.thickness){
+	if(this.distance(x, y) > this.thickness / 2){
 		return false;
 	}else{
 		var x1 = this.getX1(),
@@ -51,7 +51,7 @@ dia.LineArea.prototype.distance = function(x0, y0){
 
 dia.LineArea.prototype.render = function(c){
 	c.strokeStyle = 'red';
-	c.lineWidth = this.thickness;
+	c.lineWidth = this.thickness / 4;
 	c.beginPath();
 	c.moveTo(this.getX1(), this.getY1());
 	c.lineTo(this.getX2(), this.getY2());

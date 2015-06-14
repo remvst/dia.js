@@ -2,7 +2,7 @@ dia.BrokenLineArea = function(options){
 	dia.Area.call(this);
 	
 	this.getPoints = options.points;
-	this.thickness = options.thickness;
+	this.thickness = options.thickness || 10;
 	this.type = 'brokenline'
 };
 
@@ -31,3 +31,55 @@ dia.BrokenLineArea.prototype.indexOfLineThatContains = function(x, y){
 	
 	return -1;
 };
+
+dia.BrokenLineArea.prototype.render = function(c){
+	c.strokeStyle = 'red';
+	c.lineWidth = this.thickness;
+	c.beginPath();
+	
+	var points = this.getPoints();
+	for(var i = 0 ; i < points.length ; i++){
+		c.lineTo(points[i].x, points[i].y);
+	}
+	c.stroke();
+};
+
+dia.Area.defineIntersection('line', 'brokenline', function(line, brokenLine){
+	var points = brokenLine.getPoints(),
+		area;
+	for(var i = 0 ; i < points.length - 1 ; i++){
+		area = new dia.LineArea({
+			x1: function(){ return points[i].x; },
+			y1: function(){ return points[i].y; },
+			x2: function(){ return points[i + 1].x; },
+			y2: function(){ return points[i + 1].y; },
+			thickness: brokenLine.thickness
+		});
+		
+		if(area.intersectsWith(line)){
+			return true;
+		}
+	}
+	
+	return false;
+});
+
+dia.Area.defineIntersection('rectangle', 'brokenline', function(rectangle, brokenLine){
+	var points = brokenLine.getPoints(),
+		area;
+	for(var i = 0 ; i < points.length - 1 ; i++){
+		area = new dia.LineArea({
+			x1: function(){ return points[i].x; },
+			y1: function(){ return points[i].y; },
+			x2: function(){ return points[i + 1].x; },
+			y2: function(){ return points[i + 1].y; },
+			thickness: brokenLine.thickness
+		});
+		
+		if(area.intersectsWith(rectangle)){
+			return true;
+		}
+	}
+	
+	return false;
+});
