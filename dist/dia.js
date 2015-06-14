@@ -548,6 +548,10 @@ dia.GraphicalRepresentation.prototype.render = function(ctx){
 	for(var i = 0 ; i < this.renderables.length ; i++){
 		this.renderables[i].render(ctx);
 	}
+	
+	for(var i = 0 ; i < this.handles.length ; i++){
+		this.handles[i].render(ctx);
+	}
 };
 
 dia.GraphicalRepresentation.prototype.addHandle = function(handle){
@@ -783,12 +787,16 @@ dia.DragHandle.prototype.dragStart = function(x, y){
 	
 };
 
-dia.DragHandle.prototype.dragMove = function(dx, dy){
+dia.DragHandle.prototype.dragMove = function(dx, dy, x, y){
 	
 };
 
 dia.DragHandle.prototype.dragDrop = function(x, y){
 	
+};
+
+dia.DragHandle.prototype.render = function(c){
+	this.area.render(c);
 };
 
 dia.MoveElementDragHandle = function(element, area){
@@ -809,6 +817,54 @@ dia.MoveElementDragHandle.prototype.dragMove = function(dx, dy){
 	this.element.setProperty('y', elementY + dy);
 };
 
+dia.MoveAnchorDragHandle = function(element, area, property){
+	dia.DragHandle.call(this, element, area);
+	
+	this.property = property;
+};
+
+extend(dia.MoveAnchorDragHandle, dia.DragHandle);
+
+dia.MoveAnchorDragHandle.prototype.dragMove = function(dx, dy, x, y){
+	var propertyValue = this.element.getProperty(this.property);
+	
+	// Let's bind the coordinates to the element's side
+	// At the moment we assume its area will be a rectangle
+	var anchoredArea = propertyValue.element.getRepresentation().area;
+	var anchoredX = anchoredArea.getX();
+	var anchoredY = anchoredArea.getY();
+	var anchoredWidth = anchoredArea.getWidth();
+	var anchoredHeight = anchoredArea.getHeight();
+	
+	if(x < anchoredX) x = anchoredX;
+	else if(x > anchoredX + anchoredWidth) x = anchoredX + anchoredWidth;
+	if(y < anchoredY) y = anchoredY;
+	else if(y > anchoredY + anchoredHeight) y = anchoredY + anchoredHeight;
+	
+	// Let's calculate the ratio (that we're actually storing)
+	var ratioX = (x - anchoredX) / anchoredWidth;
+	var ratioY = (y - anchoredY) / anchoredHeight;
+	
+	// And adjust it: the ratio that is the closest to 0 or 1 should be bound to that value
+	// and the other will keep the value it was originally going for.
+	var factorX = ratioX - .5;
+	var factorY = ratioY - .5;
+	
+	if(Math.abs(factorX) > Math.abs(factorY)){
+		ratioX = factorX > 0 ? 1 : 0;
+	}else{
+		ratioY = factorY > 0 ? 1 : 0;
+	}
+	
+	// Update the object
+	// Copying the object is necessary to trigger property change event.
+	this.element.setProperty(this.property, {
+		element: propertyValue.element,
+		x: ratioX,
+		y: ratioY
+	});
+};
+
 dia.Area = function(){
 	
 };
@@ -819,6 +875,10 @@ dia.Area.prototype.contains = function(x, y){
 
 dia.Area.prototype.intersectsWith = function(otherArea){
 	return false;	
+};
+
+dia.Area.prototype.render = function(c){
+	
 };
 
 dia.RectangleArea = function(options){
@@ -870,6 +930,16 @@ dia.RectangleArea.prototype.intersectsWith = function(otherArea){
 	// Taken from http://stackoverflow.com/questions/306316/determine-if-two-rectangles-overlap-each-other
 	return a.x1 < b.x2 && a.x2 > b.x1 &&
     	   a.y1 < b.y2 && a.y2 > b.y1;
+};
+
+dia.RectangleArea.prototype.render = function(c){
+	var areaX = this.getX();
+	var areaY = this.getY();
+	var areaWidth = this.getWidth();
+	var areaHeight = this.getHeight();
+	
+	c.strokeStyle = 'red';
+	c.strokeRect(areaX, areaY, areaWidth, areaHeight);
 };
 
 dia.InteractionManager = function(){
@@ -1089,7 +1159,7 @@ dia.EditTool.prototype.mouseDown = function(sheet, x, y){
 	var repr;
 	for(var i = 0 ; i < sheet.elements.length && !this.currentHandle ; i++){
 		repr = sheet.elements[i].getRepresentation();
-		for(var j = 0 ; j < repr.handles.length && !this.currentHandle ; j++){
+		for(var j = repr.handles.length - 1 ; j >= 0 && !this.currentHandle ; j--){
 			if(repr.handles[j].area.contains(x, y)){
 				this.currentHandle = repr.handles[j];
 			}
@@ -1107,7 +1177,9 @@ dia.EditTool.prototype.mouseMove = function(sheet, x, y){
 	if(this.currentHandle){
 		this.currentHandle.dragMove(
 			x - this.currentPosition.x,
-			y - this.currentPosition.y
+			y - this.currentPosition.y,
+			x,
+			y
 		);
 	}
 	

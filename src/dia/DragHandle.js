@@ -11,10 +11,14 @@ dia.DragHandle.prototype.dragStart = function(x, y){
 	
 };
 
-dia.DragHandle.prototype.dragMove = function(dx, dy){
+dia.DragHandle.prototype.dragMove = function(dx, dy, x, y){
 	
 };
 
 dia.DragHandle.prototype.dragDrop = function(x, y){
 	
+};
+
+dia.DragHandle.prototype.render = function(c){
+	this.area.render(c);
 };

@@ -9,3 +9,7 @@ dia.Area.prototype.contains = function(x, y){
 dia.Area.prototype.intersectsWith = function(otherArea){
 	return false;	
 };
+
+dia.Area.prototype.render = function(c){
+	
+};

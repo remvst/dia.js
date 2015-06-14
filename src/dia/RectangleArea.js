@@ -48,3 +48,13 @@ dia.RectangleArea.prototype.intersectsWith = function(otherArea){
 	return a.x1 < b.x2 && a.x2 > b.x1 &&
     	   a.y1 < b.y2 && a.y2 > b.y1;
 };
+
+dia.RectangleArea.prototype.render = function(c){
+	var areaX = this.getX();
+	var areaY = this.getY();
+	var areaWidth = this.getWidth();
+	var areaHeight = this.getHeight();
+	
+	c.strokeStyle = 'red';
+	c.strokeRect(areaX, areaY, areaWidth, areaHeight);
+};

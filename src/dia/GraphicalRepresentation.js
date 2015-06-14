@@ -18,6 +18,10 @@ dia.GraphicalRepresentation.prototype.render = function(ctx){
 	for(var i = 0 ; i < this.renderables.length ; i++){
 		this.renderables[i].render(ctx);
 	}
+	
+	for(var i = 0 ; i < this.handles.length ; i++){
+		this.handles[i].render(ctx);
+	}
 };
 
 dia.GraphicalRepresentation.prototype.addHandle = function(handle){

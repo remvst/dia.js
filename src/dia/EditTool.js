@@ -14,7 +14,7 @@ dia.EditTool.prototype.mouseDown = function(sheet, x, y){
 	var repr;
 	for(var i = 0 ; i < sheet.elements.length && !this.currentHandle ; i++){
 		repr = sheet.elements[i].getRepresentation();
-		for(var j = 0 ; j < repr.handles.length && !this.currentHandle ; j++){
+		for(var j = repr.handles.length - 1 ; j >= 0 && !this.currentHandle ; j--){
 			if(repr.handles[j].area.contains(x, y)){
 				this.currentHandle = repr.handles[j];
 			}
@@ -32,7 +32,9 @@ dia.EditTool.prototype.mouseMove = function(sheet, x, y){
 	if(this.currentHandle){
 		this.currentHandle.dragMove(
 			x - this.currentPosition.x,
-			y - this.currentPosition.y
+			y - this.currentPosition.y,
+			x,
+			y
 		);
 	}
 	
