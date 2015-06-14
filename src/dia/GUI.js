@@ -14,6 +14,11 @@ dia.GUI = function(app){
 	this.boundElementRemoved = this.elementRemoved.bind(this);
 	this.boundElementModified = this.elementModified.bind(this);
 	
+	// In case the sheet already contains elements, let's watch them
+	for(var i = 0 ; i < this.app.sheet.elements.length ; i++){
+		this.app.sheet.elements[i].listen('propertychange', this.boundElementModified);
+	}
+	
 	this.setupInterationManager();
 	
 	var selectionTool = this.app.toolbox.getTool('select');
@@ -24,21 +29,23 @@ dia.GUI = function(app){
 	}
 	
 	
-	// Resizing the canvas
-	var content = $('#canvas-container'),
-		gui = this;
-			
-	var resize = function(){
-		var width = content.outerWidth();
-		var height = content.outerHeight();
+	// Canvas auto-resize
+	window.addEventListener('resize', this.resizeCanvas.bind(this), false);
+	this.resizeCanvas();
+	
+	this.renderSheet();
+};
 
-		gui.canvas.width = width;
-		gui.canvas.height = height;
-		
-		gui.sheetCanvases[gui.app.sheet.id].setDimensions(width, height);
-	};
-	window.addEventListener('resize', resize, false);
-	resize();
+dia.GUI.prototype.resizeCanvas = function(){
+	var content = $('#canvas-container');
+	
+	var width = content.outerWidth();
+	var height = content.outerHeight();
+
+	this.canvas.width = width;
+	this.canvas.height = height;
+
+	this.sheetCanvases[this.app.sheet.id].setDimensions(width, height);
 };
 
 dia.GUI.prototype.setupInterationManager = function(){
