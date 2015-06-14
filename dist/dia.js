@@ -1274,6 +1274,9 @@ dia.GUI.prototype.setupInterationManager = function(){
 		var position = gui.getPositionOnSheet(e);
 		gui.interactionManager.mouseUp(position.x, position.y);
 	}, false);
+	
+	this.app.sheet.listen('elementadded', this.renderSheet.bind(this));
+	this.app.sheet.listen('elementremoved', this.renderSheet.bind(this));
 };
 
 dia.GUI.prototype.getPositionOnSheet = function(event){

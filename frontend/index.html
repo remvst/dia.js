@@ -108,13 +108,13 @@
 			classType.addProperty(new dia.Property({
 				id: 'attributes',
 				type: dia.DataType.STRING_ARRAY,
-				default: ['+hello', '+suce'],
+				default: [],
 				label: 'Instance attributes'
 			}));
 			classType.addProperty(new dia.Property({
 				id: 'methods',
 				type: dia.DataType.STRING_ARRAY,
-				default: ['do()', 'close()', 'fail()', 'open()'],
+				default: [],
 				label: 'Instance methods'
 			}));
 			classType.setRepresentationFactory(function(element){
@@ -135,8 +135,8 @@
 				};
 
 				var getRequiredHeight = function(){
-					return lineHeight * (1 + element.getProperty('methods').length
-										 + element.getProperty('attributes').length)
+					return lineHeight * (1 + Math.max(1, element.getProperty('methods').length)
+										 + Math.max(1, element.getProperty('attributes').length));
 				};
 
 				representation.addRenderable(new dia.Renderable(function(c){
@@ -153,7 +153,7 @@
 					c.fillRect(0, 0, width, 1);
 					c.fillRect(0, height - 1, width, 1);
 					c.fillRect(0, lineHeight, width, 1);
-					c.fillRect(0, lineHeight * (element.getProperty('attributes').length + 1), width, 1);
+					c.fillRect(0, lineHeight * (Math.max(1, element.getProperty('attributes').length) + 1), width, 1);
 
 					c.fillRect(0, 0, 1, height);
 					c.fillRect(width - 1, 0, 1, height);
@@ -190,7 +190,10 @@
 			classType.creatorTool = new dia.CreateTool({
 				type: classType,
 				mouseDown: function(sheet, x, y){
-					sheet.addElement(this.type.emptyElement());
+					var element = this.type.emptyElement();
+					element.setProperty('x', x);
+					element.setProperty('y', y);
+					sheet.addElement(element);
 				}
 			});
 
