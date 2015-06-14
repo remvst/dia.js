@@ -21,11 +21,14 @@ dia.Area.prototype.surface = function(){
 dia.Area.intersectionMap = {};
 
 dia.Area.defineIntersection = function(type1, type2, func){
-	// Let's add it to both ways
 	dia.Area.intersectionMap[type1 + '-' + type2] = func;
-	dia.Area.intersectionMap[type2 + '-' + type1] = function(a, b){
-		return func(b, a);
-	};
+	
+	if(type1 !== type2){
+		// Let's add it for both ways
+		dia.Area.intersectionMap[type2 + '-' + type1] = function(a, b){
+			return func(b, a);
+		};
+	}
 };
 
 dia.Area.intersect = function(area1, area2){

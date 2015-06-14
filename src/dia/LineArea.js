@@ -28,10 +28,6 @@ dia.LineArea.prototype.contains = function(x, y){
 	}
 };
 
-dia.LineArea.prototype.intersectsWith = function(otherArea){
-	// TODO
-};
-
 dia.LineArea.prototype.distance = function(x0, y0){
 	// Taken from https://en.wikipedia.org/wiki/Distance_from_a_point_to_a_line#Line_defined_by_two_points
 	var x1 = this.getX1(),
@@ -72,3 +68,41 @@ dia.LineArea.prototype.getLength = function(){
 dia.LineArea.prototype.surface = function(){
 	return this.getLength() * this.thickness;
 };
+
+dia.Area.defineIntersection('line', 'line', function(a, b){
+	var coeffA = (a.getY2() - a.getY1()) / (a.getX2() - a.getX1());
+	var coeffB = (b.getY2() - b.getY1()) / (b.getX2() - b.getX1());
+	
+	// Parallel lines
+	if(coeffA === coeffB){
+		return false;
+	}
+	
+	// Let's calculate the full equations
+	var originA = a.getY1() - coeffA * a.getX1();
+	var originB = b.getY1() - coeffB * b.getX1();
+	
+	// Let's find the intersection point
+	var intersectionY = (originA * coeffB - coeffA * originB) / (coeffB - coeffA);
+	var intersectionX = (intersectionY - originA) / coeffA;
+	
+	return dia.between(
+		Math.min(a.getX1(), a.getX2()),
+		intersectionX,
+		Math.max(a.getX1(), a.getX2())
+	) &&
+	dia.between(
+		Math.min(a.getY1(), a.getY2()),
+		intersectionY,
+		Math.max(a.getY1(), a.getY2())
+	) && dia.between(
+		Math.min(b.getX1(), b.getX2()),
+		intersectionX,
+		Math.max(b.getX1(), b.getX2())
+	) &&
+	dia.between(
+		Math.min(b.getY1(), b.getY2()),
+		intersectionY,
+		Math.max(b.getY1(), b.getY2())
+	);
+});
