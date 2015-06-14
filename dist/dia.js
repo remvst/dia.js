@@ -1304,6 +1304,7 @@ dia.SelectionTool.prototype.mouseDown = function(sheet, x, y){
 		if(this.currentSelection.indexOf(this.currentHandle.element) === -1){
 			this.currentSelection = [this.currentHandle.element];
 			this.currentHandle.element.highlighted = true;
+			this.dispatch('selectionchange', { selection: this.currentSelection });
 		}
 	}else{
 		// No handle, let's do selection mode
