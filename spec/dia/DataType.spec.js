@@ -113,3 +113,37 @@ describe('built in float data type', function(){
 		expect(dia.DataType.FLOAT.validateValue(NaN)).toBe(false);
 	});
 });
+
+describe('built in anchor data type', function(){
+	it('validates correctly', function(){
+		expect(dia.DataType.ANCHOR.validateValue('hello')).toBe(false);
+		expect(dia.DataType.ANCHOR.validateValue(123)).toBe(false);
+		expect(dia.DataType.ANCHOR.validateValue(-123)).toBe(false);
+		expect(dia.DataType.ANCHOR.validateValue(123.54)).toBe(false);
+		expect(dia.DataType.ANCHOR.validateValue('')).toBe(false);
+		expect(dia.DataType.ANCHOR.validateValue(null)).toBe(false);
+		expect(dia.DataType.ANCHOR.validateValue(false)).toBe(false);
+		expect(dia.DataType.ANCHOR.validateValue(NaN)).toBe(false);
+		
+		expect(dia.DataType.ANCHOR.validateValue({
+			element: 123,
+			x: 1,
+			y: 1
+		})).toBe(false);
+		expect(dia.DataType.ANCHOR.validateValue({
+			element: 'anid',
+			x: 1,
+			y: 'lawl'
+		})).toBe(false);
+		expect(dia.DataType.ANCHOR.validateValue({
+			element: 'anid',
+			x: 1,
+			y: -1
+		})).toBe(false);
+		expect(dia.DataType.ANCHOR.validateValue({
+			element: 'anid',
+			x: 1,
+			y: 1
+		})).toBe(true);
+	});
+});

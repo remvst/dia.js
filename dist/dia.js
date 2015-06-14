@@ -455,6 +455,19 @@ dia.DataType.FLOAT = new dia.DataType({
 	}
 });
 
+dia.DataType.ANCHOR = new dia.DataType({
+	label: 'anchor',
+	validate: function(value){
+		return !!(value
+			&& typeof value.x === 'number'
+			&& typeof value.y === 'number'
+			&& typeof value.element === 'string'
+			&& dia.between(0, value.x, 1)
+			&& dia.between(0, value.y, 1));
+		
+	}
+});
+
 dia.ArrayDataType = function(containedType){
 	dia.DataType.call(this);
 	
