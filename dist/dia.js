@@ -1219,6 +1219,14 @@ dia.App = function(){
 	this.sheet = new dia.Sheet();
 };
 
+dia.GUI = function(app){
+	if(!app){
+		throw new Error('Cannot instantiate GUI without an app');
+	}
+	
+	this.app = app;
+};
+
 dia.ElementForm = function(element){
 	if(!element){
 		throw new Error('Cannot create ElementForm without element parameter.');
