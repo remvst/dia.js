@@ -86,6 +86,10 @@ describe('an edit tool', function(){
 		
 		var sheet = new dia.Sheet();
 		
+		var mediumElement = type.emptyElement();
+		mediumElement.setProperty('x', 7);
+		sheet.addElement(mediumElement);
+		
 		var smallElement = type.emptyElement();
 		smallElement.setProperty('x', 5);
 		sheet.addElement(smallElement);
