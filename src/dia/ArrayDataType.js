@@ -37,20 +37,24 @@ dia.ArrayDataType.prototype.toJSON = function(value){
 dia.ArrayDataType.prototype.createHTMLInput = function(currentValue){
 	var add = function(value){
 		var inputContainer = document.createElement('div');
+		inputContainer.className = 'input-group';
 		inputsContainer.appendChild(inputContainer);
 
 		var input = this.containedType.createHTMLInput(value);
 		input.className += ' contained-type-input';
 		inputContainer.appendChild(input);
+		
+		var removerWrapper = document.createElement('span');
+		removerWrapper.className = 'input-group-btn';
+		inputContainer.appendChild(removerWrapper);
 
 		var remover = document.createElement('button');
+		remover.className = 'btn btn-default';
 		remover.innerHTML = 'X';
 		remover.addEventListener('click', function(){
 			inputContainer.parentNode.removeChild(inputContainer);
 		}, false);
-		inputContainer.appendChild(remover);
-
-		return input;
+		removerWrapper.appendChild(remover);
 	}.bind(this);
 
 	var container = document.createElement('div');
@@ -65,9 +69,10 @@ dia.ArrayDataType.prototype.createHTMLInput = function(currentValue){
 	var nextIndex = currentValue.length;
 
 	var adder = document.createElement('button');
-	adder.innerHTML = 'Add';
+	adder.className = 'btn btn-default';
+	adder.innerHTML = 'Add an item';
 	adder.addEventListener('click', function(){
-		add('');
+		add(null);
 	}, false);
 	container.appendChild(adder);
 

@@ -39,7 +39,7 @@ describe('an array data type', function(){
 	it('does HTML conversions correctly', function(){
 		var simple = new dia.DataType({
 			toHTML: function(value){
-				var input = document.createElement('span');
+				var input = document.createElement('dd');
 				input.innerHTML = value;
 				return input;
 			},
@@ -52,7 +52,7 @@ describe('an array data type', function(){
 		var value = ['a', 'b', 'c', 'd'];
 		var input = complex.createHTMLInput(value);
 		
-		var spans = input.querySelectorAll('span');
+		var spans = input.querySelectorAll('dd');
 		expect(spans.length).toEqual(value.length);
 		
 		for(var i = 0 ; i < spans.length ; i++){

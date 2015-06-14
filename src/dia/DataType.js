@@ -9,6 +9,7 @@ dia.DataType = function(options){
 		var input = document.createElement('input');
 		input.setAttribute('type', 'text');
 		input.setAttribute('value', currentValue);
+		input.className = 'form-control';
 		return input;
 	};
 	this.fromHTML = options.fromHTML || function(html){

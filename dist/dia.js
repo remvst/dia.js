@@ -363,6 +363,7 @@ dia.DataType = function(options){
 		var input = document.createElement('input');
 		input.setAttribute('type', 'text');
 		input.setAttribute('value', currentValue);
+		input.className = 'form-control';
 		return input;
 	};
 	this.fromHTML = options.fromHTML || function(html){
@@ -465,20 +466,24 @@ dia.ArrayDataType.prototype.toJSON = function(value){
 dia.ArrayDataType.prototype.createHTMLInput = function(currentValue){
 	var add = function(value){
 		var inputContainer = document.createElement('div');
+		inputContainer.className = 'input-group';
 		inputsContainer.appendChild(inputContainer);
 
 		var input = this.containedType.createHTMLInput(value);
 		input.className += ' contained-type-input';
 		inputContainer.appendChild(input);
+		
+		var removerWrapper = document.createElement('span');
+		removerWrapper.className = 'input-group-btn';
+		inputContainer.appendChild(removerWrapper);
 
 		var remover = document.createElement('button');
+		remover.className = 'btn btn-default';
 		remover.innerHTML = 'X';
 		remover.addEventListener('click', function(){
 			inputContainer.parentNode.removeChild(inputContainer);
 		}, false);
-		inputContainer.appendChild(remover);
-
-		return input;
+		removerWrapper.appendChild(remover);
 	}.bind(this);
 
 	var container = document.createElement('div');
@@ -493,9 +498,10 @@ dia.ArrayDataType.prototype.createHTMLInput = function(currentValue){
 	var nextIndex = currentValue.length;
 
 	var adder = document.createElement('button');
-	adder.innerHTML = 'Add';
+	adder.className = 'btn btn-default';
+	adder.innerHTML = 'Add an item';
 	adder.addEventListener('click', function(){
-		add('');
+		add(null);
 	}, false);
 	container.appendChild(adder);
 
@@ -1145,14 +1151,24 @@ dia.ElementForm.prototype.createHTMLRoot = function(){
 	
 	this.element.type.properties.forEach(function(property){
 		var propertyRoot = document.createElement('div');
+		propertyRoot.className = 'row form-group';
+		
+		var labelContainer = document.createElement('div');
+		labelContainer.className = 'col-md-6';
+		propertyRoot.appendChild(labelContainer);
+		
+		var inputContainer = document.createElement('div');
+		inputContainer.className = 'col-md-6';
+		propertyRoot.appendChild(inputContainer);
 		
 		var label = document.createElement('label');
 		label.innerHTML = property.label || property.id;
 		label.title = property.description;
-		propertyRoot.appendChild(label);
+		label.className = 'col-md-6';
+		labelContainer.appendChild(label);
 		
 		var input = property.type.createHTMLInput(form.element.getProperty(property.id));
-		propertyRoot.appendChild(input);
+		inputContainer.appendChild(input);
 		
 		root.appendChild(propertyRoot);
 		

@@ -22,14 +22,24 @@ dia.ElementForm.prototype.createHTMLRoot = function(){
 	
 	this.element.type.properties.forEach(function(property){
 		var propertyRoot = document.createElement('div');
+		propertyRoot.className = 'row form-group';
+		
+		var labelContainer = document.createElement('div');
+		labelContainer.className = 'col-md-6';
+		propertyRoot.appendChild(labelContainer);
+		
+		var inputContainer = document.createElement('div');
+		inputContainer.className = 'col-md-6';
+		propertyRoot.appendChild(inputContainer);
 		
 		var label = document.createElement('label');
 		label.innerHTML = property.label || property.id;
 		label.title = property.description;
-		propertyRoot.appendChild(label);
+		label.className = 'col-md-6';
+		labelContainer.appendChild(label);
 		
 		var input = property.type.createHTMLInput(form.element.getProperty(property.id));
-		propertyRoot.appendChild(input);
+		inputContainer.appendChild(input);
 		
 		root.appendChild(propertyRoot);
 		
