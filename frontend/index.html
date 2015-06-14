@@ -60,26 +60,6 @@
 			</div>
 		</div>
 		
-		<script id="popup-template" type="x-tmpl-mustache">
-			<div class="modal fade" role="dialog">
-				<div class="modal-dialog">
-					<div class="modal-content">
-						<div class="modal-header">
-							<button type="button" class="close" data-dismiss="modal">&times;</button>
-							<h4 class="modal-title">{{ title }}</h4>
-						</div>
-						<div class="modal-body">
-							{{ content }}
-						</div>
-						<div class="modal-footer">
-							<button type="button" class="btn btn-default" data-dismiss="modal">{{ cancelLabel }}</button>
-							<button type="button" class="btn btn-primary" data-dismiss="modal">{{ okLabel }}</button>
-						</div>
-					</div>
-				</div>
-			</div>
-		</script>
-		
 		<script>
 			var classType = new dia.ElementType({
 				id: 'uml.class'
@@ -97,17 +77,20 @@
 			classType.addProperty(new dia.Property({
 				id: 'title',
 				type: dia.DataType.STRING,
-				default: 'class'
+				default: 'class',
+				label: 'Class title'
 			}));
 			classType.addProperty(new dia.Property({
 				id: 'attributes',
 				type: dia.DataType.STRING_ARRAY,
-				default: ['+hello', '+suce']
+				default: ['+hello', '+suce'],
+				label: 'Instance attributes'
 			}));
 			classType.addProperty(new dia.Property({
 				id: 'methods',
 				type: dia.DataType.STRING_ARRAY,
-				default: ['do()', 'close()', 'fail()', 'open()']
+				default: ['do()', 'close()', 'fail()', 'open()'],
+				label: 'Instance methods'
 			}));
 			classType.setRepresentationFactory(function(element){
 				var representation = new dia.GraphicalRepresentation(element);

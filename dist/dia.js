@@ -1123,22 +1123,22 @@ dia.Dialog.prototype.hide = function(){
 dia.Dialog.getTemplate = function(){
 	return '\
 <div class="modal fade" role="dialog">\
-		<div class="modal-dialog">\
-			<div class="modal-content">\
-				<div class="modal-header">\
-					<button type="button" class="close" data-dismiss="modal">&times;</button>\
-					<h4 class="modal-title">{{ title }}</h4>\
-				</div>\
-				<div class="modal-body">\
-					{{ content }}\
-				</div>\
-				<div class="modal-footer">\
-					<button type="button" class="btn btn-default" data-dismiss="modal">{{ cancelLabel }}</button>\
-					<button type="button" class="btn btn-primary" data-dismiss="modal">{{ okLabel }}</button>\
-				</div>\
+	<div class="modal-dialog">\
+		<div class="modal-content">\
+			<div class="modal-header">\
+				<button type="button" class="close" data-dismiss="modal">&times;</button>\
+				<h4 class="modal-title">{{ title }}</h4>\
+			</div>\
+			<div class="modal-body">\
+				{{ content }}\
+			</div>\
+			<div class="modal-footer">\
+				<button type="button" class="btn btn-default" data-dismiss="modal">{{ cancelLabel }}</button>\
+				<button type="button" class="btn btn-primary" data-dismiss="modal">{{ okLabel }}</button>\
 			</div>\
 		</div>\
-	</div>';
+	</div>\
+</div>';
 };
 
 dia.ElementForm = function(element){
