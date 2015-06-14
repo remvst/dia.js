@@ -900,6 +900,46 @@ dia.MoveAnchorDragHandle.prototype.dragMove = function(dx, dy, x, y){
 	});
 };
 
+dia.BrokenLineDragHandle = function(element, area, property){
+	dia.DragHandle.call(this, element, area);
+	
+	this.property = property;
+	this.brokenIndex = null;
+	this.broken = false;
+};
+
+extend(dia.BrokenLineDragHandle, dia.DragHandle);
+
+dia.BrokenLineDragHandle.prototype.dragStart = function(x, y){
+	// Let's find the line we should split into two
+	this.brokenIndex = Math.max(this.area.indexOfLineThatContains(x, y), 0);
+	this.broken = false;
+	
+	// not splitting until we move the mouse (to avoid having too many points)
+};
+
+dia.BrokenLineDragHandle.prototype.dragMove = function(dx, dy, x, y){
+	var propertyValue = this.element.getProperty(this.property);
+	
+	var newPoints = propertyValue.slice(0);
+	if(!this.broken){
+		newPoints.splice(this.brokenIndex, 0, {});
+		this.broken = true;
+	}
+	
+	newPoints[this.brokenIndex].x = x;
+	newPoints[this.brokenIndex].y = y;
+	
+	// Update the object
+	// Copying the object is necessary to trigger property change event.
+	this.element.setProperty(this.property, newPoints);
+};
+
+dia.BrokenLineDragHandle.prototype.dragDrop = function(x, y){
+	this.brokenIndex = null;
+	this.broken = false;
+};
+
 dia.Area = function(){
 	this.type = null;
 };
@@ -1143,6 +1183,40 @@ dia.Area.defineIntersection('line', 'rectangle', function(line, rectangle){
 	
 	return line.intersectsWith(diag1) || line.intersectsWith(diag2);
 });
+
+dia.BrokenLineArea = function(options){
+	dia.Area.call(this);
+	
+	this.getPoints = options.points;
+	this.thickness = options.thickness;
+	this.type = 'brokenline'
+};
+
+extend(dia.BrokenLineArea, dia.Area);
+
+dia.BrokenLineArea.prototype.contains = function(x, y){
+	return this.indexOfLineThatContains(x, y) !== -1;
+};
+
+dia.BrokenLineArea.prototype.indexOfLineThatContains = function(x, y){
+	var points = this.getPoints(),
+		area;
+	for(var i = 0 ; i < points.length - 1 ; i++){
+		area = new dia.LineArea({
+			x1: function(){ return points[i].x; },
+			y1: function(){ return points[i].y; },
+			x2: function(){ return points[i + 1].x; },
+			y2: function(){ return points[i + 1].y; },
+			thickness: this.thickness
+		});
+		
+		if(area.contains(x, y)){
+			return i;
+		}
+	}
+	
+	return -1;
+};
 
 dia.InteractionManager = function(){
 	this.sheet = null;
