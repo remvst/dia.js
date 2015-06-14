@@ -68,22 +68,6 @@
 		</div>
 		
 		<script>
-			var canvas = $('#canvas'),
-				content = $('#canvas-container');
-			
-			var resize = function(){
-				var width = content.outerWidth();
-				var height = content.outerHeight();
-				
-				canvas.attr({
-					width: width,
-					height: height
-				});
-			};
-			$(window).on('resize', resize);
-			resize();
-			
-			
 			var classType = new dia.ElementType({
 				id: 'uml.class'
 			});
@@ -183,6 +167,8 @@
 
 				var moveHandle = new dia.MoveElementDragHandle(element, area);
 				representation.addHandle(moveHandle);
+				
+				representation.area = area;
 
 				return representation;
 			});

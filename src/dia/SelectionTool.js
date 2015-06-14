@@ -45,8 +45,6 @@ dia.SelectionTool.prototype.mouseUp = function(sheet, x, y){
 			}
 		}
 		
-		this.dispatch('selectionchange', { selection: this.currentSelection });
-		
 		if(this.selectionStart.x === this.selectionEnd.x && this.selectionStart.y == this.selectionEnd.y){
 			// It's a click
 			if(!this.previousClick 
@@ -55,17 +53,19 @@ dia.SelectionTool.prototype.mouseUp = function(sheet, x, y){
 			   && Date.now() - this.previousClick.time < 500){
 
 				this.clickCount++;
-				this.dispatch('click', { clickCount: this.clickCount, element: this.currentSelection[0] || null });
-
-				this.previousClick = null;
+			}else{
+				this.clickCount = 1;
 			}
+			
+			this.dispatch('click', { clickCount: this.clickCount, element: this.currentSelection[0] || null });
 
 			this.previousClick = this.selectionStart;
 			this.previousClick.time = Date.now();
 		}
-	}
 	
-	this.selectionStart = null;
+		this.selectionStart = null;
+		this.dispatch('selectionchange', { selection: this.currentSelection });
+	}
 	this.selectionEnd = null;
 };
 

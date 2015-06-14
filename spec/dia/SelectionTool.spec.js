@@ -89,6 +89,60 @@ describe('a selection tool', function(){
 		expect(eventFired).toBe(5);
 	});
 	
+	it('can perform simple clicks', function(){
+		var rectangleType = new dia.ElementType();
+		rectangleType.addProperty(new dia.Property({
+			id: 'x',
+			type: dia.DataType.INTEGER,
+			default: 0
+		}));
+		rectangleType.addProperty(new dia.Property({
+			id: 'y',
+			type: dia.DataType.INTEGER,
+			default: 0
+		}));
+		rectangleType.addProperty(new dia.Property({
+			id: 'width',
+			type: dia.DataType.INTEGER,
+			default: 10
+		}));
+		rectangleType.addProperty(new dia.Property({
+			id: 'height',
+			type: dia.DataType.INTEGER,
+			default: 10
+		}));
+		rectangleType.setRepresentationFactory(function(element){
+			var repr = new dia.GraphicalRepresentation(element);
+			
+			repr.area = new dia.RectangleArea({
+				x: function(){ return element.getProperty('x'); },
+				y: function(){ return element.getProperty('y'); },
+				width: function(){ return element.getProperty('width'); },
+				height: function(){ return element.getProperty('height'); }
+			});
+			
+			return repr;
+		});
+		
+		var sheet = new dia.Sheet();
+		
+		var element = rectangleType.emptyElement();
+		sheet.addElement(element);
+		
+		var tool = new dia.SelectionTool();
+		
+		var event;
+		tool.listen('click', function(e){
+			event = e;
+		});
+		
+		tool.mouseDown(sheet, 5, 5);
+		tool.mouseUp(sheet, 5, 5);
+		
+		expect(event.element).toBe(element);
+		expect(event.clickCount).toBe(1);
+	});
+	
 	it('can perform double clicks', function(){
 		var rectangleType = new dia.ElementType();
 		rectangleType.addProperty(new dia.Property({

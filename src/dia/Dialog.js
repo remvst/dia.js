@@ -23,10 +23,10 @@ dia.Dialog = function(settings){
 		this.root.find('.modal-body').append(settings.content);
 	}
 	
-	this.root.find('.btn-primary').click(function(){
+	this.root.find('.modal-footer .btn-primary').click(function(){
 		this.hide(true);
 	}.bind(this));
-	this.root.find('.btn-default').click(function(){
+	this.root.find('.modal-footer .btn-default').click(function(){
 		this.hide(false);
 	}.bind(this));
 	this.root.find('.close').click(function(){
