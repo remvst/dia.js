@@ -106,3 +106,29 @@ dia.Area.defineIntersection('line', 'line', function(a, b){
 		Math.max(b.getY1(), b.getY2())
 	);
 });
+
+dia.Area.defineIntersection('line', 'rectangle', function(line, rectangle){
+	// Easy case, if the rectangle contains one of the intersections
+	if(rectangle.contains(line.getX1(), line.getY1())
+	  || rectangle.contains(line.getX2(), line.getY2())){
+		return true;
+	}
+	
+	// Otherwise, we have to check for intersections with diagonals
+	
+	var bounds = rectangle.getBounds();
+	var diag1 = new dia.LineArea({
+		x1: function(){ return bounds.x1; },
+		y1: function(){ return bounds.y1; },
+		x2: function(){ return bounds.x2; },
+		y2: function(){ return bounds.y2; },
+	});
+	var diag2 = new dia.LineArea({
+		x1: function(){ return bounds.x2; },
+		y1: function(){ return bounds.y1; },
+		x2: function(){ return bounds.x1; },
+		y2: function(){ return bounds.y2; },
+	});
+	
+	return line.intersectsWith(diag1) || line.intersectsWith(diag2);
+});

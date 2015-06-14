@@ -59,4 +59,39 @@ describe('a line area', function(){
 		expect(area1.intersectsWith(area2)).toBe(true);
 		expect(area1.intersectsWith(area3)).toBe(false);
 	});
+	
+	it('can check for intersection with rectangles', function(){
+		var rectangle = new dia.RectangleArea({
+			x: function(){ return 0; },
+			y: function(){ return 0; },
+			width: function(){ return 100; },
+			height: function(){ return 100; },
+		});
+		
+		// Cuts left side but does not cross
+		var line1 = new dia.LineArea({
+			x1: function(){ return -10; },
+			y1: function(){ return 50; },
+			x2: function(){ return 40; },
+			y2: function(){ return 50; }
+		});
+		// Goes through
+		var line2 = new dia.LineArea({
+			x1: function(){ return -10; },
+			y1: function(){ return -10; },
+			x2: function(){ return 100; },
+			y2: function(){ return 200; }
+		});
+		// Left side
+		var line3 = new dia.LineArea({
+			x1: function(){ return -10; },
+			y1: function(){ return -10; },
+			x2: function(){ return -10; },
+			y2: function(){ return 200; }
+		});
+		
+		expect(line1.intersectsWith(rectangle)).toBe(true);
+		expect(line2.intersectsWith(rectangle)).toBe(true);
+		expect(line3.intersectsWith(rectangle)).toBe(false);
+	});
 });
