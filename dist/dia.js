@@ -1164,11 +1164,14 @@ extend(dia.EditTool, dia.Tool);
 dia.EditTool.prototype.mouseDown = function(sheet, x, y){
 	this.currentHandle = null;
 	
-	var repr;
-	for(var i = 0 ; i < sheet.elements.length && !this.currentHandle ; i++){
+	var repr,
+		handleArea;
+	for(var i = 0 ; i < sheet.elements.length ; i++){
 		repr = sheet.elements[i].getRepresentation();
-		for(var j = 0 ; j < repr.handles.length && !this.currentHandle ; j++){
-			if(repr.handles[j].area.contains(x, y)){
+		for(var j = 0 ; j < repr.handles.length ; j++){
+			handleArea = repr.handles[j].area;
+			if(handleArea.contains(x, y) && 
+			   (!this.currentHandle || handleArea.surface() < this.currentHandle.area.surface())){
 				this.currentHandle = repr.handles[j];
 			}
 		}

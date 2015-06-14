@@ -62,4 +62,41 @@ describe('an edit tool', function(){
 		expect(tool.currentHandle).toBe(null);
 		expect(tool.currentPosition).toEqual({x: 50, y: 50});
 	});
+	
+	it('always picks the handles with the smallest areas', function(){
+		var type = new dia.ElementType();
+		type.addProperty(new dia.Property({
+			id: 'x',
+			default: 0
+		}));
+		type.setRepresentationFactory(function(element){
+			var repr = new dia.GraphicalRepresentation(element);
+			
+			var area = new dia.RectangleArea({
+				x: function(){ return 0; },
+				y: function(){ return 0; },
+				width: function(){ return element.getProperty('x'); },
+				height: function(){ return element.getProperty('x'); }
+			});
+			var handle = new dia.DragHandle(element, area);
+			repr.addHandle(handle);
+			
+			return repr;
+		});
+		
+		var sheet = new dia.Sheet();
+		
+		var smallElement = type.emptyElement();
+		smallElement.setProperty('x', 5);
+		sheet.addElement(smallElement);
+		
+		var bigElement = type.emptyElement();
+		bigElement.setProperty('x', 10);
+		sheet.addElement(bigElement);
+		
+		var tool = new dia.EditTool();
+		
+		tool.mouseDown(sheet, 2, 2);
+		expect(tool.currentHandle.element).toBe(smallElement);
+	});
 });
