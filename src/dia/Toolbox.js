@@ -1,13 +1,15 @@
 dia.Toolbox = function(){
-	this.tools = {};
+	this.toolMap = {};
+	this.toolList = [];
 };
 
 dia.Toolbox.prototype.addTool = function(tool){
-	if(!this.tools[tool.id]){
-		this.tools[tool.id] = tool;
+	if(!this.toolMap[tool.id]){
+		this.toolMap[tool.id] = tool;
+		this.toolList.push(tool);
 	}
 };
 
 dia.Toolbox.prototype.getTool = function(id){
-	return this.tools[id] || null;
+	return this.toolMap[id] || null;
 };

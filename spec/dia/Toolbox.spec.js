@@ -7,5 +7,6 @@ describe('a toolbox', function(){
 		toolbox.addTool(tool);
 		
 		expect(toolbox.getTool('mytool')).toBe(tool);
+		expect(toolbox.toolList).toEqual([tool]);
 	});
 });
