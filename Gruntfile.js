@@ -36,7 +36,6 @@ module.exports = function(grunt) {
 					'src/dia/Tool.js',
 					'src/dia/CreateTool.js',
 					'src/dia/SelectionTool.js',
-					'src/dia/EditTool.js',
 					'src/dia/Dialog.js',
 					'src/dia/Canvas.js',
 					'src/dia/App.js',
