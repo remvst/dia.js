@@ -1089,6 +1089,8 @@ dia.EditTool.prototype.mouseUp = function(sheet, x, y){
 };
 
 dia.Dialog = function(settings){
+	dia.EventDispatcher.call(this);
+	
 	settings = settings || {};
 	
 	var mustacheContent = settings.content instanceof HTMLElement ? null : settings.content;
@@ -1110,15 +1112,34 @@ dia.Dialog = function(settings){
 	if(settings.content instanceof HTMLElement){
 		this.root.find('.modal-body').append(settings.content);
 	}
+	
+	this.root.find('.btn-primary').click(function(){
+		this.hide(true);
+	}.bind(this));
+	this.root.find('.btn-default').click(function(){
+		this.hide(false);
+	}.bind(this));
+	this.root.find('.close').click(function(){
+		this.hide();
+	}.bind(this));
 };
+
+extend(dia.Dialog, dia.EventDispatcher);
 
 dia.Dialog.prototype.show = function(){
 	this.root.appendTo('body');
-	this.root.modal('show');
+	this.root.modal({
+		show: true,
+		backdrop: 'static'
+	});
+	this.dispatch('show');
 };
 
-dia.Dialog.prototype.hide = function(){
+dia.Dialog.prototype.hide = function(confirmed){
 	this.root.modal('hide');
+	this.dispatch('hide', {
+		confirmed: !!confirmed
+	});
 };
 
 dia.Dialog.getTemplate = function(){
@@ -1127,15 +1148,15 @@ dia.Dialog.getTemplate = function(){
 	<div class="modal-dialog">\
 		<div class="modal-content">\
 			<div class="modal-header">\
-				<button type="button" class="close" data-dismiss="modal">&times;</button>\
+				<button type="button" class="close">&times;</button>\
 				<h4 class="modal-title">{{ title }}</h4>\
 			</div>\
 			<div class="modal-body">\
 				{{ content }}\
 			</div>\
 			<div class="modal-footer">\
-				<button type="button" class="btn btn-default" data-dismiss="modal">{{ cancelLabel }}</button>\
-				<button type="button" class="btn btn-primary" data-dismiss="modal">{{ okLabel }}</button>\
+				<button type="button" class="btn btn-default">{{ cancelLabel }}</button>\
+				<button type="button" class="btn btn-primary">{{ okLabel }}</button>\
 			</div>\
 		</div>\
 	</div>\
