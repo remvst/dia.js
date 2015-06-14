@@ -124,6 +124,7 @@ dia.Sheet = function(){
 	
 	this.title = null;
 	this.elements = [];
+	this.elementsMap = {};
 	this.id = dia.uuid4();
 };
 
@@ -138,6 +139,8 @@ dia.Sheet.prototype.addElement = function(element){
 	this.elements.push(element);
 	element.sheet = this;
 	
+	this.elementsMap[element.id] = element;
+	
 	this.dispatch('elementadded', { element: element });
 };
 
@@ -150,6 +153,8 @@ dia.Sheet.prototype.removeElement = function(element){
 	if(index >= 0){
 		this.elements.splice(index, 1);
 		element.sheet = null;
+		
+		delete this.elementsMap[element.id];
 		
 		this.dispatch('elementremoved', { element: element });
 	}
@@ -170,6 +175,10 @@ dia.Sheet.prototype.toJSON = function(){
 		json.elements.push(this.elements[i].toJSON());
 	}
 	return json;
+};
+
+dia.Sheet.prototype.getElement = function(id){
+	return this.elementsMap[id] || null;
 };
 
 dia.Sheet.fromJSON = function(json){

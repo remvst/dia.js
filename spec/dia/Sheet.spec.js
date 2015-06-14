@@ -19,6 +19,7 @@ describe('a sheet', function(){
 		
 		expect(sheet.elements).toEqual([element]);
 		expect(element.sheet).toBe(sheet);
+		expect(sheet.getElement(element.id)).toBe(element);
 	});
 	
 	it('does not add the same element twice', function(){
