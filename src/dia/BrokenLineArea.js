@@ -33,11 +33,8 @@ dia.BrokenLineArea.prototype.indexOfLineThatContains = function(x, y){
 				closest = i;
 				minDistance = dist;
 			}
-			console.log('index ' + i + ' contains');
 		}
 	}
-	
-	console.log('final index' + closest);
 	
 	return closest;
 };

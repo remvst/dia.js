@@ -931,7 +931,6 @@ dia.BrokenLineDragHandle.prototype.dragStart = function(x, y){
 			// not splitting until we move the mouse (to avoid having too many points)
 			this.breakIndex = index;
 			this.modifiedPoint = {};
-			console.log('were breaking!', this.breakIndex);
 		}
 	}
 };
@@ -1261,11 +1260,8 @@ dia.BrokenLineArea.prototype.indexOfLineThatContains = function(x, y){
 				closest = i;
 				minDistance = dist;
 			}
-			console.log('index ' + i + ' contains');
 		}
 	}
-	
-	console.log('final index' + closest);
 	
 	return closest;
 };
