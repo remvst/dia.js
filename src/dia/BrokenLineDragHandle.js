@@ -26,15 +26,15 @@ dia.BrokenLineDragHandle.prototype.dragStart = function(x, y){
 		// We're too far from the points, let's create a new one
 		// not splitting until we move the mouse (to avoid having too many points)
 		this.breakIndex = index;
+		this.modifiedPoint = {}
 	}
 };
 
 dia.BrokenLineDragHandle.prototype.dragMove = function(dx, dy, x, y){
-	var propertyValue = this.element.getProperty(this.property);
+	var points = this.element.getProperty(this.property);
 	
-	var newPoints = propertyValue.slice(0);
+	var newPoints = points.slice(0);
 	if(this.breakIndex !== null){
-		this.modifiedPoint = {};
 		newPoints.splice(this.breakIndex, 0, this.modifiedPoint);
 		this.breakIndex = null;
 	}
@@ -48,6 +48,21 @@ dia.BrokenLineDragHandle.prototype.dragMove = function(dx, dy, x, y){
 };
 
 dia.BrokenLineDragHandle.prototype.dragDrop = function(x, y){
+	var points = this.element.getProperty(this.property);
+	var modifiedIndex = points.indexOf(this.modifiedPoint);
+	
+	var point1 = points[modifiedIndex - 1];
+	var point2 = points[modifiedIndex + 1];
+	
+	var newPoints;
+	if(point1 && dia.distance(this.modifiedPoint.x, this.modifiedPoint.y, point1.x, point1.y) <= 10
+	   || point2 && dia.distance(this.modifiedPoint.x, this.modifiedPoint.y, point2.x, point2.y) <= 10){
+		var newPoints = points.slice(0);
+		newPoints.splice(modifiedIndex, 1);
+		
+		this.element.setProperty(this.property, newPoints);
+	}
+	
 	this.breakIndex = null;
 	this.modifiedPoint = null;
 };
