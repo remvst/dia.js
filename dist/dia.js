@@ -350,6 +350,7 @@ dia.Property = function(options){
 	this.description = options.description || null;
 	this.default = 'default' in options ? options.default : null;
 	this.id = options.id || null;
+	this.private = options.private || false;
 };
 
 dia.DataType = function(options){
@@ -1164,6 +1165,10 @@ dia.ElementForm.prototype.createHTMLRoot = function(){
 		form = this;
 	
 	this.element.type.properties.forEach(function(property){
+		if(property.private){
+			return;
+		}
+		
 		var propertyRoot = document.createElement('div');
 		propertyRoot.className = 'row form-group';
 		
@@ -1203,6 +1208,10 @@ dia.ElementForm.prototype.isValid = function(){
 	var valid = true,
 		form = this;
 	this.element.type.properties.forEach(function(property){
+		if(property.private){
+			return;
+		}
+		
 		var input = form.inputMap[property.id];
 		var newValue = property.type.getValueFromHTMLInput(input);
 		
@@ -1229,6 +1238,10 @@ dia.ElementForm.prototype.submit = function(){
 	var form = this;
 	
 	this.element.type.properties.forEach(function(property){
+		if(property.private){
+			return;
+		}
+		
 		var input = form.inputMap[property.id];
 		var newValue = property.type.getValueFromHTMLInput(input);
 		

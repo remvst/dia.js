@@ -48,6 +48,34 @@ describe('an element form', function(){
 		expect(inputs[1].value).toEqual('value2');
 	});
 	
+	it('does not add private values to the form', function(){
+		var type = new dia.ElementType();
+		type.addProperty(new dia.Property({
+			id: 'prop1',
+			label: 'label1',
+			description: 'description1'
+		}));
+		type.addProperty(new dia.Property({
+			id: 'prop2',
+			label: 'label2',
+			description: 'description2',
+			private: true
+		}));
+		var element = type.emptyElement();
+		
+		element.setProperty('prop1', 'value1');
+		element.setProperty('prop2', 'value2');
+		
+		var form = new dia.ElementForm(element);
+		var root = form.getHTMLRoot();
+		
+		var labels = root.querySelectorAll('label');
+		var inputs = root.querySelectorAll('input');
+		
+		expect(root.innerHTML).toContain('label1');
+		expect(root.innerHTML).not.toContain('label2');
+	});
+	
 	it('does not create its root twice', function(){
 		var type = new dia.ElementType();
 		var element = type.emptyElement();

@@ -7,6 +7,7 @@ describe('a property', function(){
 		expect(property.description).toBe(null);
 		expect(property.default).toBe(null);
 		expect(property.id).toBe(null);
+		expect(property.private).toBe(false);
 	});
 	
 	it('is initialized correctly with options', function(){
@@ -15,7 +16,8 @@ describe('a property', function(){
 			type: dia.DataType.STRING,
 			label: 'label',
 			description: 'title of the element',
-			default: 'empty'
+			default: 'empty',
+			private: true
 		});
 		
 		expect(property.id).toEqual('title');
@@ -23,6 +25,7 @@ describe('a property', function(){
 		expect(property.label).toEqual('label');
 		expect(property.description).toEqual('title of the element');
 		expect(property.default).toEqual('empty');
+		expect(property.private).toBe(true);
 	});
 	
 	it('initializes default with falsy values', function(){

@@ -6,4 +6,5 @@ dia.Property = function(options){
 	this.description = options.description || null;
 	this.default = 'default' in options ? options.default : null;
 	this.id = options.id || null;
+	this.private = options.private || false;
 };
