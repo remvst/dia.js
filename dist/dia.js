@@ -909,6 +909,20 @@ dia.InteractionManager.prototype.keyUp = function(keyUp){
 	}
 };
 
+dia.Toolbox = function(){
+	this.tools = {};
+};
+
+dia.Toolbox.prototype.addTool = function(tool){
+	if(!this.tools[tool.id]){
+		this.tools[tool.id] = tool;
+	}
+};
+
+dia.Toolbox.prototype.getTool = function(id){
+	return this.tools[id] || null;
+};
+
 dia.Tool = function(){
 	dia.EventDispatcher.call(this);
 	
@@ -1198,6 +1212,11 @@ dia.Canvas.prototype.render = function(ctx){
 	ctx.translate(this.offsetX, this.offsetY);
 	this.sheet.render(ctx);
 	ctx.restore();
+};
+
+dia.App = function(){
+	this.toolbox = new dia.Toolbox();
+	this.sheet = new dia.Sheet();
 };
 
 dia.ElementForm = function(element){

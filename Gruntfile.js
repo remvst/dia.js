@@ -29,12 +29,14 @@ module.exports = function(grunt) {
 					'src/dia/Area.js',
 					'src/dia/RectangleArea.js',
 					'src/dia/InteractionManager.js',
+					'src/dia/Toolbox.js',
 					'src/dia/Tool.js',
 					'src/dia/CreateTool.js',
 					'src/dia/SelectionTool.js',
 					'src/dia/EditTool.js',
 					'src/dia/Dialog.js',
 					'src/dia/Canvas.js',
+					'src/dia/App.js',
 					'src/dia/ElementForm.js'
 				],
 			dest: 'dist/<%= pkg.name %>.js'
