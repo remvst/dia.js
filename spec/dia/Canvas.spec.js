@@ -23,13 +23,19 @@ describe('a canvas', function(){
 		var sheet = new dia.Sheet();
 		var canvas = new dia.Canvas(sheet);
 		
+		canvas.offsetX = 200;
+		canvas.offsetY = 100;
+		
 		canvas.setDimensions(100, 200);
 		
-		var clearParams;
+		var clearParams,
+			translateParams;
 		var ctx = {
 			save: function(){},
 			restore: function(){},
-			translate: function(){},
+			translate: function(){
+				translateParams = Array.prototype.slice.call(arguments, 0);
+			},
 			fillRect: function(){
 				clearParams = Array.prototype.slice.call(arguments, 0);
 			}
@@ -38,5 +44,6 @@ describe('a canvas', function(){
 		canvas.render(ctx);
 		
 		expect(clearParams).toEqual([0, 0, 100, 200]);
+		expect(translateParams).toEqual([200, 100]);
 	});
 });
