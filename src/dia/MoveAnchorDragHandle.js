@@ -11,7 +11,7 @@ dia.MoveAnchorDragHandle.prototype.dragMove = function(dx, dy, x, y){
 	
 	// Let's bind the coordinates to the element's side
 	// At the moment we assume its area will be a rectangle
-	var anchoredArea = propertyValue.element.getRepresentation().area;
+	var anchoredArea = this.element.sheet.getElement(propertyValue.element).getRepresentation().area;
 	var anchoredX = anchoredArea.getX();
 	var anchoredY = anchoredArea.getY();
 	var anchoredWidth = anchoredArea.getWidth();
