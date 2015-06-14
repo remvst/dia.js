@@ -3,6 +3,7 @@ describe('an element type', function(){
 		var type = new dia.ElementType();
 		
 		expect(type.id).toBe(null);
+		expect(type.label).toBe(null);
 		expect(type.properties).toEqual([]);
 		expect(type.propertyMap).toEqual({});
 		expect(type.creatorTool).toBe(null);
@@ -10,10 +11,12 @@ describe('an element type', function(){
 	
 	it('is initialized correctly with options', function(){
 		var type = new dia.ElementType({
-			id: 'mytype'
+			id: 'mytype',
+			label: 'mylabel'
 		});
 		
 		expect(type.id).toEqual('mytype');
+		expect(type.label).toEqual('mylabel');
 		expect(type.properties).toEqual([]);
 		expect(type.propertyMap).toEqual({});
 	});

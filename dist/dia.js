@@ -300,6 +300,7 @@ dia.ElementType = function(options){
 	options = options || {};
 	
 	this.id = options.id || null;
+	this.label = options.label || null;
 	this.properties = [];
 	this.propertyMap = {};
 	this.representationFactory = options.representation || null;
