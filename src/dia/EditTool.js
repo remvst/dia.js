@@ -3,6 +3,7 @@ dia.EditTool = function(){
 	
 	this.currentHandle = null;
 	this.currentPosition = {x: 0, y: 0};
+	this.id = 'edit';
 };
 
 extend(dia.EditTool, dia.Tool);

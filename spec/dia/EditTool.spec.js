@@ -3,6 +3,7 @@ describe('an edit tool', function(){
 		var tool = new dia.EditTool();
 		
 		expect(tool.currentHandle).toBe(null);
+		expect(tool.id).toBe('edit');
 	});
 	
 	it('can move objects', function(){

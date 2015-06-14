@@ -9,6 +9,10 @@ dia.CreateTool = function(options){
 	this.onMouseUp = options.mouseUp || new Function();
 	
 	this.currentElement = null;
+	
+	if(this.type && this.type.id){
+		this.id = 'create-' + this.type.id;
+	}
 };
 
 extend(dia.CreateTool, dia.Tool);

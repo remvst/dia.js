@@ -6,6 +6,7 @@ dia.SelectionTool = function(){
 	this.previousClick = null;
 	this.currentSelection = [];
 	this.clickCount = 0;
+	this.id = 'select';
 };
 
 extend(dia.SelectionTool, dia.Tool);

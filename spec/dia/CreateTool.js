@@ -1,8 +1,14 @@
 describe('an create tool', function(){
 	it('is initialized correctly', function(){
-		var creator = new dia.CreateTool();
+		var type = new dia.ElementType({
+			id: 'myid'
+		});
+		var creator = new dia.CreateTool({
+			type: type
+		});
 		
 		expect(creator.currentElement).toBe(null);
+		expect(creator.id).toBe('create-myid');
 	});
 	
 	it('calls the functions correctly', function(){

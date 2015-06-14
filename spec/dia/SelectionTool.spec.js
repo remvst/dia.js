@@ -3,6 +3,7 @@ describe('a selection tool', function(){
 		var tool = new dia.SelectionTool();
 		
 		expect(tool.currentSelection).toEqual([]);
+		expect(tool.id).toEqual('select');
 	});
 	
 	it('can select some elements', function(){

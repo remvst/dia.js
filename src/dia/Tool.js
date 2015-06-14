@@ -1,5 +1,7 @@
 dia.Tool = function(){
 	dia.EventDispatcher.call(this);
+	
+	this.id = null;
 };
 
 extend(dia.Tool, dia.EventDispatcher);

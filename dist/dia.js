@@ -911,6 +911,8 @@ dia.InteractionManager.prototype.keyUp = function(keyUp){
 
 dia.Tool = function(){
 	dia.EventDispatcher.call(this);
+	
+	this.id = null;
 };
 
 extend(dia.Tool, dia.EventDispatcher);
@@ -946,6 +948,10 @@ dia.CreateTool = function(options){
 	this.onMouseUp = options.mouseUp || new Function();
 	
 	this.currentElement = null;
+	
+	if(this.type && this.type.id){
+		this.id = 'create-' + this.type.id;
+	}
 };
 
 extend(dia.CreateTool, dia.Tool);
@@ -972,6 +978,7 @@ dia.SelectionTool = function(){
 	this.previousClick = null;
 	this.currentSelection = [];
 	this.clickCount = 0;
+	this.id = 'select';
 };
 
 extend(dia.SelectionTool, dia.Tool);
@@ -1045,6 +1052,7 @@ dia.EditTool = function(){
 	
 	this.currentHandle = null;
 	this.currentPosition = {x: 0, y: 0};
+	this.id = 'edit';
 };
 
 extend(dia.EditTool, dia.Tool);
