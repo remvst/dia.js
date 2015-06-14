@@ -259,6 +259,16 @@
 				var toHandle = new dia.MoveAnchorDragHandle(element, areaTo, 'to');
 				repr.addHandle(toHandle);
 				
+				repr.area = new dia.LineArea({
+					x1: function(){ return fromPosition().x; },
+					y1: function(){ return fromPosition().y; },
+					x2: function(){ return toPosition().x; },
+					y2: function(){ return toPosition().y; }
+				});
+				
+				var tmpHandle = new dia.DragHandle(element, repr.area);
+				repr.addHandle(tmpHandle);
+				
 				return repr;
 			});
 			
