@@ -139,7 +139,7 @@ dia.GUI.prototype.selectionClick = function(e){
 		var root = form.getHTMLRoot();
 
 		var dialog = new dia.Dialog({
-			title: 'Edit class',
+			title: 'Edit ' + e.element.type.label,
 			content: root
 		});
 		dialog.show();

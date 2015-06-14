@@ -69,7 +69,8 @@
 		
 		<script>
 			var classType = new dia.ElementType({
-				id: 'uml.class'
+				id: 'uml.class',
+				label: 'Class'
 			});
 			classType.addProperty(new dia.Property({
 				id: 'x',
@@ -186,18 +187,21 @@
 			});
 			
 			var relationType = new dia.ElementType({
-				id: 'uml.relation'
+				id: 'uml.relation',
+				label: 'Relation'
 			});
 			relationType.addProperty(new dia.Property({
 				id: 'from',
 				type: dia.DataType.ANY,
-				default: null
+				default: null,
+				private: true
 			}));
 			
 			relationType.addProperty(new dia.Property({
 				id: 'to',
 				type: dia.DataType.ANY,
-				default: null
+				default: null,
+				private: true
 			}));
 			
 			relationType.setRepresentationFactory(function(element){
