@@ -7,6 +7,10 @@
 		<link rel="stylesheet" href="css/gui.css" />
 		<script src="../bower_components/jquery/dist/jquery.min.js"></script>
 		<script src="../bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+		<script src="../bower_components/mustache/mustache.js"></script>
+		<script src="../dist/dia.js"></script>
+		
+		
 	</head>
 	
 	<body>
@@ -55,39 +59,140 @@
 				</div>
 			</div>
 		</div>
-
-		<!-- Modal -->
-		<div id="myModal" class="modal fade" role="dialog">
-		  <div class="modal-dialog">
-
-			<!-- Modal content-->
-			<div class="modal-content">
-			  <div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal">&times;</button>
-				<h4 class="modal-title">Edit Element</h4>
-			  </div>
-			  <div class="modal-body">
-				<div>
-					<form>
-						<div class="">
-							<div class="form-group">
-								<label class="col-md-6">Class name</label>
-								<input class="col-md-6" type="text" class="form-control" />
-							</div>  
+		
+		<script id="popup-template" type="x-tmpl-mustache">
+			<div class="modal fade" role="dialog">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal">&times;</button>
+							<h4 class="modal-title">{{ title }}</h4>
 						</div>
-						
-						<div class="row"></div>
-					</form>
-				  
-			  	</div>
-			  </div>
-			  <div class="modal-footer">
-				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-				<button type="button" class="btn btn-primary" data-dismiss="modal">Save</button>
-			  </div>
+						<div class="modal-body">
+							{{ content }}
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-default" data-dismiss="modal">{{ cancelLabel }}</button>
+							<button type="button" class="btn btn-primary" data-dismiss="modal">{{ okLabel }}</button>
+						</div>
+					</div>
+				</div>
 			</div>
+		</script>
+		
+		<script>
+			var classType = new dia.ElementType({
+				id: 'uml.class'
+			});
+			classType.addProperty(new dia.Property({
+				id: 'x',
+				type: dia.DataType.INTEGER,
+				default: 50
+			}));
+			classType.addProperty(new dia.Property({
+				id: 'y',
+				type: dia.DataType.INTEGER,
+				default: 100
+			}));
+			classType.addProperty(new dia.Property({
+				id: 'title',
+				type: dia.DataType.STRING,
+				default: 'class'
+			}));
+			classType.addProperty(new dia.Property({
+				id: 'attributes',
+				type: dia.DataType.STRING_ARRAY,
+				default: ['+hello', '+suce']
+			}));
+			classType.addProperty(new dia.Property({
+				id: 'methods',
+				type: dia.DataType.STRING_ARRAY,
+				default: ['do()', 'close()', 'fail()', 'open()']
+			}));
+			classType.setRepresentationFactory(function(element){
+				var representation = new dia.GraphicalRepresentation(element);
 
-		  </div>
-		</div>
+				var lineHeight = 20;
+				var padding = 10;
+
+				var getRequiredWidth = function(){
+					var maxLength = element.getProperty('title').length;
+					element.getProperty('attributes').forEach(function(attr){
+						maxLength = Math.max(maxLength, attr.length);
+					});
+					element.getProperty('methods').forEach(function(attr){
+						maxLength = Math.max(maxLength, attr.length);
+					});
+					return maxLength * 10 + 2 * padding;
+				};
+
+				var getRequiredHeight = function(){
+					return lineHeight * (1 + element.getProperty('methods').length
+										 + element.getProperty('attributes').length)
+				};
+
+				representation.addRenderable(new dia.Renderable(function(c){
+					c.translate(element.getProperty('x'), element.getProperty('y'));
+
+					var width = getRequiredWidth();
+					var height = getRequiredHeight();
+
+					c.fillStyle = '#ffffff';
+					c.fillRect(0, 0, width, height);
+
+					c.fillStyle = '#000';
+
+					c.fillRect(0, 0, width, 1);
+					c.fillRect(0, height - 1, width, 1);
+					c.fillRect(0, lineHeight, width, 1);
+					c.fillRect(0, lineHeight * (element.getProperty('attributes').length + 1), width, 1);
+
+					c.fillRect(0, 0, 1, height);
+					c.fillRect(width - 1, 0, 1, height);
+
+					c.textBaseline = 'middle';
+					c.font = '10pt Arial';
+
+					c.textAlign = 'center';
+					c.fillText(element.getProperty('title'), width / 2, lineHeight / 2);
+
+					c.textAlign = 'left';
+
+					var y = 1.5 * lineHeight;
+					var lines = element.getProperty('attributes').concat(element.getProperty('methods'));
+					for(var i = 0 ; i < lines.length ; i++){
+						c.fillText(lines[i], padding, y);
+						y += lineHeight;
+					}
+				}));
+
+				var area = new dia.RectangleArea({
+					x: function(){ return element.getProperty('x'); },
+					y: function(){ return element.getProperty('y'); },
+					width: getRequiredWidth,
+					height: getRequiredHeight
+				});
+
+				var moveHandle = new dia.MoveElementDragHandle(element, area);
+				representation.addHandle(moveHandle);
+
+				return representation;
+			});
+
+			var c = classType.emptyElement();
+			c.setProperty('x', 100);
+			c.setProperty('y', 100);
+			c.setProperty('title', 'Object');
+			c.setProperty('attributes', ['+id', '+length']);
+
+			var form = new dia.ElementForm(c);
+			var root = form.getHTMLRoot();
+			
+			var dialog = new dia.Dialog({
+				title: 'Edit class',
+				content: root
+			});
+			dialog.show();
+		</script>
 	</body>
 </html>

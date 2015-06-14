@@ -45,7 +45,8 @@ module.exports = function(grunt) {
 				vendor: [
 					'bower_components/mustache/mustache.js',
 					'bower_components/jquery/dist/jquery.js',
-					'bower_components/jasmine-jquery/lib/jasmine-jquery.js'
+					'bower_components/jasmine-jquery/lib/jasmine-jquery.js',
+					'bower_components/bootstrap/dist/js/bootstrap.min.js'
 			  	],
 				specs: 'spec/**/**.spec.js'
 			}

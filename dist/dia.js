@@ -1096,6 +1096,10 @@ dia.Dialog = function(settings){
 	
 	this.root = $(html);
 	
+	this.root.on('hidden', function () {
+        $(this).remove();
+    });
+	
 	if(settings.content instanceof HTMLElement){
 		this.root.find('.modal-body').append(settings.content);
 	}
@@ -1103,10 +1107,11 @@ dia.Dialog = function(settings){
 
 dia.Dialog.prototype.show = function(){
 	this.root.appendTo('body');
+	this.root.modal('show');
 };
 
 dia.Dialog.prototype.hide = function(){
-	this.root.detach();
+	this.root.modal('hide');
 };
 
 dia.Dialog.getTemplate = function(){

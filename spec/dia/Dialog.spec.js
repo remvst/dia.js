@@ -2,8 +2,11 @@ jasmine.getFixtures().fixturesPath = 'spec/html';
 
 describe('a dialog', function(){
 	beforeEach(function() {
-		$('.modal').remove();
 		loadFixtures('dialog.html');
+	});
+	
+	afterEach(function(){
+		$('.modal').remove();
 	});
 	
 	it('does not get added to the body if not shown', function(){
@@ -13,20 +16,27 @@ describe('a dialog', function(){
 	});
 	
 	it('can show', function(){
-		var dialog = new dia.Dialog();
+		var dialog = new dia.Dialog({
+			title: 'show'
+		});
 		dialog.show();
 		
 		expect($('.modal').size()).toBe(1);
 		expect($('.modal')).toBeVisible();
 	});
 	
-	it('can hide', function(){
-		var dialog = new dia.Dialog();
+	it('can hide', function(done){
+		var dialog = new dia.Dialog({
+			title: 'hide'
+		});
 		dialog.show();
+		expect($('.modal').size()).toBe(1);
 		dialog.hide();
 		
-		expect($('.modal').size()).toBe(0);
-		expect($('.modal')).not.toBeVisible();
+		setTimeout(function(){
+			expect(dialog.root).not.toBeVisible();
+			done();
+		}, 500);
 	});
 	
 	it('sets title and content correctly', function(){
