@@ -14,8 +14,39 @@
 	</head>
 	
 	<body>
-		<!-- Trigger the modal with a button -->
-		<!--<button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Open Modal</button>-->
+		<nav class="navbar navbar-default">
+			<div class="container-fluid">
+			  <div class="navbar-header">
+				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+				  <span class="sr-only">Toggle navigation</span>
+				  <span class="icon-bar"></span>
+				  <span class="icon-bar"></span>
+				  <span class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="#">Dia.js</a>
+			  </div>
+			  <div id="navbar" class="navbar-collapse collapse">
+				<ul class="nav navbar-nav">
+				  <li class="dropdown">
+					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">File <span class="caret"></span></a>
+					<ul class="dropdown-menu" role="menu">
+					  <li><a href="#">New</a></li>
+					  <li><a href="#">Save</a></li>
+					  <li><a href="#">Load</a></li>
+					</ul>
+				  </li>
+				  <li class="dropdown">
+					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Edit <span class="caret"></span></a>
+					<ul class="dropdown-menu" role="menu">
+					  <li><a href="#">Copy</a></li>
+					  <li><a href="#">Cut</a></li>
+					  <li><a href="#">Paste</a></li>
+					</ul>
+				  </li>
+				</ul>
+			  </div><!--/.nav-collapse -->
+			</div><!--/.container-fluid -->
+	  	</nav>
 		
 		<div id="side-panel">
 			<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
@@ -29,8 +60,9 @@
 				</div>
 				<div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
 				  <div class="panel-body">
-					<button type="button" class="btn btn-default btn-lg btn-block">Class</button>
-					<button type="button" class="btn btn-default btn-lg btn-block">Package</button>
+					<button type="button" class="btn btn-default btn-lg btn-block">Rectangle</button>
+					<button type="button" class="btn btn-default btn-lg btn-block">Circle</button>
+					<button type="button" class="btn btn-default btn-lg btn-block">Link</button>
 				  </div>
 				</div>
 			  </div>
@@ -45,22 +77,39 @@
 				<div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
 				  <div class="panel-body">
 					<button type="button" class="btn btn-default btn-lg btn-block">Class</button>
+					<button type="button" class="btn btn-default btn-lg btn-block">Interface</button>
 					<button type="button" class="btn btn-default btn-lg btn-block">Package</button>
+					<button type="button" class="btn btn-default btn-lg btn-block">Inheritance</button>
+					<button type="button" class="btn btn-default btn-lg btn-block">Composition</button>
+					<button type="button" class="btn btn-default btn-lg btn-block">Aggregation</button>
+					<button type="button" class="btn btn-default btn-lg btn-block">Relation</button>
 				  </div>
 				</div>
 			  </div>
 			</div>
 		</div>
 		
-		<div id="content">
-			<div id="canvas-container">
-				<div id="canvas-wrapper">
-					<canvas id="canvas" width="400" height="400"></canvas>
-				</div>
-			</div>
+		<div id="canvas-container">
+			<canvas id="canvas"></canvas>
 		</div>
 		
 		<script>
+			var canvas = $('#canvas'),
+				content = $('#canvas-container');
+			
+			var resize = function(){
+				var width = content.outerWidth();
+				var height = content.outerHeight();
+				
+				canvas.attr({
+					width: width,
+					height: height
+				});
+			};
+			$(window).on('resize', resize);
+			resize();
+			
+			
 			var classType = new dia.ElementType({
 				id: 'uml.class'
 			});
