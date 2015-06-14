@@ -912,27 +912,35 @@ extend(dia.BrokenLineDragHandle, dia.DragHandle);
 
 dia.BrokenLineDragHandle.prototype.dragStart = function(x, y){
 	this.breakIndex = null;
+	this.modifiedPoint = null;
 	
 	// Let's find the line we should split into two
-	var index = Math.max(this.area.indexOfLineThatContains(x, y), 0);
+	var index = this.area.indexOfLineThatContains(x, y);
 	
-	var points = this.element.getProperty(this.property);
-	var point1 = points[index - 1];
-	var point2 = points[index];
-	
-	if(point1 && dia.distance(x, y, point1.x, point1.y) <= 20 && index >= 0){
-		this.modifiedPoint = point1;
-   	}else if(point2 && dia.distance(x, y, point2.x, point2.y) <= 20 && index < points.length){
-		this.modifiedPoint = point2;
-	}else{
-		// We're too far from the points, let's create a new one
-		// not splitting until we move the mouse (to avoid having too many points)
-		this.breakIndex = index;
-		this.modifiedPoint = {}
+	if(index !== -1){
+		var points = this.element.getProperty(this.property);
+		var point1 = points[index - 1];
+		var point2 = points[index];
+
+		if(point1 && dia.distance(x, y, point1.x, point1.y) <= 20 && index >= 0){
+			this.modifiedPoint = point1;
+		}else if(point2 && dia.distance(x, y, point2.x, point2.y) <= 20 && index < points.length){
+			this.modifiedPoint = point2;
+		}else{
+			// We're too far from the points, let's create a new one
+			// not splitting until we move the mouse (to avoid having too many points)
+			this.breakIndex = index;
+			this.modifiedPoint = {};
+			console.log('were breaking!', this.breakIndex);
+		}
 	}
 };
 
 dia.BrokenLineDragHandle.prototype.dragMove = function(dx, dy, x, y){
+	if(!this.modifiedPoint){
+		return;
+	}
+	
 	var points = this.element.getProperty(this.property);
 	
 	var newPoints = points.slice(0);
@@ -950,6 +958,10 @@ dia.BrokenLineDragHandle.prototype.dragMove = function(dx, dy, x, y){
 };
 
 dia.BrokenLineDragHandle.prototype.dragDrop = function(x, y){
+	if(!this.modifiedPoint){
+		return;
+	}
+	
 	var points = this.element.getProperty(this.property);
 	var modifiedIndex = points.indexOf(this.modifiedPoint);
 	
@@ -1230,7 +1242,10 @@ dia.BrokenLineArea.prototype.contains = function(x, y){
 
 dia.BrokenLineArea.prototype.indexOfLineThatContains = function(x, y){
 	var points = this.getPoints(),
-		area;
+		area, 
+		minDistance,
+		dist,
+		closest = -1;
 	for(var i = 0 ; i < points.length - 1 ; i++){
 		area = new dia.LineArea({
 			x1: function(){ return points[i].x; },
@@ -1241,11 +1256,18 @@ dia.BrokenLineArea.prototype.indexOfLineThatContains = function(x, y){
 		});
 		
 		if(area.contains(x, y)){
-			return i;
+			dist = area.distance(x, y);
+			if(closest === -1 || dist < minDistance){
+				closest = i;
+				minDistance = dist;
+			}
+			console.log('index ' + i + ' contains');
 		}
 	}
 	
-	return -1;
+	console.log('final index' + closest);
+	
+	return closest;
 };
 
 dia.BrokenLineArea.prototype.render = function(c){

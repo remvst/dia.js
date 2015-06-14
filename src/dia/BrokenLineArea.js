@@ -14,7 +14,10 @@ dia.BrokenLineArea.prototype.contains = function(x, y){
 
 dia.BrokenLineArea.prototype.indexOfLineThatContains = function(x, y){
 	var points = this.getPoints(),
-		area;
+		area, 
+		minDistance,
+		dist,
+		closest = -1;
 	for(var i = 0 ; i < points.length - 1 ; i++){
 		area = new dia.LineArea({
 			x1: function(){ return points[i].x; },
@@ -25,11 +28,18 @@ dia.BrokenLineArea.prototype.indexOfLineThatContains = function(x, y){
 		});
 		
 		if(area.contains(x, y)){
-			return i;
+			dist = area.distance(x, y);
+			if(closest === -1 || dist < minDistance){
+				closest = i;
+				minDistance = dist;
+			}
+			console.log('index ' + i + ' contains');
 		}
 	}
 	
-	return -1;
+	console.log('final index' + closest);
+	
+	return closest;
 };
 
 dia.BrokenLineArea.prototype.render = function(c){
