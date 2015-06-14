@@ -227,16 +227,27 @@
 					var fromPos = fromPosition();
 					var toPos = toPosition();
 					
+					var angle = Math.atan2(toPos.y - fromPos.y, toPos.x - fromPos.x);
+					var length = dia.distance(fromPos.x, fromPos.y, toPos.x, toPos.y);
+					
+					c.save();
+					c.translate(fromPos.x, fromPos.y);
+					c.rotate(angle);
+					
 					c.beginPath();
-					c.moveTo(
-						fromPos.x,
-						fromPos.y
-					);
-					c.lineTo(
-						toPos.x,
-						toPos.y
-					);
+					c.moveTo(0, 0);
+					c.lineTo(length, 0);
 					c.stroke();
+					
+					c.fillStyle = 'black';
+					
+					c.beginPath();
+					c.moveTo(length, 0);
+					c.lineTo(length - 10, 5);
+					c.lineTo(length - 10, -5);
+					c.fill();
+					
+					c.restore();
 				}));
 				
 				var areaFrom = new dia.RectangleArea({
