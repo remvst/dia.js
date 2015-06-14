@@ -5,6 +5,11 @@
     "remvst <remvst@gmail.com>"
   ],
   "dependencies": {
-    "bootstrap": "~3.3.4"
+    "bootstrap": "~3.3.4",
+    "mustache": "~2.1.1"
+  },
+  "devDependencies": {
+    "jquery": "~2.1.4",
+    "jasmine-jquery": "~2.1.0"
   }
 }

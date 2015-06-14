@@ -1081,6 +1081,32 @@ dia.EditTool.prototype.mouseUp = function(sheet, x, y){
 	this.currentPosition = {x: x, y: y};
 };
 
+dia.Dialog = function(settings){
+	settings = settings || {};
+	
+	var template = dia.Dialog.getTemplate();
+	var html = Mustache.render(template, {
+		title: settings.title || null
+	});
+	
+	this.root = $(html);
+};
+
+dia.Dialog.prototype.show = function(){
+	this.root.appendTo('body');
+};
+
+dia.Dialog.prototype.hide = function(){
+	this.root.detach();
+};
+
+dia.Dialog.getTemplate = function(){
+	if(!this.template){
+		this.template = $('#popup-template').html();
+	}
+	return this.template;
+};
+
 dia.ElementForm = function(element){
 	if(!element){
 		throw new Error('Cannot create ElementForm without element parameter.');

@@ -33,6 +33,7 @@ module.exports = function(grunt) {
 					'src/dia/CreateTool.js',
 					'src/dia/SelectionTool.js',
 					'src/dia/EditTool.js',
+					'src/dia/Dialog.js',
 					'src/dia/ElementForm.js'
 				],
 			dest: 'dist/<%= pkg.name %>.js'
@@ -41,6 +42,11 @@ module.exports = function(grunt) {
 		jasmine: {
 			src: 'dist/dia.js',
 			options: {
+				vendor: [
+					'bower_components/mustache/mustache.js',
+					'bower_components/jquery/dist/jquery.js',
+					'bower_components/jasmine-jquery/lib/jasmine-jquery.js'
+			  	],
 				specs: 'spec/**/**.spec.js'
 			}
 		}
