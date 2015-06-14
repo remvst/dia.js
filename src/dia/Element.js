@@ -10,6 +10,7 @@ dia.Element = function(type){
 	this.type = type;
 	this.properties = {};
 	this.representation = null;
+	this.highlighted = false;
 };
 
 extend(dia.Element, dia.EventDispatcher);

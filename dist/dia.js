@@ -197,6 +197,7 @@ dia.Element = function(type){
 	this.type = type;
 	this.properties = {};
 	this.representation = null;
+	this.highlighted = false;
 };
 
 extend(dia.Element, dia.EventDispatcher);
@@ -553,13 +554,19 @@ dia.GraphicalRepresentation.prototype.addRenderable = function(renderable){
 };
 
 dia.GraphicalRepresentation.prototype.render = function(ctx){
+	ctx.save();
+	
 	for(var i = 0 ; i < this.renderables.length ; i++){
 		this.renderables[i].render(ctx);
 	}
 	
-	for(var i = 0 ; i < this.handles.length ; i++){
-		this.handles[i].render(ctx);
+	if(this.element.highlighted){
+		for(var i = 0 ; i < this.handles.length ; i++){
+			this.handles[i].render(ctx);
+		}
 	}
+	
+	ctx.restore();
 };
 
 dia.GraphicalRepresentation.prototype.addHandle = function(handle){
@@ -1277,12 +1284,17 @@ dia.SelectionTool.prototype.mouseUp = function(sheet, x, y){
 			width: function(){ return tool.selectionEnd.x - tool.selectionStart.x; },
 			height: function(){ return tool.selectionEnd.y - tool.selectionStart.y; }
 		});
+		
+		for(var i = 0 ; i < this.currentSelection ; i++){
+			this.currentSelection[i].highlighted = false;
+		}
 
 		this.currentSelection = [];
 
 		for(var i in sheet.elements){
 			if(sheet.elements[i].isContainedIn(area)){
 				this.currentSelection.push(sheet.elements[i]);
+				sheet.elements[i].highlighted = true;
 			}
 		}
 		

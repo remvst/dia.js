@@ -36,12 +36,17 @@ dia.SelectionTool.prototype.mouseUp = function(sheet, x, y){
 			width: function(){ return tool.selectionEnd.x - tool.selectionStart.x; },
 			height: function(){ return tool.selectionEnd.y - tool.selectionStart.y; }
 		});
+		
+		for(var i = 0 ; i < this.currentSelection ; i++){
+			this.currentSelection[i].highlighted = false;
+		}
 
 		this.currentSelection = [];
 
 		for(var i in sheet.elements){
 			if(sheet.elements[i].isContainedIn(area)){
 				this.currentSelection.push(sheet.elements[i]);
+				sheet.elements[i].highlighted = true;
 			}
 		}
 		

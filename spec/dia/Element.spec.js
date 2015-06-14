@@ -9,6 +9,7 @@ describe('an element', function(){
 		
 		expect(element.id).toBe('uuid');
 		expect(element.sheet).toBe(null);
+		expect(element.highlighted).toBe(false);
 		expect(element.type).toBe(type);
 		expect(element.properties).toEqual({});
 	});
