@@ -1032,7 +1032,8 @@ dia.RectangleArea.prototype.render = function(c){
 	var areaHeight = this.getHeight();
 	
 	c.strokeStyle = 'red';
-	c.strokeRect(areaX, areaY, areaWidth, areaHeight);
+	c.lineWidth = 1;
+	c.strokeRect(areaX + .5, areaY + .5, areaWidth, areaHeight);
 };
 
 dia.RectangleArea.prototype.surface = function(){
@@ -1220,7 +1221,7 @@ dia.BrokenLineArea.prototype.indexOfLineThatContains = function(x, y){
 
 dia.BrokenLineArea.prototype.render = function(c){
 	c.strokeStyle = 'red';
-	c.lineWidth = this.thickness;
+	c.lineWidth = this.thickness / 4;
 	c.beginPath();
 	
 	var points = this.getPoints();
@@ -1228,6 +1229,18 @@ dia.BrokenLineArea.prototype.render = function(c){
 		c.lineTo(points[i].x, points[i].y);
 	}
 	c.stroke();
+};
+
+dia.BrokenLineArea.prototype.surface = function(){
+	var points = this.getPoints(),
+		length = 0;
+	for(var i = 0 ; i < points.length - 1 ; i++){
+		length += dia.distance(
+			points[i].x, points[i].y,
+			points[i + 1].x, points[i + 1].y
+		);
+	}
+	return length * this.thickness;
 };
 
 dia.Area.defineIntersection('line', 'brokenline', function(line, brokenLine){

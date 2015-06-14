@@ -48,7 +48,8 @@ dia.RectangleArea.prototype.render = function(c){
 	var areaHeight = this.getHeight();
 	
 	c.strokeStyle = 'red';
-	c.strokeRect(areaX, areaY, areaWidth, areaHeight);
+	c.lineWidth = 1;
+	c.strokeRect(areaX + .5, areaY + .5, areaWidth, areaHeight);
 };
 
 dia.RectangleArea.prototype.surface = function(){
