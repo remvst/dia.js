@@ -4,6 +4,9 @@ dia.App = function(){
 };
 
 dia.App.prototype.start = function(){
+	this.toolbox.addTool(new dia.SelectionTool());
+	this.toolbox.addTool(new dia.EditTool());
+	
 	for(var i in dia.ElementType.types){
 		if(dia.ElementType.types[i].creatorTool){
 			this.toolbox.addTool(dia.ElementType.types[i].creatorTool);

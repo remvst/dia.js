@@ -194,6 +194,8 @@
 					element.setProperty('x', x);
 					element.setProperty('y', y);
 					sheet.addElement(element);
+					
+					this.dispatch('elementcreated');
 				}
 			});
 

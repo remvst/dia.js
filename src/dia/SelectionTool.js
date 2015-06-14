@@ -19,6 +19,8 @@ dia.SelectionTool.prototype.mouseDown = function(sheet, x, y){
 dia.SelectionTool.prototype.mouseMove = function(sheet, x, y){
 	if(this.selectionStart){
 		this.selectionEnd = { x: x, y: y };
+		
+		this.dispatch('selectionmove');
 	}
 	
 	// Cancel double click
@@ -41,26 +43,26 @@ dia.SelectionTool.prototype.mouseUp = function(sheet, x, y){
 			if(sheet.elements[i].isContainedIn(area)){
 				this.currentSelection.push(sheet.elements[i]);
 			}
-		}	
-		
-		this.dispatch('selectionchange', { selection: this.currentSelection });
-	}
-	
-	if(this.selectionStart.x === this.selectionEnd.x && this.selectionStart.y == this.selectionEnd.y){
-		// It's a click
-		if(!this.previousClick 
-		   || this.selectionStart.x == this.previousClick.x
-		   && this.selectionStart.y == this.previousClick.y
-		   && Date.now() - this.previousClick.time < 500){
-			
-			this.clickCount++;
-			this.dispatch('click', { clickCount: this.clickCount, element: this.currentSelection[0] || null });
-			
-			this.previousClick = null;
 		}
 		
-		this.previousClick = this.selectionStart;
-		this.previousClick.time = Date.now();
+		this.dispatch('selectionchange', { selection: this.currentSelection });
+		
+		if(this.selectionStart.x === this.selectionEnd.x && this.selectionStart.y == this.selectionEnd.y){
+			// It's a click
+			if(!this.previousClick 
+			   || this.selectionStart.x == this.previousClick.x
+			   && this.selectionStart.y == this.previousClick.y
+			   && Date.now() - this.previousClick.time < 500){
+
+				this.clickCount++;
+				this.dispatch('click', { clickCount: this.clickCount, element: this.currentSelection[0] || null });
+
+				this.previousClick = null;
+			}
+
+			this.previousClick = this.selectionStart;
+			this.previousClick.time = Date.now();
+		}
 	}
 	
 	this.selectionStart = null;

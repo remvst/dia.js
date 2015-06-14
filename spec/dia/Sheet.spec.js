@@ -1,9 +1,14 @@
 describe('a sheet', function(){
 	it('is initialized correctly', function(){
+		dia.uuid4 = function(){
+			return 'uuid';
+		};
+		
 		var sheet = new dia.Sheet();
 		
 		expect(sheet.elements).toEqual([]);
 		expect(sheet.title).toBe(null);
+		expect(sheet.id).toBe('uuid');
 	});
 	
 	it('can add elements', function(){

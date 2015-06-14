@@ -3,6 +3,7 @@ dia.Sheet = function(){
 	
 	this.title = null;
 	this.elements = [];
+	this.id = dia.uuid4();
 };
 
 extend(dia.Sheet, dia.EventDispatcher);

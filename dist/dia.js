@@ -116,6 +116,7 @@ dia.Sheet = function(){
 	
 	this.title = null;
 	this.elements = [];
+	this.id = dia.uuid4();
 };
 
 extend(dia.Sheet, dia.EventDispatcher);
@@ -1014,6 +1015,8 @@ dia.SelectionTool.prototype.mouseDown = function(sheet, x, y){
 dia.SelectionTool.prototype.mouseMove = function(sheet, x, y){
 	if(this.selectionStart){
 		this.selectionEnd = { x: x, y: y };
+		
+		this.dispatch('selectionmove');
 	}
 	
 	// Cancel double click
@@ -1036,26 +1039,26 @@ dia.SelectionTool.prototype.mouseUp = function(sheet, x, y){
 			if(sheet.elements[i].isContainedIn(area)){
 				this.currentSelection.push(sheet.elements[i]);
 			}
-		}	
-		
-		this.dispatch('selectionchange', { selection: this.currentSelection });
-	}
-	
-	if(this.selectionStart.x === this.selectionEnd.x && this.selectionStart.y == this.selectionEnd.y){
-		// It's a click
-		if(!this.previousClick 
-		   || this.selectionStart.x == this.previousClick.x
-		   && this.selectionStart.y == this.previousClick.y
-		   && Date.now() - this.previousClick.time < 500){
-			
-			this.clickCount++;
-			this.dispatch('click', { clickCount: this.clickCount, element: this.currentSelection[0] || null });
-			
-			this.previousClick = null;
 		}
 		
-		this.previousClick = this.selectionStart;
-		this.previousClick.time = Date.now();
+		this.dispatch('selectionchange', { selection: this.currentSelection });
+		
+		if(this.selectionStart.x === this.selectionEnd.x && this.selectionStart.y == this.selectionEnd.y){
+			// It's a click
+			if(!this.previousClick 
+			   || this.selectionStart.x == this.previousClick.x
+			   && this.selectionStart.y == this.previousClick.y
+			   && Date.now() - this.previousClick.time < 500){
+
+				this.clickCount++;
+				this.dispatch('click', { clickCount: this.clickCount, element: this.currentSelection[0] || null });
+
+				this.previousClick = null;
+			}
+
+			this.previousClick = this.selectionStart;
+			this.previousClick.time = Date.now();
+		}
 	}
 	
 	this.selectionStart = null;
@@ -1229,6 +1232,9 @@ dia.App = function(){
 };
 
 dia.App.prototype.start = function(){
+	this.toolbox.addTool(new dia.SelectionTool());
+	this.toolbox.addTool(new dia.EditTool());
+	
 	for(var i in dia.ElementType.types){
 		if(dia.ElementType.types[i].creatorTool){
 			this.toolbox.addTool(dia.ElementType.types[i].creatorTool);
@@ -1250,6 +1256,12 @@ dia.GUI = function(app){
 	this.context = this.canvas.getContext('2d');
 	
 	this.setupInterationManager();
+	
+	var selectionTool = this.app.toolbox.getTool('select');
+	if(selectionTool){
+		selectionTool.listen('selectionmove', this.renderSheet.bind(this));
+		selectionTool.listen('selectionchange', this.renderSheet.bind(this));
+	}
 };
 
 dia.GUI.prototype.setupInterationManager = function(){
@@ -1297,7 +1309,6 @@ dia.GUI.prototype.renderToolbox = function(){
 		button;
 	for(var i = 0 ; i < this.app.toolbox.toolList.length ; i++){
 		tool = this.app.toolbox.toolList[i];
-		//<button type="button" class="btn btn-default btn-lg btn-block">Rectangle</button>
 		button = $('<button></button>')
 					.addClass('btn btn-default btn-block btn-lg')
 					.text(tool.id)
@@ -1307,7 +1318,14 @@ dia.GUI.prototype.renderToolbox = function(){
 							gui.selectTool(t);
 						}
 					})(tool));
+		
+		tool.listen('elementcreated', this.doneCreating.bind(this));
 	}
+};
+
+dia.GUI.prototype.doneCreating = function(){
+	var select = this.app.toolbox.getTool('select');
+	this.interactionManager.setTool(select);
 };
 
 dia.GUI.prototype.selectTool = function(tool){
@@ -1316,6 +1334,18 @@ dia.GUI.prototype.selectTool = function(tool){
 
 dia.GUI.prototype.renderSheet = function(){
 	this.app.sheet.render(this.context);
+	
+	// Rendering selection
+	var selectionTool = this.app.toolbox.getTool('select');
+	if(selectionTool && selectionTool.selectionStart){
+		this.context.strokeStyle = 'black';
+		this.context.strokeRect(
+			selectionTool.selectionStart.x,
+			selectionTool.selectionStart.y,
+			selectionTool.selectionEnd.x - selectionTool.selectionStart.x,
+			selectionTool.selectionEnd.y - selectionTool.selectionStart.y
+		)
+	}
 };
 
 dia.ElementForm = function(element){

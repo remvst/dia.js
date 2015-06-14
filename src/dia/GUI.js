@@ -9,6 +9,12 @@ dia.GUI = function(app){
 	this.context = this.canvas.getContext('2d');
 	
 	this.setupInterationManager();
+	
+	var selectionTool = this.app.toolbox.getTool('select');
+	if(selectionTool){
+		selectionTool.listen('selectionmove', this.renderSheet.bind(this));
+		selectionTool.listen('selectionchange', this.renderSheet.bind(this));
+	}
 };
 
 dia.GUI.prototype.setupInterationManager = function(){
@@ -56,7 +62,6 @@ dia.GUI.prototype.renderToolbox = function(){
 		button;
 	for(var i = 0 ; i < this.app.toolbox.toolList.length ; i++){
 		tool = this.app.toolbox.toolList[i];
-		//<button type="button" class="btn btn-default btn-lg btn-block">Rectangle</button>
 		button = $('<button></button>')
 					.addClass('btn btn-default btn-block btn-lg')
 					.text(tool.id)
@@ -66,7 +71,14 @@ dia.GUI.prototype.renderToolbox = function(){
 							gui.selectTool(t);
 						}
 					})(tool));
+		
+		tool.listen('elementcreated', this.doneCreating.bind(this));
 	}
+};
+
+dia.GUI.prototype.doneCreating = function(){
+	var select = this.app.toolbox.getTool('select');
+	this.interactionManager.setTool(select);
 };
 
 dia.GUI.prototype.selectTool = function(tool){
@@ -75,4 +87,16 @@ dia.GUI.prototype.selectTool = function(tool){
 
 dia.GUI.prototype.renderSheet = function(){
 	this.app.sheet.render(this.context);
+	
+	// Rendering selection
+	var selectionTool = this.app.toolbox.getTool('select');
+	if(selectionTool && selectionTool.selectionStart){
+		this.context.strokeStyle = 'black';
+		this.context.strokeRect(
+			selectionTool.selectionStart.x,
+			selectionTool.selectionStart.y,
+			selectionTool.selectionEnd.x - selectionTool.selectionStart.x,
+			selectionTool.selectionEnd.y - selectionTool.selectionStart.y
+		)
+	}
 };
