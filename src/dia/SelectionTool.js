@@ -137,9 +137,13 @@ dia.SelectionTool.prototype.mouseUp = function(sheet, x, y){
 };
 
 dia.SelectionTool.prototype.keyDown = function(sheet, keyCode){
-	// TODO
+	
 };
 
 dia.SelectionTool.prototype.keyUp = function(sheet, keyCode){
-	// TODO
+	if(keyCode === 8){
+		this.currentSelection.forEach(function(element){
+			element.remove();
+		});
+	}
 };

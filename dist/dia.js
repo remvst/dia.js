@@ -898,7 +898,8 @@ dia.MoveAnchorDragHandle.prototype.dragMove = function(dx, dy, x, y){
 	
 	// Let's bind the coordinates to the element's side
 	// At the moment we assume its area will be a rectangle
-	var anchoredArea = this.element.sheet.getElement(propertyValue.element).getRepresentation().area;
+	var anchoredElement = this.element.sheet.getElement(propertyValue.element);
+	var anchoredArea = anchoredElement.getRepresentation().area;
 	var anchoredX = anchoredArea.getX();
 	var anchoredY = anchoredArea.getY();
 	var anchoredWidth = anchoredArea.getWidth();
@@ -913,24 +914,30 @@ dia.MoveAnchorDragHandle.prototype.dragMove = function(dx, dy, x, y){
 	var ratioX = (x - anchoredX) / anchoredWidth;
 	var ratioY = (y - anchoredY) / anchoredHeight;
 	
-	// And adjust it: the ratio that is the closest to 0 or 1 should be bound to that value
-	// and the other will keep the value it was originally going for.
-	var factorX = ratioX - .5;
-	var factorY = ratioY - .5;
-	
-	if(Math.abs(factorX) > Math.abs(factorY)){
-		ratioX = factorX > 0 ? 1 : 0;
-	}else{
-		ratioY = factorY > 0 ? 1 : 0;
-	}
-	
-	// Update the object
 	// Copying the object is necessary to trigger property change event.
-	this.element.setProperty(this.property, {
+	var newAnchor = {
 		element: propertyValue.element,
 		x: ratioX,
 		y: ratioY
-	});
+	};
+	
+	dia.MoveAnchorDragHandle.adjustAnchorRatios(newAnchor, anchoredElement);
+	
+	// Update the object
+	this.element.setProperty(this.property, newAnchor);
+};
+
+dia.MoveAnchorDragHandle.adjustAnchorRatios = function(anchor, element){
+	// And adjust it: the ratio that is the closest to 0 or 1 should be bound to that value
+	// and the other will keep the value it was originally going for.
+	var factorX = anchor.x - .5;
+	var factorY = anchor.y - .5;
+	
+	if(Math.abs(factorX) > Math.abs(factorY)){
+		anchor.x = factorX > 0 ? 1 : 0;
+	}else{
+		anchor.y = factorY > 0 ? 1 : 0;
+	}
 };
 
 dia.BrokenLineDragHandle = function(element, area, property){
@@ -1635,11 +1642,15 @@ dia.SelectionTool.prototype.mouseUp = function(sheet, x, y){
 };
 
 dia.SelectionTool.prototype.keyDown = function(sheet, keyCode){
-	// TODO
+	
 };
 
 dia.SelectionTool.prototype.keyUp = function(sheet, keyCode){
-	// TODO
+	if(keyCode === 8){
+		this.currentSelection.forEach(function(element){
+			element.remove();
+		});
+	}
 };
 
 dia.Dialog = function(settings){

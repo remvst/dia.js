@@ -320,26 +320,23 @@
 						
 						var angle = Math.atan2(toPosition.y - fromPosition.y, toPosition.x - fromPosition.x);
 						
-						var fromRatios = {
+						var fromAnchor = {
+							element: this.from.id,
 							x: Math.cos(angle) / 2 + .5,
 							y: Math.sin(angle) / 2 + .5
 						};
-						var toRatios = {
+						var toAnchor = {
+							element: to.id,
 							x: -Math.cos(angle) / 2 + .5,
 							y: -Math.sin(angle) / 2 + .5
 						};
 						
+						dia.MoveAnchorDragHandle.adjustAnchorRatios(fromAnchor, this.from);
+						dia.MoveAnchorDragHandle.adjustAnchorRatios(toAnchor, to);
+						
 						var element = this.type.create({
-							from: {
-								element: this.from.id,
-								x: fromRatios.x,
-								y: fromRatios.y
-							},
-							to: {
-								element: to.id,
-								x: toRatios.x,
-								y: toRatios.y
-							}
+							from: fromAnchor,
+							to: toAnchor
 						});
 						
 						sheet.addElement(element);
