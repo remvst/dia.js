@@ -42,7 +42,9 @@ module.exports = function(grunt) {
 					'src/dia/Canvas.js',
 					'src/dia/App.js',
 					'src/dia/GUI.js',
-					'src/dia/ElementForm.js'
+					'src/dia/ElementForm.js',
+					
+					'src/dia/generic/**.js'
 				],
 			dest: 'dist/<%= pkg.name %>.js'
 			}

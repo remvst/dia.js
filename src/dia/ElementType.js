@@ -55,6 +55,24 @@ dia.ElementType.prototype.createRepresentation = function(element){
 	return this.representationFactory.call(this, element);
 };
 
+dia.ElementType.prototype.clone = function(options){
+	var type = new dia.ElementType({
+		id: this.id,
+		label: this.label
+	});
+	type.representationFactory = this.representationFactory;
+	type.creatorTool = this.creatorTool;
+	if(type.creatorTool){
+		type.creatorTool.type = type;
+	}
+	
+	for(var i = 0 ; i < this.properties.length ; i++){
+		type.addProperty(this.properties[i].clone());
+	}
+	
+	return type;
+};
+
 dia.ElementType.register = function(type){
 	if(!type.id){
 		throw new Error('Cannot register a type with no ID.');

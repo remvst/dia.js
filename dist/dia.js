@@ -384,6 +384,24 @@ dia.ElementType.prototype.createRepresentation = function(element){
 	return this.representationFactory.call(this, element);
 };
 
+dia.ElementType.prototype.clone = function(options){
+	var type = new dia.ElementType({
+		id: this.id,
+		label: this.label
+	});
+	type.representationFactory = this.representationFactory;
+	type.creatorTool = this.creatorTool;
+	if(type.creatorTool){
+		type.creatorTool.type = type;
+	}
+	
+	for(var i = 0 ; i < this.properties.length ; i++){
+		type.addProperty(this.properties[i].clone());
+	}
+	
+	return type;
+};
+
 dia.ElementType.register = function(type){
 	if(!type.id){
 		throw new Error('Cannot register a type with no ID.');
@@ -809,49 +827,6 @@ dia.TextPrimitive.prototype.render = function(ctx){
 		ctx.fillText(lines[i], this.getPropertyValue('x'), y);
 	}
 };
-
-dia.Generic = {};
-
-dia.Generic.RECTANGLE = new dia.ElementType({
-	id: 'generic.rectangle'
-});
-
-dia.Generic.RECTANGLE.addProperty(new dia.Property({
-	id: 'x',
-	type: dia.DataType.INTEGER,
-	default: 0
-}));
-
-dia.Generic.RECTANGLE.addProperty(new dia.Property({
-	id: 'y',
-	type: dia.DataType.INTEGER,
-	default: 0
-}));
-
-dia.Generic.RECTANGLE.addProperty(new dia.Property({
-	id: 'width',
-	type: dia.DataType.INTEGER,
-	default: 100
-}));
-
-dia.Generic.RECTANGLE.addProperty(new dia.Property({
-	id: 'height',
-	type: dia.DataType.INTEGER,
-	default: 100
-}));
-
-dia.Generic.RECTANGLE.setRepresentationFactory(function(element){
-	var repr = new dia.GraphicalRepresentation(element);
-	
-	var rect = new dia.RectanglePrimitive(repr);
-	rect.bind('x', 'x');
-	rect.bind('y', 'y');
-	rect.bind('width', 'width');
-	rect.bind('height', 'height');
-	repr.addPrimitive(rect);
-	
-	return repr;
-});
 
 dia.DragHandle = function(element, area){
 	if(!element){
@@ -1693,24 +1668,40 @@ dia.Dialog = function(settings){
 	this.root.find('.close').click(function(){
 		this.hide();
 	}.bind(this));
+	
+	this.visible = false;
 };
 
 extend(dia.Dialog, dia.EventDispatcher);
 
 dia.Dialog.prototype.show = function(){
+	if(this.visible){
+		return;
+	}
+	
 	this.root.appendTo('body');
 	this.root.modal({
 		show: true,
 		backdrop: 'static'
 	});
 	this.dispatch('show');
+	
+	this.visible = true;
+	dia.Dialog.openCount++;
 };
 
 dia.Dialog.prototype.hide = function(confirmed){
+	if(!this.visible){
+		return;
+	}
+	
 	this.root.modal('hide');
 	this.dispatch('hide', {
 		confirmed: !!confirmed
 	});
+	
+	this.visible = false;
+	dia.Dialog.openCount--;
 };
 
 dia.Dialog.getTemplate = function(){
@@ -1733,6 +1724,8 @@ dia.Dialog.getTemplate = function(){
 	</div>\
 </div>';
 };
+
+dia.Dialog.openCount = 0;
 
 dia.Canvas = function(sheet){
 	dia.EventDispatcher.call(this);
@@ -1883,32 +1876,40 @@ dia.GUI.prototype.setupInterationManager = function(){
 	var gui = this;
 	
 	this.canvas.addEventListener('mousedown', function(e){
-		e.preventDefault();
-		
-		var position = gui.getPositionOnSheet(e);
-		gui.interactionManager.mouseDown(position.x, position.y);
+		if(dia.Dialog.openCount === 0){
+			e.preventDefault();
+
+			var position = gui.getPositionOnSheet(e);
+			gui.interactionManager.mouseDown(position.x, position.y);
+		}
 	}, false);
 	this.canvas.addEventListener('mousemove', function(e){
-		e.preventDefault();
-		
-		var position = gui.getPositionOnSheet(e);
-		gui.interactionManager.mouseMove(position.x, position.y, position.absoluteX, position.absoluteY);
+		if(dia.Dialog.openCount === 0){
+			e.preventDefault();
+
+			var position = gui.getPositionOnSheet(e);
+			gui.interactionManager.mouseMove(position.x, position.y, position.absoluteX, position.absoluteY);
+		}
 	}, false);
 	this.canvas.addEventListener('mouseup', function(e){
-		e.preventDefault();
-		
-		var position = gui.getPositionOnSheet(e);
-		gui.interactionManager.mouseUp(position.x, position.y);
+		if(dia.Dialog.openCount === 0){
+			e.preventDefault();
+
+			var position = gui.getPositionOnSheet(e);
+			gui.interactionManager.mouseUp(position.x, position.y);
+		}
 	}, false);
 	document.addEventListener('keydown', function(e){
-		e.preventDefault();
-		
-		gui.interactionManager.keyDown(e.keyCode);
+		if(dia.Dialog.openCount === 0){
+			e.preventDefault();
+			gui.interactionManager.keyDown(e.keyCode);
+		}
 	}, false);
 	document.addEventListener('keyup', function(e){
-		e.preventDefault();
-		
-		gui.interactionManager.keyUp(e.keyCode);
+		if(dia.Dialog.openCount === 0){
+			e.preventDefault();
+			gui.interactionManager.keyUp(e.keyCode);
+		}
 	}, false);
 	
 	this.app.sheet.listen('elementadded', this.elementAdded.bind(this));
@@ -2121,3 +2122,136 @@ dia.ElementForm.prototype.submit = function(){
 		form.element.setProperty(property.id, newValue);
 	});
 };
+
+dia.generic = dia.generic || {};
+
+dia.generic.RECTANGLE = new dia.ElementType({
+	id: 'generic.rectangle'
+});
+
+dia.generic.RECTANGLE.addProperty(new dia.Property({
+	id: 'x',
+	type: dia.DataType.INTEGER,
+	default: 0,
+	private: true
+}));
+
+dia.generic.RECTANGLE.addProperty(new dia.Property({
+	id: 'y',
+	type: dia.DataType.INTEGER,
+	default: 0,
+	private: true
+}));
+
+dia.generic.RECTANGLE.addProperty(new dia.Property({
+	id: 'width',
+	type: dia.DataType.INTEGER,
+	default: 100,
+	private: true
+}));
+
+dia.generic.RECTANGLE.addProperty(new dia.Property({
+	id: 'height',
+	type: dia.DataType.INTEGER,
+	default: 100,
+	private: true
+}));
+
+dia.generic.RECTANGLE.addProperty(new dia.Property({
+	id: 'label',
+	type: dia.DataType.STRING,
+	default: ''
+}));
+
+dia.generic.RECTANGLE.addProperty(new dia.Property({
+	id: 'fontColor',
+	type: dia.DataType.STRING,
+	default: '#000'
+}));
+
+dia.generic.RECTANGLE.addProperty(new dia.Property({
+	id: 'fontFamily',
+	type: dia.DataType.STRING,
+	default: 'Arial'
+}));
+
+dia.generic.RECTANGLE.addProperty(new dia.Property({
+	id: 'fontSize',
+	type: dia.DataType.INTEGER,
+	default: 14
+}));
+
+dia.generic.RECTANGLE.addProperty(new dia.Property({
+	id: 'backgroundColor',
+	type: dia.DataType.STRING,
+	default: '#ffffff'
+}));
+
+dia.generic.RECTANGLE.addProperty(new dia.Property({
+	id: 'borderColor',
+	type: dia.DataType.STRING,
+	default: '#000'
+}));
+
+dia.generic.RECTANGLE.addProperty(new dia.Property({
+	id: 'borderThickness',
+	type: dia.DataType.INTEGER,
+	default: 1
+}));
+
+dia.generic.RECTANGLE.setRepresentationFactory(function(element){
+	var repr = new dia.GraphicalRepresentation(element);
+	
+	repr.addRenderable(new dia.Renderable(function(c){
+		c.fillStyle = element.getProperty('backgroundColor');
+		c.fillRect(
+			element.getProperty('x'),
+			element.getProperty('y'),
+			element.getProperty('width'),
+			element.getProperty('height')
+		);
+		
+		c.strokeStyle = element.getProperty('borderColor');
+		c.lineWidth = element.getProperty('borderThickness');
+		c.strokeRect(
+			element.getProperty('x') + .5,
+			element.getProperty('y') + .5,
+			element.getProperty('width'),
+			element.getProperty('height')
+		);
+		
+		c.textAlign = 'center';
+		c.textBaseline = 'middle';
+		c.font = element.getProperty('fontSize') + 'pt ' + element.getProperty('fontFamily');
+		c.fillStyle = element.getProperty('fontColor');
+		c.fillText(
+			element.getProperty('label'),
+			element.getProperty('x') + element.getProperty('width') / 2,
+			element.getProperty('y') + element.getProperty('height') / 2
+		);
+	}));
+
+	repr.area = new dia.RectangleArea({
+		x: function(){ return element.getProperty('x'); },
+		y: function(){ return element.getProperty('y'); },
+		width: function(){ return element.getProperty('width'); },
+		height: function(){ return element.getProperty('height'); },
+	});
+
+	var handle = new dia.MoveElementDragHandle(element, repr.area, 'points');
+	repr.addHandle(handle);
+	
+	return repr;
+});
+
+dia.generic.RECTANGLE.creatorTool = new dia.CreateTool({
+	type: dia.generic.RECTANGLE,
+	mouseDown: function(sheet, x, y){
+		var element = this.type.create({
+			x: x,
+			y: y
+		});
+		sheet.addElement(element);
+		this.dispatch('elementcreated');
+	}
+});

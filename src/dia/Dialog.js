@@ -32,24 +32,40 @@ dia.Dialog = function(settings){
 	this.root.find('.close').click(function(){
 		this.hide();
 	}.bind(this));
+	
+	this.visible = false;
 };
 
 extend(dia.Dialog, dia.EventDispatcher);
 
 dia.Dialog.prototype.show = function(){
+	if(this.visible){
+		return;
+	}
+	
 	this.root.appendTo('body');
 	this.root.modal({
 		show: true,
 		backdrop: 'static'
 	});
 	this.dispatch('show');
+	
+	this.visible = true;
+	dia.Dialog.openCount++;
 };
 
 dia.Dialog.prototype.hide = function(confirmed){
+	if(!this.visible){
+		return;
+	}
+	
 	this.root.modal('hide');
 	this.dispatch('hide', {
 		confirmed: !!confirmed
 	});
+	
+	this.visible = false;
+	dia.Dialog.openCount--;
 };
 
 dia.Dialog.getTemplate = function(){
@@ -72,3 +88,5 @@ dia.Dialog.getTemplate = function(){
 	</div>\
 </div>';
 };
+
+dia.Dialog.openCount = 0;

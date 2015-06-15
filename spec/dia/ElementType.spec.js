@@ -126,4 +126,36 @@ describe('an element type', function(){
 		
 		expect(element.getProperty('prop')).toBe(123);
 	});
+	
+	it('can be cloned', function(){
+		var type = new dia.ElementType({
+			id: 'myid',
+			label: 'mylabel'
+		});
+		type.addProperty(new dia.Property({
+			id: 'x',
+			type: dia.DataType.INTEGER,
+			default: 0
+		}));
+		type.addProperty(new dia.Property({
+			id: 'y',
+			type: dia.DataType.INTEGER,
+			default: 1
+		}));
+		type.setRepresentationFactory(function(element){
+			var repr = new dia.GraphicalRepresentation(element);
+			repr.addRenderable(new dia.RectanglePrimitive(repr));
+			return repr;
+		});
+		
+		var clone = type.clone();
+		
+		expect(clone).not.toBe(type);
+		expect(clone.id).toEqual(type.id);
+		expect(clone.label).toEqual(type.label);
+		expect(clone.properties[0]).toEqual(type.properties[0]);
+		expect(clone.properties[1]).toEqual(type.properties[1]);
+		expect(clone.properties[0]).not.toBe(type.properties[0]);
+		expect(clone.properties[1]).not.toBe(type.properties[1]);
+	});
 });
