@@ -331,8 +331,8 @@
 							y: -Math.sin(angle) / 2 + .5
 						};
 						
-						dia.MoveAnchorDragHandle.adjustAnchorRatios(fromAnchor, this.from);
-						dia.MoveAnchorDragHandle.adjustAnchorRatios(toAnchor, to);
+						dia.adjustAnchorRatios(fromAnchor, this.from);
+						dia.adjustAnchorRatios(toAnchor, to);
 						
 						var element = this.type.create({
 							from: fromAnchor,
