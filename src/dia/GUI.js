@@ -169,5 +169,8 @@ dia.GUI.prototype.elementRemoved = function(e){
 };
 
 dia.GUI.prototype.elementModified = function(e){
+	if(e.element.type.hasPropertyId('x')){
+		this.sheetCanvases[this.app.sheet.id].snapElementToGrid(e.element);
+	}
 	this.renderSheet();
 };

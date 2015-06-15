@@ -13,7 +13,7 @@ describe('a move element drag handle', function(){
 		}).toThrow();
 	});
 	
-	it('cannot be bound to an element with no x or y', function(){
+	it('can move an element', function(){
 		var type = new dia.ElementType();
 		type.addProperty(new dia.Property({
 			id: 'x',
@@ -30,6 +30,7 @@ describe('a move element drag handle', function(){
 		expect(element.getProperty('x')).toBe(1);
 		expect(element.getProperty('y')).toBe(2);
 		
+		handle.dragStart(0, 0);
 		handle.dragMove(5, -3);
 		
 		expect(element.getProperty('x')).toBe(6);

@@ -38,6 +38,7 @@ dia.Element.prototype.setProperty = function(id, value){
 			
 			if(tmp !== value){
 				this.dispatch('propertychange', {
+					element: this,
 					property: this.type.getProperty(id),
 					from: tmp,
 					to: value

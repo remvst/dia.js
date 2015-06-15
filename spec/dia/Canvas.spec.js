@@ -28,22 +28,18 @@ describe('a canvas', function(){
 		
 		canvas.setDimensions(100, 200);
 		
-		var clearParams,
-			translateParams;
+		var translateParams;
 		var ctx = {
 			save: function(){},
 			restore: function(){},
 			translate: function(){
 				translateParams = Array.prototype.slice.call(arguments, 0);
 			},
-			fillRect: function(){
-				clearParams = Array.prototype.slice.call(arguments, 0);
-			}
+			fillRect: function(){}
 		};
 		
 		canvas.render(ctx);
 		
-		expect(clearParams).toEqual([0, 0, 100, 200]);
 		expect(translateParams).toEqual([200, 100]);
 	});
 });

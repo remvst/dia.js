@@ -234,6 +234,7 @@ dia.Element.prototype.setProperty = function(id, value){
 			
 			if(tmp !== value){
 				this.dispatch('propertychange', {
+					element: this,
 					property: this.type.getProperty(id),
 					from: tmp,
 					to: value
@@ -840,16 +841,37 @@ dia.MoveElementDragHandle = function(element, area){
 	if(!this.element.type.hasPropertyId('x') || !this.element.type.hasPropertyId('y')){
 		throw new Error('Cannot bind a MoveElementDragHandle to an element that has no x or y');
 	}
+	
+	this.start = null;
 };
 
 extend(dia.MoveElementDragHandle, dia.DragHandle);
 
+dia.MoveElementDragHandle.prototype.dragStart = function(x, y){
+	this.lastPosition = {
+		x: this.element.getProperty('x'),
+		y: this.element.getProperty('y')
+	};
+};
+
 dia.MoveElementDragHandle.prototype.dragMove = function(dx, dy){
-	var elementX = this.element.getProperty('x');
-	var elementY = this.element.getProperty('y');
+	if(this.lastPosition){
+		var elementX = this.element.getProperty('x');
+		var elementY = this.element.getProperty('y');
+
+		this.element.setProperty('x', this.lastPosition.x + dx);
+		this.element.setProperty('y', this.lastPosition.y + dy);
 	
-	this.element.setProperty('x', elementX + dx);
-	this.element.setProperty('y', elementY + dy);
+		this.lastPosition = {
+			x: this.lastPosition.x + dx,
+			y: this.lastPosition.y + dy
+		};
+	}else{
+		this.lastPosition = {
+			x: this.element.getProperty('x'),
+			y: this.element.getProperty('y')
+		};
+	}
 };
 
 dia.MoveAnchorDragHandle = function(element, area, property){
@@ -1681,6 +1703,8 @@ dia.Canvas = function(sheet){
 	
 	this.width = 0;
 	this.height = 0;
+	
+	this.gridSize = 10;
 };
 
 dia.Canvas.prototype.setDimensions = function(width, height){
@@ -1693,13 +1717,28 @@ dia.Canvas.prototype.render = function(ctx){
 	ctx.fillStyle = 'rgb(240, 240, 240)';
 	ctx.fillRect(0,0, this.width, this.height);
 	
-	// Grid (TODO)
+	// Grid
+	ctx.fillStyle = '#ffffff';
+	for(var x = this.offsetX % this.gridSize ; x < this.width ; x += this.gridSize){
+		ctx.fillRect(x, 0, 1, this.height);
+	}
+	for(var y = this.offsetY % this.gridSize ; y < this.height ; y += this.gridSize){
+		ctx.fillRect(0, y, this.width, 1);
+	}
 	
 	// Sheet
 	ctx.save();
 	ctx.translate(this.offsetX, this.offsetY);
 	this.sheet.render(ctx);
 	ctx.restore();
+};
+
+dia.Canvas.prototype.snapElementToGrid = function(element){
+	var x = element.getProperty('x');
+	var y = element.getProperty('y');
+	
+	element.setProperty('x', Math.round(x / this.gridSize) * this.gridSize);
+	element.setProperty('y', Math.round(y / this.gridSize) * this.gridSize);
 };
 
 dia.App = function(){
@@ -1891,6 +1930,9 @@ dia.GUI.prototype.elementRemoved = function(e){
 };
 
 dia.GUI.prototype.elementModified = function(e){
+	if(e.element.type.hasPropertyId('x')){
+		this.sheetCanvases[this.app.sheet.id].snapElementToGrid(e.element);
+	}
 	this.renderSheet();
 };
 
