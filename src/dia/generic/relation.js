@@ -107,18 +107,37 @@ dia.generic.RELATION.creatorTool = new dia.CreateTool({
 	mouseUp: function(sheet, x, y){
 		var to = elementThatContains(sheet, x, y);
 		if(to && this.from && to !== this.from){
+			var fromArea = this.from.getRepresentation().area;
+			var toArea = to.getRepresentation().area;
+
+			var fromPosition = {
+				x: fromArea.getX() + fromArea.getWidth() / 2,
+				y: fromArea.getY() + fromArea.getHeight() / 2,
+			};
+			var toPosition = {
+				x: toArea.getX() + toArea.getWidth() / 2,
+				y: toArea.getY() + toArea.getHeight() / 2,
+			};
+
+			var angle = Math.atan2(toPosition.y - fromPosition.y, toPosition.x - fromPosition.x);
+
+			var fromAnchor = {
+				element: this.from.id,
+				x: Math.cos(angle) / 2 + .5,
+				y: Math.sin(angle) / 2 + .5
+			};
+			var toAnchor = {
+				element: to.id,
+				x: -Math.cos(angle) / 2 + .5,
+				y: -Math.sin(angle) / 2 + .5
+			};
+
+			dia.adjustAnchorRatios(fromAnchor, this.from);
+			dia.adjustAnchorRatios(toAnchor, to);
+
 			var element = this.type.create({
-				from: {
-					element: this.from.id,
-					x: 0,
-					y: 0
-				},
-				to: {
-					element: to.id,
-					x: 0,
-					y: 0
-				},
-				//points : [{x: 0, y: 0}]
+				from: fromAnchor,
+				to: toAnchor
 			});
 
 			sheet.addElement(element);
