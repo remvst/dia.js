@@ -53,7 +53,7 @@ dia.GUI.prototype.setupInterationManager = function(){
 		return;
 	}
 	
-	this.interactionManager = new dia.InteractionManager();
+	this.interactionManager = new dia.InteractionManager(this);
 	this.interactionManager.setSheet(this.app.sheet);
 	
 	var selectionTool = this.app.toolbox.getTool('select');
@@ -62,6 +62,7 @@ dia.GUI.prototype.setupInterationManager = function(){
 	}
 	
 	this.sheetCanvases[this.app.sheet.id] = new dia.Canvas(this.app.sheet);
+	this.sheetCanvases[this.app.sheet.id].listen('scrollchange', this.renderSheet.bind(this));
 	
 	var gui = this;
 	
@@ -71,7 +72,7 @@ dia.GUI.prototype.setupInterationManager = function(){
 	}, false);
 	this.canvas.addEventListener('mousemove', function(e){
 		var position = gui.getPositionOnSheet(e);
-		gui.interactionManager.mouseMove(position.x, position.y);
+		gui.interactionManager.mouseMove(position.x, position.y, position.absoluteX, position.absoluteY);
 	}, false);
 	this.canvas.addEventListener('mouseup', function(e){
 		var position = gui.getPositionOnSheet(e);
@@ -89,12 +90,15 @@ dia.GUI.prototype.setupInterationManager = function(){
 };
 
 dia.GUI.prototype.getPositionOnSheet = function(event){
-	var offset = $('#canvas').offset();
+	var offset = this.canvas.getBoundingClientRect();
 	
-	// TODO account for canvas offset
+	var canvas = this.getSheetCanvas(this.app.sheet);
+	
 	return {
-		x: event.pageX - offset.left,
-		y: event.pageY - offset.top
+		x: event.pageX - offset.left + canvas.scrollX,
+		y: event.pageY - offset.top + canvas.scrollY,
+		absoluteX: event.pageX - offset.left,
+		absoluteY: event.pageY - offset.top
 	};
 };
 
@@ -130,16 +134,16 @@ dia.GUI.prototype.selectTool = function(tool){
 };
 
 dia.GUI.prototype.renderSheet = function(){
-	var canvas = this.sheetCanvases[this.app.sheet.id];
+	var canvas = this.getSheetCanvas(this.app.sheet);
 	canvas.render(this.context);
 	
-	// Rendering selection
+	// Rendering selection rectangle (kinda sketchy)
 	var selectionTool = this.app.toolbox.getTool('select');
 	if(selectionTool && selectionTool.selectionStart){
 		this.context.strokeStyle = 'black';
 		this.context.strokeRect(
-			selectionTool.selectionStart.x + .5,
-			selectionTool.selectionStart.y + .5,
+			selectionTool.selectionStart.x + .5 - canvas.scrollX,
+			selectionTool.selectionStart.y + .5 - canvas.scrollY,
 			selectionTool.selectionEnd.x - selectionTool.selectionStart.x,
 			selectionTool.selectionEnd.y - selectionTool.selectionStart.y
 		)
@@ -176,7 +180,11 @@ dia.GUI.prototype.elementRemoved = function(e){
 
 dia.GUI.prototype.elementModified = function(e){
 	if(e.element.type.hasPropertyId('x')){
-		this.sheetCanvases[this.app.sheet.id].snapElementToGrid(e.element);
+		this.getSheetCanvas(this.app.sheet).snapElementToGrid(e.element);
 	}
 	this.renderSheet();
+};
+
+dia.GUI.prototype.getSheetCanvas = function(sheet){
+	return this.sheetCanvases[sheet.id];
 };

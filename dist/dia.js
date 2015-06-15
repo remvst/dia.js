@@ -1352,10 +1352,13 @@ dia.Area.defineIntersection('rectangle', 'brokenline', function(rectangle, broke
 	return false;
 });
 
-dia.InteractionManager = function(){
+dia.InteractionManager = function(gui){
+	this.gui = gui;
+	
 	this.sheet = null;
 	this.tool = null;
-	this.currentPosition = {x: 0, y: 0};
+	this.currentPosition = {x: 0, y: 0, absoluteX: 0, absoluteY: 0 };
+	this.downKeys = {};
 };
 
 dia.InteractionManager.prototype.setTool = function(tool){
@@ -1372,11 +1375,17 @@ dia.InteractionManager.prototype.mouseDown = function(x, y){
 	}
 };
 
-dia.InteractionManager.prototype.mouseMove = function(x, y){
-	if(this.tool){
+dia.InteractionManager.prototype.mouseMove = function(x, y, absoluteX, absoluteY){
+	if(this.downKeys[32]){
+		var canvas = this.gui.getSheetCanvas(this.sheet);
+		canvas.scroll(
+			this.currentPosition.absoluteX - absoluteX,
+			this.currentPosition.absoluteY - absoluteY
+		);
+	}else if(this.tool){
 		this.tool.mouseMove(this.sheet, x, y);
 	}
-	this.currentPosition = {x: x, y: y};
+	this.currentPosition = {x: x, y: y, absoluteX: absoluteX, absoluteY: absoluteY};
 };
 
 dia.InteractionManager.prototype.mouseUp = function(){
@@ -1389,12 +1398,14 @@ dia.InteractionManager.prototype.keyDown = function(keyCode){
 	if(this.tool){
 		this.tool.keyDown(this.sheet, keyCode);
 	}
+	this.downKeys[keyCode] = true;
 };
 
 dia.InteractionManager.prototype.keyUp = function(keyCode){
 	if(this.tool){
 		this.tool.keyUp(this.sheet, keyCode);
 	}
+	this.downKeys[keyCode] = false;
 };
 
 dia.Toolbox = function(){
@@ -1614,7 +1625,6 @@ dia.SelectionTool.prototype.mouseUp = function(sheet, x, y){
 
 dia.SelectionTool.prototype.keyDown = function(sheet, keyCode){
 	// TODO
-	console.log(keyCode);
 };
 
 dia.SelectionTool.prototype.keyUp = function(sheet, keyCode){
@@ -1697,10 +1707,13 @@ dia.Dialog.getTemplate = function(){
 };
 
 dia.Canvas = function(sheet){
-	this.sheet = sheet;
+	dia.EventDispatcher.call(this);
 	
-	this.offsetX = 0;
-	this.offsetY = 0;
+	this.sheet = sheet;
+	this.sheet.canvas = this;
+	
+	this.scrollX = 0;
+	this.scrollY = 0;
 	
 	this.width = 0;
 	this.height = 0;
@@ -1708,9 +1721,22 @@ dia.Canvas = function(sheet){
 	this.gridSize = 10;
 };
 
+extend(dia.Canvas, dia.EventDispatcher);
+
 dia.Canvas.prototype.setDimensions = function(width, height){
 	this.width = width;
 	this.height = height;
+};
+
+dia.Canvas.prototype.scroll = function(dx, dy){
+	this.scrollTo(this.scrollX + dx, this.scrollY + dy);
+};
+
+dia.Canvas.prototype.scrollTo = function(x, y){
+	this.scrollX = x;
+	this.scrollY = y;
+	
+	this.dispatch('scrollchange');
 };
 
 dia.Canvas.prototype.render = function(ctx){
@@ -1720,16 +1746,16 @@ dia.Canvas.prototype.render = function(ctx){
 	
 	// Grid
 	ctx.fillStyle = '#ffffff';
-	for(var x = this.offsetX % this.gridSize ; x < this.width ; x += this.gridSize){
+	for(var x = this.gridSize - (this.scrollX % this.gridSize) ; x < this.width ; x += this.gridSize){
 		ctx.fillRect(x, 0, 1, this.height);
 	}
-	for(var y = this.offsetY % this.gridSize ; y < this.height ; y += this.gridSize){
+	for(var y = this.gridSize - (this.scrollY % this.gridSize) ; y < this.height ; y += this.gridSize){
 		ctx.fillRect(0, y, this.width, 1);
 	}
 	
 	// Sheet
 	ctx.save();
-	ctx.translate(this.offsetX, this.offsetY);
+	ctx.translate(-this.scrollX, -this.scrollY);
 	this.sheet.render(ctx);
 	ctx.restore();
 };
@@ -1815,7 +1841,7 @@ dia.GUI.prototype.setupInterationManager = function(){
 		return;
 	}
 	
-	this.interactionManager = new dia.InteractionManager();
+	this.interactionManager = new dia.InteractionManager(this);
 	this.interactionManager.setSheet(this.app.sheet);
 	
 	var selectionTool = this.app.toolbox.getTool('select');
@@ -1824,6 +1850,7 @@ dia.GUI.prototype.setupInterationManager = function(){
 	}
 	
 	this.sheetCanvases[this.app.sheet.id] = new dia.Canvas(this.app.sheet);
+	this.sheetCanvases[this.app.sheet.id].listen('scrollchange', this.renderSheet.bind(this));
 	
 	var gui = this;
 	
@@ -1833,7 +1860,7 @@ dia.GUI.prototype.setupInterationManager = function(){
 	}, false);
 	this.canvas.addEventListener('mousemove', function(e){
 		var position = gui.getPositionOnSheet(e);
-		gui.interactionManager.mouseMove(position.x, position.y);
+		gui.interactionManager.mouseMove(position.x, position.y, position.absoluteX, position.absoluteY);
 	}, false);
 	this.canvas.addEventListener('mouseup', function(e){
 		var position = gui.getPositionOnSheet(e);
@@ -1851,12 +1878,15 @@ dia.GUI.prototype.setupInterationManager = function(){
 };
 
 dia.GUI.prototype.getPositionOnSheet = function(event){
-	var offset = $('#canvas').offset();
+	var offset = this.canvas.getBoundingClientRect();
 	
-	// TODO account for canvas offset
+	var canvas = this.getSheetCanvas(this.app.sheet);
+	
 	return {
-		x: event.pageX - offset.left,
-		y: event.pageY - offset.top
+		x: event.pageX - offset.left + canvas.scrollX,
+		y: event.pageY - offset.top + canvas.scrollY,
+		absoluteX: event.pageX - offset.left,
+		absoluteY: event.pageY - offset.top
 	};
 };
 
@@ -1892,16 +1922,16 @@ dia.GUI.prototype.selectTool = function(tool){
 };
 
 dia.GUI.prototype.renderSheet = function(){
-	var canvas = this.sheetCanvases[this.app.sheet.id];
+	var canvas = this.getSheetCanvas(this.app.sheet);
 	canvas.render(this.context);
 	
-	// Rendering selection
+	// Rendering selection rectangle (kinda sketchy)
 	var selectionTool = this.app.toolbox.getTool('select');
 	if(selectionTool && selectionTool.selectionStart){
 		this.context.strokeStyle = 'black';
 		this.context.strokeRect(
-			selectionTool.selectionStart.x + .5,
-			selectionTool.selectionStart.y + .5,
+			selectionTool.selectionStart.x + .5 - canvas.scrollX,
+			selectionTool.selectionStart.y + .5 - canvas.scrollY,
 			selectionTool.selectionEnd.x - selectionTool.selectionStart.x,
 			selectionTool.selectionEnd.y - selectionTool.selectionStart.y
 		)
@@ -1938,9 +1968,13 @@ dia.GUI.prototype.elementRemoved = function(e){
 
 dia.GUI.prototype.elementModified = function(e){
 	if(e.element.type.hasPropertyId('x')){
-		this.sheetCanvases[this.app.sheet.id].snapElementToGrid(e.element);
+		this.getSheetCanvas(this.app.sheet).snapElementToGrid(e.element);
 	}
 	this.renderSheet();
+};
+
+dia.GUI.prototype.getSheetCanvas = function(sheet){
+	return this.sheetCanvases[sheet.id];
 };
 
 dia.ElementForm = function(element){

@@ -4,7 +4,7 @@ describe('an interaction manager', function(){
 		
 		expect(im.sheet).toBe(null);
 		expect(im.tool).toBe(null);
-		expect(im.currentPosition).toEqual({ x: 0, y: 0 });
+		expect(im.currentPosition).toEqual({ x: 0, y: 0, absoluteX: 0, absoluteY: 0 });
 	});
 	
 	it('can be set a sheet', function(){
@@ -20,11 +20,9 @@ describe('an interaction manager', function(){
 		var im = new dia.InteractionManager();
 		im.setSheet(new dia.Sheet());
 		
-		expect(im.currentPosition).toEqual({x: 0, y: 0});
+		im.mouseMove(100, 20, 50, 70);
 		
-		im.mouseMove(100, 20);
-		
-		expect(im.currentPosition).toEqual({x: 100, y: 20});
+		expect(im.currentPosition).toEqual({x: 100, y: 20, absoluteX: 50, absoluteY: 70 });
 	});
 	
 	it('can use tools', function(){

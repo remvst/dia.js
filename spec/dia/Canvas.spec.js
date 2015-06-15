@@ -5,8 +5,8 @@ describe('a canvas', function(){
 		
 		expect(canvas.width).toBe(0);
 		expect(canvas.height).toBe(0);
-		expect(canvas.offsetX).toBe(0);
-		expect(canvas.offsetY).toBe(0);
+		expect(canvas.scrollX).toBe(0);
+		expect(canvas.scrollY).toBe(0);
 	});
 	
 	it('can be set new dimensions', function(){
@@ -23,8 +23,7 @@ describe('a canvas', function(){
 		var sheet = new dia.Sheet();
 		var canvas = new dia.Canvas(sheet);
 		
-		canvas.offsetX = 200;
-		canvas.offsetY = 100;
+		canvas.scrollTo(200, 100);
 		
 		canvas.setDimensions(100, 200);
 		
@@ -40,6 +39,6 @@ describe('a canvas', function(){
 		
 		canvas.render(ctx);
 		
-		expect(translateParams).toEqual([200, 100]);
+		expect(translateParams).toEqual([-200, -100]);
 	});
 });
