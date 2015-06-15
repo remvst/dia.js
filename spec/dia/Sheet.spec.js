@@ -108,4 +108,34 @@ describe('a sheet', function(){
 		var loaded = dia.Sheet.fromJSON(json);
 		expect(loaded).toEqual(sheet);
 	});
+	
+	it('can find an element containing a point', function(){
+		var type1 = new dia.ElementType();
+		type1.setRepresentationFactory(function(element){
+			var repr = new dia.GraphicalRepresentation(element);
+			repr.area = new dia.Area();
+			repr.area.contains = function(x, y){ return x === 0 && y === 1; };
+			return repr;
+		});
+		
+		var type2 = new dia.ElementType();
+		type2.setRepresentationFactory(function(element){
+			var repr = new dia.GraphicalRepresentation(element);
+			repr.area = new dia.Area();
+			repr.area.contains = function(x, y){ return x === 1 && y === 2; };
+			return repr;
+		});
+		
+		var sheet = new dia.Sheet();
+		
+		var element1 = type1.emptyElement();
+		sheet.addElement(element1);
+		
+		var element2 = type2.emptyElement();
+		sheet.addElement(element2);
+		
+		expect(sheet.findElementContaining(0, 0)).toBe(null);
+		expect(sheet.findElementContaining(0, 1)).toBe(element1);
+		expect(sheet.findElementContaining(1, 2)).toBe(element2);
+	});
 });
