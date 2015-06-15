@@ -77,6 +77,12 @@ dia.GUI.prototype.setupInterationManager = function(){
 		var position = gui.getPositionOnSheet(e);
 		gui.interactionManager.mouseUp(position.x, position.y);
 	}, false);
+	document.addEventListener('keydown', function(e){
+		gui.interactionManager.keyDown(e.keyCode);
+	}, false);
+	document.addEventListener('keyup', function(e){
+		gui.interactionManager.keyUp(e.keyCode);
+	}, false);
 	
 	this.app.sheet.listen('elementadded', this.elementAdded.bind(this));
 	this.app.sheet.listen('elementremoved', this.elementRemoved.bind(this));

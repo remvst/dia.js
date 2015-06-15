@@ -33,12 +33,12 @@ dia.InteractionManager.prototype.mouseUp = function(){
 
 dia.InteractionManager.prototype.keyDown = function(keyCode){
 	if(this.tool){
-		this.tool.keyDown(keyCode);
+		this.tool.keyDown(this.sheet, keyCode);
 	}
 };
 
-dia.InteractionManager.prototype.keyUp = function(keyUp){
+dia.InteractionManager.prototype.keyUp = function(keyCode){
 	if(this.tool){
-		this.tool.keyUp(keyCode);
+		this.tool.keyUp(this.sheet, keyCode);
 	}
 };

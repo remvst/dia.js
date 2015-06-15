@@ -1387,13 +1387,13 @@ dia.InteractionManager.prototype.mouseUp = function(){
 
 dia.InteractionManager.prototype.keyDown = function(keyCode){
 	if(this.tool){
-		this.tool.keyDown(keyCode);
+		this.tool.keyDown(this.sheet, keyCode);
 	}
 };
 
-dia.InteractionManager.prototype.keyUp = function(keyUp){
+dia.InteractionManager.prototype.keyUp = function(keyCode){
 	if(this.tool){
-		this.tool.keyUp(keyCode);
+		this.tool.keyUp(this.sheet, keyCode);
 	}
 };
 
@@ -1614,6 +1614,7 @@ dia.SelectionTool.prototype.mouseUp = function(sheet, x, y){
 
 dia.SelectionTool.prototype.keyDown = function(sheet, keyCode){
 	// TODO
+	console.log(keyCode);
 };
 
 dia.SelectionTool.prototype.keyUp = function(sheet, keyCode){
@@ -1837,6 +1838,12 @@ dia.GUI.prototype.setupInterationManager = function(){
 	this.canvas.addEventListener('mouseup', function(e){
 		var position = gui.getPositionOnSheet(e);
 		gui.interactionManager.mouseUp(position.x, position.y);
+	}, false);
+	document.addEventListener('keydown', function(e){
+		gui.interactionManager.keyDown(e.keyCode);
+	}, false);
+	document.addEventListener('keyup', function(e){
+		gui.interactionManager.keyUp(e.keyCode);
 	}, false);
 	
 	this.app.sheet.listen('elementadded', this.elementAdded.bind(this));
