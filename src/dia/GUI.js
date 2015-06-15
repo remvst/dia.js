@@ -67,21 +67,31 @@ dia.GUI.prototype.setupInterationManager = function(){
 	var gui = this;
 	
 	this.canvas.addEventListener('mousedown', function(e){
+		e.preventDefault();
+		
 		var position = gui.getPositionOnSheet(e);
 		gui.interactionManager.mouseDown(position.x, position.y);
 	}, false);
 	this.canvas.addEventListener('mousemove', function(e){
+		e.preventDefault();
+		
 		var position = gui.getPositionOnSheet(e);
 		gui.interactionManager.mouseMove(position.x, position.y, position.absoluteX, position.absoluteY);
 	}, false);
 	this.canvas.addEventListener('mouseup', function(e){
+		e.preventDefault();
+		
 		var position = gui.getPositionOnSheet(e);
 		gui.interactionManager.mouseUp(position.x, position.y);
 	}, false);
 	document.addEventListener('keydown', function(e){
+		e.preventDefault();
+		
 		gui.interactionManager.keyDown(e.keyCode);
 	}, false);
 	document.addEventListener('keyup', function(e){
+		e.preventDefault();
+		
 		gui.interactionManager.keyUp(e.keyCode);
 	}, false);
 	
