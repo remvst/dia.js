@@ -410,6 +410,17 @@ dia.Property = function(options){
 	this.private = options.private || false;
 };
 
+dia.Property.prototype.clone = function(){
+	return new dia.Property({
+		label: this.label,
+		type: this.type,
+		description: this.description,
+		default: this.default,
+		id: this.id,
+		private: this.private
+	});
+};
+
 dia.DataType = function(options){
 	options = options || {};
 	

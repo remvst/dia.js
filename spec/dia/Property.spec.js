@@ -42,4 +42,20 @@ describe('a property', function(){
 		expect(propertyInt.default).toBe(0);
 		expect(propertyString.default).toBe('');
 	});
+	
+	it('can be cloned', function(){
+		var property = new dia.Property({
+			id: 'title',
+			type: dia.DataType.STRING,
+			label: 'label',
+			description: 'title of the element',
+			default: 'empty',
+			private: true
+		});
+		
+		var clone = property.clone();
+		
+		expect(clone).not.toBe(property);
+		expect(clone).toEqual(property);
+	});
 });
