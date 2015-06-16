@@ -2399,6 +2399,7 @@ dia.generic.RELATION.creatorTool = new dia.CreateTool({
 				y: toArea.getHeight() / 2 - Math.sin(angle)
 			};
 
+			// Let's bind those anchors
 			fromArea.bindAnchorToBounds(fromAnchor);
 			toArea.bindAnchorToBounds(toAnchor);
 
