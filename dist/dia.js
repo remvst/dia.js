@@ -2255,6 +2255,19 @@ dia.generic.RECTANGLE.setRepresentationFactory(function(element, repr){
 
 	var handle = new dia.MoveElementDragHandle(element, repr.area, 'points');
 	repr.addHandle(handle);
+	
+	var resizeBottomRightArea = new dia.RectangleArea({
+		x: function(){ return element.getProperty('x') + element.getProperty('width') - 5; },
+		y: function(){ return element.getProperty('y') + element.getProperty('height') - 5; },
+		width: function(){ return 10; },
+		height: function(){ return 10; },
+	});
+	var resizeBottomRightHandle = new dia.DragHandle(element, resizeBottomRightArea);
+	repr.addHandle(resizeBottomRightHandle);
+	resizeBottomRightHandle.dragMove = function(dx, dy){
+		element.setProperty('width', Math.max(100, element.getProperty('width') + dx));
+		element.setProperty('height', Math.max(100, element.getProperty('height') + dy));
+	};
 });
 
 dia.generic.RECTANGLE.creatorTool = new dia.CreateTool({
