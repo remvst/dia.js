@@ -74,9 +74,7 @@ dia.generic.RECTANGLE.addProperty(new dia.Property({
 	default: 1
 }));
 
-dia.generic.RECTANGLE.setRepresentationFactory(function(element){
-	var repr = new dia.GraphicalRepresentation(element);
-	
+dia.generic.RECTANGLE.setRepresentationFactory(function(element, repr){
 	repr.addRenderable(new dia.Renderable(function(c){
 		c.fillStyle = element.getProperty('backgroundColor');
 		c.fillRect(
@@ -115,8 +113,6 @@ dia.generic.RECTANGLE.setRepresentationFactory(function(element){
 
 	var handle = new dia.MoveElementDragHandle(element, repr.area, 'points');
 	repr.addHandle(handle);
-	
-	return repr;
 });
 
 dia.generic.RECTANGLE.creatorTool = new dia.CreateTool({

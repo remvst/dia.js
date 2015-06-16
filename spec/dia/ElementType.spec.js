@@ -58,37 +58,17 @@ describe('an element type', function(){
 	});
 	
 	it('can have a representation factory', function(){
+		var renderable = new dia.Renderable(function(){});
+		
 		var rectType = new dia.ElementType();
-		rectType.addProperty(new dia.Property({
-			id: 'e.x',
-			type: dia.DataType.INTEGER,
-			default: 0
-		}));
-		rectType.addProperty(new dia.Property({
-			id: 'e.y',
-			type: dia.DataType.INTEGER,
-			default: 1
-		}));
-		rectType.addProperty(new dia.Property({
-			id: 'e.width',
-			type: dia.DataType.INTEGER,
-			default: 2
-		}));
-		rectType.addProperty(new dia.Property({
-			id: 'e.height',
-			type: dia.DataType.INTEGER,
-			default: 3
-		}));
-		rectType.setRepresentationFactory(function(element){
-			var repr = new dia.GraphicalRepresentation(element);
-			repr.addRenderable(new dia.RectanglePrimitive(repr));
-			return repr;
+		rectType.setRepresentationFactory(function(element, repr){
+			repr.addRenderable(renderable);
 		});
 		
 		var element = rectType.emptyElement();
 		var repr = element.getRepresentation();
 		
-		expect(repr.renderables[0].render).toBe(dia.RectanglePrimitive.prototype.render);
+		expect(repr.renderables[0]).toBe(renderable);
 	});
 	
 	it('is automatically registered upon instanciation', function(){

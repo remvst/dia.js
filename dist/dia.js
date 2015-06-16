@@ -334,7 +334,7 @@ dia.ElementType = function(options){
 	this.label = options.label || null;
 	this.properties = [];
 	this.propertyMap = {};
-	this.representationFactory = options.representation || null;
+	this.representationFactory = function(){};
 	this.creatorTool = null;
 	
 	if(this.id){
@@ -377,11 +377,21 @@ dia.ElementType.prototype.setRepresentationFactory = function(factory){
 	this.representationFactory = factory;
 };
 
+dia.ElementType.prototype.extendRepresentationFactory = function(extension){
+	var factory = this.representationFactory,
+		type = this;
+	this.setRepresentationFactory(function(element, representation){
+		factory.call(type, element, representation);
+		extension.call(type, element, representation);
+	});
+};
+
 dia.ElementType.prototype.createRepresentation = function(element){
-	if(!this.representationFactory){
-		throw new Error('Representation factory not set');
-	}
-	return this.representationFactory.call(this, element);
+	var representation = new dia.GraphicalRepresentation(element);
+	
+	this.representationFactory.call(this, element, representation);
+	
+	return representation;
 };
 
 dia.ElementType.prototype.clone = function(options){
@@ -2199,9 +2209,7 @@ dia.generic.RECTANGLE.addProperty(new dia.Property({
 	default: 1
 }));
 
-dia.generic.RECTANGLE.setRepresentationFactory(function(element){
-	var repr = new dia.GraphicalRepresentation(element);
-	
+dia.generic.RECTANGLE.setRepresentationFactory(function(element, repr){
 	repr.addRenderable(new dia.Renderable(function(c){
 		c.fillStyle = element.getProperty('backgroundColor');
 		c.fillRect(
@@ -2240,8 +2248,6 @@ dia.generic.RECTANGLE.setRepresentationFactory(function(element){
 
 	var handle = new dia.MoveElementDragHandle(element, repr.area, 'points');
 	repr.addHandle(handle);
-	
-	return repr;
 });
 
 dia.generic.RECTANGLE.creatorTool = new dia.CreateTool({
@@ -2279,9 +2285,7 @@ dia.generic.RELATION.addProperty(new dia.Property({
 	default: []
 }));
 
-dia.generic.RELATION.setRepresentationFactory(function(element){
-	var repr = new dia.GraphicalRepresentation(element);
-
+dia.generic.RELATION.setRepresentationFactory(function(element, repr){
 	var areaFrom = new dia.RectangleArea({
 		x: function(){ return fromPosition().x - 5 },
 		y: function(){ return fromPosition().y - 5 },
@@ -2353,8 +2357,6 @@ dia.generic.RELATION.setRepresentationFactory(function(element){
 
 	var toHandle = new dia.MoveAnchorDragHandle(element, areaTo, 'to');
 	repr.addHandle(toHandle);
-
-	return repr;
 });
 
 dia.generic.RELATION.creatorTool = new dia.CreateTool({

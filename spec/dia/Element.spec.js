@@ -136,15 +136,12 @@ describe('an element', function(){
 		var parsed = dia.Element.fromJSON(json);
 		
 		expect(parsed.id).toEqual(element.id);
-		expect(parsed.type).toEqual(element.type);
+		expect(parsed.type.id).toBe(element.type.id);
 		expect(parsed.properties).toEqual(element.properties);
 	});
 	
 	it('cannot be contained if no area is specified in the representation', function(){
 		var type = new dia.ElementType();
-		type.setRepresentationFactory(function(element){
-			return new dia.GraphicalRepresentation(element);
-		});
 		var element = type.emptyElement();
 		
 		var area = new dia.RectangleArea({
@@ -159,13 +156,11 @@ describe('an element', function(){
 	
 	it('can be contained if an area is specified in the representation', function(){
 		var type = new dia.ElementType();
-		type.setRepresentationFactory(function(element){
-			var repr = new dia.GraphicalRepresentation(element);
+		type.setRepresentationFactory(function(element, repr){
 			repr.area = new dia.Area();
 			repr.area.intersectsWith = function(otherArea){
 				return true;
 			};
-			return repr;
 		});
 		var element = type.emptyElement();
 		

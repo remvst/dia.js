@@ -29,17 +29,13 @@ describe('a selection tool', function(){
 			type: dia.DataType.INTEGER,
 			default: 10
 		}));
-		rectangleType.setRepresentationFactory(function(element){
-			var repr = new dia.GraphicalRepresentation(element);
-			
+		rectangleType.setRepresentationFactory(function(element, repr){
 			repr.area = new dia.RectangleArea({
 				x: function(){ return element.getProperty('x'); },
 				y: function(){ return element.getProperty('y'); },
 				width: function(){ return element.getProperty('width'); },
 				height: function(){ return element.getProperty('height'); }
 			});
-			
-			return repr;
 		});
 		
 		var sheet = new dia.Sheet();
@@ -102,17 +98,13 @@ describe('a selection tool', function(){
 			type: dia.DataType.INTEGER,
 			default: 0
 		}));
-		rectangleType.setRepresentationFactory(function(element){
-			var repr = new dia.GraphicalRepresentation(element);
-			
+		rectangleType.setRepresentationFactory(function(element, repr){
 			repr.area = new dia.RectangleArea({
 				x: function(){ return element.getProperty('x'); },
 				y: function(){ return element.getProperty('y'); },
 				width: function(){ return 10; },
 				height: function(){ return 10; }
 			});
-			
-			return repr;
 		});
 		
 		var sheet = new dia.Sheet();
@@ -146,17 +138,13 @@ describe('a selection tool', function(){
 			type: dia.DataType.INTEGER,
 			default: 0
 		}));
-		rectangleType.setRepresentationFactory(function(element){
-			var repr = new dia.GraphicalRepresentation(element);
-			
+		rectangleType.setRepresentationFactory(function(element, repr){
 			repr.area = new dia.RectangleArea({
 				x: function(){ return element.getProperty('x'); },
 				y: function(){ return element.getProperty('y'); },
 				width: function(){ return 10 },
 				height: function(){ return 10 }
 			});
-			
-			return repr;
 		});
 		
 		var sheet = new dia.Sheet();
@@ -230,9 +218,7 @@ describe('a selection tool', function(){
 			id: 'y',
 			default: 0
 		}));
-		type.setRepresentationFactory(function(element){
-			var repr = new dia.GraphicalRepresentation(element);
-			
+		type.setRepresentationFactory(function(element, repr){
 			var area = new dia.RectangleArea({
 				x: function(){ return element.getProperty('x'); },
 				y: function(){ return element.getProperty('y'); },
@@ -242,8 +228,6 @@ describe('a selection tool', function(){
 			var handle = new dia.MoveElementDragHandle(element, area);
 			
 			repr.addHandle(handle);
-			
-			return repr;
 		});
 		
 		var sheet = new dia.Sheet();
@@ -284,9 +268,7 @@ describe('a selection tool', function(){
 			id: 'x',
 			default: 0
 		}));
-		type.setRepresentationFactory(function(element){
-			var repr = new dia.GraphicalRepresentation(element);
-			
+		type.setRepresentationFactory(function(element, repr){
 			var area = new dia.RectangleArea({
 				x: function(){ return 0; },
 				y: function(){ return 0; },
@@ -295,8 +277,6 @@ describe('a selection tool', function(){
 			});
 			var handle = new dia.DragHandle(element, area);
 			repr.addHandle(handle);
-			
-			return repr;
 		});
 		
 		var sheet = new dia.Sheet();

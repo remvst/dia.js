@@ -111,19 +111,15 @@ describe('a sheet', function(){
 	
 	it('can find an element containing a point', function(){
 		var type1 = new dia.ElementType();
-		type1.setRepresentationFactory(function(element){
-			var repr = new dia.GraphicalRepresentation(element);
+		type1.setRepresentationFactory(function(element, repr){
 			repr.area = new dia.Area();
 			repr.area.contains = function(x, y){ return x === 0 && y === 1; };
-			return repr;
 		});
 		
 		var type2 = new dia.ElementType();
-		type2.setRepresentationFactory(function(element){
-			var repr = new dia.GraphicalRepresentation(element);
+		type2.setRepresentationFactory(function(element, repr){
 			repr.area = new dia.Area();
 			repr.area.contains = function(x, y){ return x === 1 && y === 2; };
-			return repr;
 		});
 		
 		var sheet = new dia.Sheet();

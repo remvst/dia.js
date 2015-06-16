@@ -5,7 +5,7 @@ dia.ElementType = function(options){
 	this.label = options.label || null;
 	this.properties = [];
 	this.propertyMap = {};
-	this.representationFactory = options.representation || null;
+	this.representationFactory = function(){};
 	this.creatorTool = null;
 	
 	if(this.id){
@@ -48,11 +48,21 @@ dia.ElementType.prototype.setRepresentationFactory = function(factory){
 	this.representationFactory = factory;
 };
 
+dia.ElementType.prototype.extendRepresentationFactory = function(extension){
+	var factory = this.representationFactory,
+		type = this;
+	this.setRepresentationFactory(function(element, representation){
+		factory.call(type, element, representation);
+		extension.call(type, element, representation);
+	});
+};
+
 dia.ElementType.prototype.createRepresentation = function(element){
-	if(!this.representationFactory){
-		throw new Error('Representation factory not set');
-	}
-	return this.representationFactory.call(this, element);
+	var representation = new dia.GraphicalRepresentation(element);
+	
+	this.representationFactory.call(this, element, representation);
+	
+	return representation;
 };
 
 dia.ElementType.prototype.clone = function(options){

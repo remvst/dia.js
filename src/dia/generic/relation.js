@@ -21,9 +21,7 @@ dia.generic.RELATION.addProperty(new dia.Property({
 	default: []
 }));
 
-dia.generic.RELATION.setRepresentationFactory(function(element){
-	var repr = new dia.GraphicalRepresentation(element);
-
+dia.generic.RELATION.setRepresentationFactory(function(element, repr){
 	var areaFrom = new dia.RectangleArea({
 		x: function(){ return fromPosition().x - 5 },
 		y: function(){ return fromPosition().y - 5 },
@@ -95,8 +93,6 @@ dia.generic.RELATION.setRepresentationFactory(function(element){
 
 	var toHandle = new dia.MoveAnchorDragHandle(element, areaTo, 'to');
 	repr.addHandle(toHandle);
-
-	return repr;
 });
 
 dia.generic.RELATION.creatorTool = new dia.CreateTool({

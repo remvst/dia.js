@@ -102,9 +102,7 @@
 				default: [],
 				label: 'Instance methods'
 			}));
-			classType.setRepresentationFactory(function(element){
-				var representation = new dia.GraphicalRepresentation(element);
-
+			classType.setRepresentationFactory(function(element, representation){
 				var lineHeight = 20;
 				var padding = 10;
 
@@ -170,8 +168,6 @@
 				representation.addHandle(moveHandle);
 				
 				representation.area = area;
-
-				return representation;
 			});
 			
 			classType.creatorTool = new dia.CreateTool({
@@ -204,9 +200,7 @@
 				private: true
 			}));
 			
-			relationType.setRepresentationFactory(function(element){
-				var repr = new dia.GraphicalRepresentation(element);
-				
+			relationType.setRepresentationFactory(function(element, repr){
 				var fromPosition = function(){
 					var from = element.getProperty('from');
 					var fromRepr = element.sheet.getElement(from.element).getRepresentation();
@@ -283,8 +277,6 @@
 				
 				var tmpHandle = new dia.DragHandle(element, repr.area);
 				repr.addHandle(tmpHandle);
-				
-				return repr;
 			});
 			
 			var elementThatContains = function(sheet, x, y){
@@ -370,9 +362,7 @@
 				default: []
 			}));
 			
-			brokenType.setRepresentationFactory(function(element){
-				var repr = new dia.GraphicalRepresentation(element);
-				
+			brokenType.setRepresentationFactory(function(element, repr){
 				var areaFrom = new dia.RectangleArea({
 					x: function(){ return fromPosition().x - 5 },
 					y: function(){ return fromPosition().y - 5 },
@@ -444,8 +434,6 @@
 
 				var toHandle = new dia.MoveAnchorDragHandle(element, areaTo, 'to');
 				repr.addHandle(toHandle);
-				
-				return repr;
 			});
 			
 			brokenType.creatorTool = new dia.CreateTool({
