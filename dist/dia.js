@@ -396,8 +396,8 @@ dia.ElementType.prototype.createRepresentation = function(element){
 
 dia.ElementType.prototype.clone = function(options){
 	var type = new dia.ElementType({
-		id: this.id,
-		label: this.label
+		id: options.id || this.id,
+		label: options.label || this.label
 	});
 	type.representationFactory = this.representationFactory;
 	type.creatorTool = this.creatorTool;
