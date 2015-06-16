@@ -1010,6 +1010,13 @@ dia.Area.prototype.bindAnchorToBounds = function(anchor){
 	
 };
 
+dia.Area.prototype.getRelativeCenter = function(){
+	return {
+		x: 0,
+		y: 0
+	};
+};
+
 dia.Area.intersectionMap = {};
 
 dia.Area.defineIntersection = function(type1, type2, func){
@@ -1119,6 +1126,81 @@ dia.Area.defineIntersection('rectangle', 'rectangle', function(a, b){
 	// Taken from http://stackoverflow.com/questions/306316/determine-if-two-rectangles-overlap-each-other
 	return boundsA.x1 < boundsB.x2 && boundsA.x2 > boundsB.x1 &&
     	   boundsA.y1 < boundsB.y2 && boundsA.y2 > boundsB.y1;
+});
+
+dia.CircleArea = function(options){
+	dia.Area.call(this);
+	
+	this.type = 'circle';
+	
+	options = options || {};
+	this.getX = options.x;
+	this.getY = options.y;
+	this.getRadius = options.radius;
+};
+
+extend(dia.CircleArea, dia.Area);
+
+dia.CircleArea.prototype.contains = function(x, y){
+	return dia.distance(x, y, this.getX(), this.getY()) < this.getRadius();
+};
+
+dia.CircleArea.prototype.render = function(c){
+	var areaX = this.getX();
+	var areaY = this.getY();
+	var areaRadius = this.getRadius();
+	
+	c.strokeStyle = 'red';
+	c.lineWidth = 1;
+	c.beginPath();
+	c.arc(areaX, areaY, areaRadius, 0, 2 * Math.PI, true);
+	c.stroke();
+};
+
+dia.CircleArea.prototype.surface = function(){
+	// TODO check formula
+	return (2 / 3) * Math.PI * Math.pow(this.getRadius(), 2);
+};
+
+dia.CircleArea.prototype.bindAnchorToBounds = function(anchor){
+	var angle = Math.atan2(anchor.y, anchor.x);
+	anchor.x = Math.cos(angle) * this.getRadius();
+	anchor.y = Math.sin(angle) * this.getRadius();
+};
+
+dia.Area.defineIntersection('rectangle', 'circle', function(rectangle, circle){
+	// Let's assume it's another rectangle area
+	var areaX = circle.getX();
+	var areaY = circle.getY();
+	var areaRadius = circle.getRadius();
+	
+	var bounds = rectangle.getBounds();
+	
+	// Check if rectangle contains the center
+	if(dia.between(bounds.x1, areaX, bounds.x2) && dia.between(bounds.y1, areaY, bounds.y2)){
+		return true;
+	}
+	
+	// Check if circle is on the top or bottom
+	if(dia.between(bounds.x1, areaX, bounds.x2) && dia.between(bounds.y1 - areaRadius, areaY, bounds.y2 + areaRadius)){
+		return true;
+	}
+	
+	// Check if circle is on the left or right
+	if(dia.between(bounds.y1, areaY, bounds.y2) && dia.between(bounds.x1 - areaRadius, areaX, bounds.x2 + areaRadius)){
+		return true;
+	}
+	
+	return false;
+	
+	var r = new dia.RectangleArea({
+		x: function(){ return areaX - areaRadius; },
+		y: function(){ return areaY - areaRadius; },
+		width: function(){ return areaRadius * 2; },
+		height: function(){ return areaRadius * 2; },
+	});
+	
+	return r.intersectsWith(rectangle);
 });
 
 dia.LineArea = function(options){
@@ -2296,11 +2378,10 @@ dia.generic.CIRCLE.setRepresentationFactory(function(element, repr){
 		);
 	}));
 
-	repr.area = new dia.RectangleArea({
-		x: function(){ return element.getProperty('x') - element.getProperty('radius'); },
-		y: function(){ return element.getProperty('y') - element.getProperty('radius'); },
-		width: function(){ return element.getProperty('radius') * 2; },
-		height: function(){ return element.getProperty('radius') * 2; },
+	repr.area = new dia.CircleArea({
+		x: function(){ return element.getProperty('x'); },
+		y: function(){ return element.getProperty('y'); },
+		radius: function(){ return element.getProperty('radius'); }
 	});
 
 	var handle = new dia.MoveElementDragHandle(element, repr.area, 'points');
@@ -2570,25 +2651,28 @@ dia.generic.RELATION.creatorTool = new dia.CreateTool({
 			var toArea = to.getRepresentation().area;
 
 			var fromPosition = {
-				x: fromArea.getX() + fromArea.getWidth() / 2,
-				y: fromArea.getY() + fromArea.getHeight() / 2,
+				x: fromArea.getX(),
+				y: fromArea.getY(),
 			};
 			var toPosition = {
-				x: toArea.getX() + toArea.getWidth() / 2,
-				y: toArea.getY() + toArea.getHeight() / 2,
+				x: toArea.getX(),
+				y: toArea.getY(),
 			};
 
 			var angle = Math.atan2(toPosition.y - fromPosition.y, toPosition.x - fromPosition.x);
+			
+			var fromRelativeCenter = fromArea.getRelativeCenter();
+			var toRelativeCenter = toArea.getRelativeCenter();
 
 			var fromAnchor = {
 				element: this.from.id,
-				x: fromArea.getWidth() / 2 + Math.cos(angle),
-				y: fromArea.getHeight() / 2 + Math.sin(angle)
+				x: fromRelativeCenter.x + Math.cos(angle),
+				y: fromRelativeCenter.y + Math.sin(angle)
 			};
 			var toAnchor = {
 				element: to.id,
-				x: toArea.getWidth() / 2 - Math.cos(angle),
-				y: toArea.getHeight() / 2 - Math.sin(angle)
+				x: toRelativeCenter.x - Math.cos(angle),
+				y: toRelativeCenter.y - Math.sin(angle)
 			};
 
 			// Let's bind those anchors

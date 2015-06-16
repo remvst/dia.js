@@ -22,6 +22,13 @@ dia.Area.prototype.bindAnchorToBounds = function(anchor){
 	
 };
 
+dia.Area.prototype.getRelativeCenter = function(){
+	return {
+		x: 0,
+		y: 0
+	};
+};
+
 dia.Area.intersectionMap = {};
 
 dia.Area.defineIntersection = function(type1, type2, func){

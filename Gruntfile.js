@@ -31,6 +31,7 @@ module.exports = function(grunt) {
 					'src/dia/BrokenLineDragHandle.js',
 					'src/dia/Area.js',
 					'src/dia/RectangleArea.js',
+					'src/dia/CircleArea.js',
 					'src/dia/LineArea.js',
 					'src/dia/BrokenLineArea.js',
 					'src/dia/InteractionManager.js',

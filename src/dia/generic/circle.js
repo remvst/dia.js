@@ -96,11 +96,10 @@ dia.generic.CIRCLE.setRepresentationFactory(function(element, repr){
 		);
 	}));
 
-	repr.area = new dia.RectangleArea({
-		x: function(){ return element.getProperty('x') - element.getProperty('radius'); },
-		y: function(){ return element.getProperty('y') - element.getProperty('radius'); },
-		width: function(){ return element.getProperty('radius') * 2; },
-		height: function(){ return element.getProperty('radius') * 2; },
+	repr.area = new dia.CircleArea({
+		x: function(){ return element.getProperty('x'); },
+		y: function(){ return element.getProperty('y'); },
+		radius: function(){ return element.getProperty('radius'); }
 	});
 
 	var handle = new dia.MoveElementDragHandle(element, repr.area, 'points');

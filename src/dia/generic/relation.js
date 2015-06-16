@@ -107,25 +107,28 @@ dia.generic.RELATION.creatorTool = new dia.CreateTool({
 			var toArea = to.getRepresentation().area;
 
 			var fromPosition = {
-				x: fromArea.getX() + fromArea.getWidth() / 2,
-				y: fromArea.getY() + fromArea.getHeight() / 2,
+				x: fromArea.getX(),
+				y: fromArea.getY(),
 			};
 			var toPosition = {
-				x: toArea.getX() + toArea.getWidth() / 2,
-				y: toArea.getY() + toArea.getHeight() / 2,
+				x: toArea.getX(),
+				y: toArea.getY(),
 			};
 
 			var angle = Math.atan2(toPosition.y - fromPosition.y, toPosition.x - fromPosition.x);
+			
+			var fromRelativeCenter = fromArea.getRelativeCenter();
+			var toRelativeCenter = toArea.getRelativeCenter();
 
 			var fromAnchor = {
 				element: this.from.id,
-				x: fromArea.getWidth() / 2 + Math.cos(angle),
-				y: fromArea.getHeight() / 2 + Math.sin(angle)
+				x: fromRelativeCenter.x + Math.cos(angle),
+				y: fromRelativeCenter.y + Math.sin(angle)
 			};
 			var toAnchor = {
 				element: to.id,
-				x: toArea.getWidth() / 2 - Math.cos(angle),
-				y: toArea.getHeight() / 2 - Math.sin(angle)
+				x: toRelativeCenter.x - Math.cos(angle),
+				y: toRelativeCenter.y - Math.sin(angle)
 			};
 
 			// Let's bind those anchors
