@@ -140,7 +140,7 @@ describe('built in anchor data type', function(){
 			element: 'anid',
 			x: 1,
 			y: -1
-		})).toBe(false);
+		})).toBe(true);
 		expect(dia.DataType.ANCHOR.validateValue({
 			element: 'anid',
 			x: 1,
