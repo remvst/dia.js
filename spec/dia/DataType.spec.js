@@ -146,5 +146,10 @@ describe('built in anchor data type', function(){
 			x: 1,
 			y: 1
 		})).toBe(true);
+		expect(dia.DataType.ANCHOR.validateValue({
+			element: 'anid',
+			x: 12,
+			y: -10
+		})).toBe(true);
 	});
 });

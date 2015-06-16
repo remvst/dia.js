@@ -65,8 +65,6 @@ dia.Sheet.prototype.findElementContaining = function(x, y){
 	var area;
 	for(var i = 0 ; i < this.elements.length ; i++){
 		area = this.elements[i].getRepresentation().area;
-		console.log(area.contains(x, y), x, y);
-		window.area = area;
 		if(area && area.contains(x, y)){
 			return this.elements[i];
 		}
