@@ -71,6 +71,26 @@ describe('an element type', function(){
 		expect(repr.renderables[0]).toBe(renderable);
 	});
 	
+	it('can extend its representation factory', function(){
+		var renderable = new dia.Renderable(function(){});
+		
+		var rectType = new dia.ElementType();
+		rectType.setRepresentationFactory(function(element, repr){
+			repr.foo = [];
+		});
+		rectType.extendRepresentationFactory(function(element, repr){
+			repr.foo.push(1);
+		});
+		rectType.extendRepresentationFactory(function(element, repr){
+			repr.foo.push(2);
+		});
+		
+		var element = rectType.emptyElement();
+		var repr = element.getRepresentation();
+		
+		expect(repr.foo).toEqual([1, 2]);
+	});
+	
 	it('is automatically registered upon instanciation', function(){
 		var type = new dia.ElementType({
 			id: 'mytypeid'
