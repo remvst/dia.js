@@ -30,3 +30,22 @@ dia.CreateTool.prototype.mouseUp = function(sheet, x, y){
 	
 	this.currentElement = null;
 };
+
+dia.CreateTool.prototype.extend = function(options){
+	var original = this;
+	return new dia.CreateTool({
+		type: options.type || this.type,
+		mouseDown: function(sheet, x, y){
+			original.onMouseDown.call(this, sheet, x, y);
+			options.mouseDown.call(this, sheet, x, y);
+		},
+		mouseMove: function(sheet, x, y){
+			original.onMouseMove.call(this, sheet, x, y);
+			options.mouseMove.call(this, sheet, x, y);
+		},
+		mouseUp: function(sheet, x, y){
+			original.onMouseUp.call(this, sheet, x, y);
+			options.mouseUp.call(this, sheet, x, y);
+		}
+	});
+};

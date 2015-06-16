@@ -143,15 +143,15 @@ describe('an element type', function(){
 			default: 1
 		}));
 		type.setRepresentationFactory(function(element){
-			var repr = new dia.GraphicalRepresentation(element);
 			repr.addRenderable(new dia.RectanglePrimitive(repr));
-			return repr;
 		});
 		
-		var clone = type.clone();
+		var clone = type.clone({
+			id: 'otherid'
+		});
 		
 		expect(clone).not.toBe(type);
-		expect(clone.id).toEqual(type.id);
+		expect(clone.id).toEqual('otherid');
 		expect(clone.label).toEqual(type.label);
 		expect(clone.properties[0]).toEqual(type.properties[0]);
 		expect(clone.properties[1]).toEqual(type.properties[1]);
