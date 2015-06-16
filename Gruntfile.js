@@ -59,6 +59,23 @@ module.exports = function(grunt) {
 					'bower_components/bootstrap/dist/js/bootstrap.min.js'
 			  	],
 				specs: 'spec/**/**.spec.js'
+			},
+			coverage: {
+				src: 'dist/dia.js',
+				options: {
+					specs: ['spec/dia/**.spec.js'],
+					template: require('grunt-template-jasmine-istanbul'),
+					templateOptions: {
+						coverage: 'bin/coverage/coverage.json',
+						report: 'bin/coverage',
+						thresholds: {
+							lines: 75,
+							statements: 75,
+							branches: 75,
+							functions: 90
+						}
+					}
+				}
 			}
 		}
 	});
@@ -67,7 +84,9 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-contrib-uglify');
 	grunt.loadNpmTasks('grunt-contrib-concat');
 	grunt.loadNpmTasks('grunt-contrib-jasmine');
+	//grunt.loadNpmTasks('grunt-jasmine-coverage');
 
 	// Default task(s).
 	grunt.registerTask('default', ['concat', 'jasmine']);
+	grunt.registerTask('test:coverage', ['concat', 'jasmine:coverage']);
 };
