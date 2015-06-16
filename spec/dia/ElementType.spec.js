@@ -145,6 +145,9 @@ describe('an element type', function(){
 		type.setRepresentationFactory(function(element){
 			repr.addRenderable(new dia.RectanglePrimitive(repr));
 		});
+		type.creatorTool = new dia.CreateTool({
+			type: type
+		});
 		
 		var clone = type.clone({
 			id: 'otherid'
@@ -157,5 +160,7 @@ describe('an element type', function(){
 		expect(clone.properties[1]).toEqual(type.properties[1]);
 		expect(clone.properties[0]).not.toBe(type.properties[0]);
 		expect(clone.properties[1]).not.toBe(type.properties[1]);
+		expect(clone.creatorTool).not.toBe(type.creatorTool);
+		expect(clone.creatorTool.type).toBe(clone);
 	});
 });

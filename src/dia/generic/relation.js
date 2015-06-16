@@ -98,10 +98,10 @@ dia.generic.RELATION.setRepresentationFactory(function(element, repr){
 dia.generic.RELATION.creatorTool = new dia.CreateTool({
 	type: dia.generic.RELATION,
 	mouseDown: function(sheet, x, y){
-		this.from = elementThatContains(sheet, x, y);
+		this.from = sheet.findElementContaining(x, y);
 	},
 	mouseUp: function(sheet, x, y){
-		var to = elementThatContains(sheet, x, y);
+		var to = sheet.findElementContaining(x, y);
 		if(to && this.from && to !== this.from){
 			var fromArea = this.from.getRepresentation().area;
 			var toArea = to.getRepresentation().area;

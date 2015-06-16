@@ -33,6 +33,11 @@ dia.CreateTool.prototype.mouseUp = function(sheet, x, y){
 
 dia.CreateTool.prototype.extend = function(options){
 	var original = this;
+	
+	options.mouseDown = options.mouseDown || new Function();
+	options.mouseMove = options.mouseMove || new Function();
+	options.mouseUp = options.mouseUp || new Function();
+	
 	return new dia.CreateTool({
 		type: options.type || this.type,
 		mouseDown: function(sheet, x, y){

@@ -71,9 +71,11 @@ dia.ElementType.prototype.clone = function(options){
 		label: options.label || this.label
 	});
 	type.representationFactory = this.representationFactory;
-	type.creatorTool = this.creatorTool;
-	if(type.creatorTool){
-		type.creatorTool.type = type;
+	
+	if(this.creatorTool){
+		type.creatorTool = this.creatorTool.extend({
+			type: type
+		});
 	}
 	
 	for(var i = 0 ; i < this.properties.length ; i++){

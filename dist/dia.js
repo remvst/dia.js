@@ -147,6 +147,8 @@ dia.Sheet.prototype.findElementContaining = function(x, y){
 	var area;
 	for(var i = 0 ; i < this.elements.length ; i++){
 		area = this.elements[i].getRepresentation().area;
+		console.log(area.contains(x, y), x, y);
+		window.area = area;
 		if(area && area.contains(x, y)){
 			return this.elements[i];
 		}
@@ -342,9 +344,11 @@ dia.ElementType.prototype.clone = function(options){
 		label: options.label || this.label
 	});
 	type.representationFactory = this.representationFactory;
-	type.creatorTool = this.creatorTool;
-	if(type.creatorTool){
-		type.creatorTool.type = type;
+	
+	if(this.creatorTool){
+		type.creatorTool = this.creatorTool.extend({
+			type: type
+		});
 	}
 	
 	for(var i = 0 ; i < this.properties.length ; i++){
@@ -1438,6 +1442,11 @@ dia.CreateTool.prototype.mouseUp = function(sheet, x, y){
 
 dia.CreateTool.prototype.extend = function(options){
 	var original = this;
+	
+	options.mouseDown = options.mouseDown || new Function();
+	options.mouseMove = options.mouseMove || new Function();
+	options.mouseUp = options.mouseUp || new Function();
+	
 	return new dia.CreateTool({
 		type: options.type || this.type,
 		mouseDown: function(sheet, x, y){
@@ -2323,10 +2332,10 @@ dia.generic.RELATION.setRepresentationFactory(function(element, repr){
 dia.generic.RELATION.creatorTool = new dia.CreateTool({
 	type: dia.generic.RELATION,
 	mouseDown: function(sheet, x, y){
-		this.from = elementThatContains(sheet, x, y);
+		this.from = sheet.findElementContaining(x, y);
 	},
 	mouseUp: function(sheet, x, y){
-		var to = elementThatContains(sheet, x, y);
+		var to = sheet.findElementContaining(x, y);
 		if(to && this.from && to !== this.from){
 			var fromArea = this.from.getRepresentation().area;
 			var toArea = to.getRepresentation().area;

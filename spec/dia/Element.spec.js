@@ -144,6 +144,16 @@ describe('an element', function(){
 		expect(parsed.properties).toEqual(element.properties);
 	});
 	
+	it('throws an error if parsed from JSON with no valid type', function(){
+		var element = new dia.ElementType().emptyElement();
+		
+		var json = element.toJSON();
+		
+		expect(function(){
+			dia.Element.fromJSON(json);
+		}).toThrow();
+	});
+	
 	it('cannot be contained if no area is specified in the representation', function(){
 		var type = new dia.ElementType();
 		var element = type.emptyElement();
@@ -176,5 +186,17 @@ describe('an element', function(){
 		});
 		
 		expect(element.isContainedIn(area)).toBe(true);
+	});
+	
+	it('can be rendered', function(){
+		var element = new dia.ElementType().emptyElement();
+		var repr = element.getRepresentation();
+		repr.render = function(){
+			repr.rendered = true;
+		};
+		
+		element.render({});
+		
+		expect(repr.rendered).toBe(true);
 	});
 });

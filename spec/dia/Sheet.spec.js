@@ -138,4 +138,18 @@ describe('a sheet', function(){
 		expect(sheet.findElementContaining(0, 1)).toBe(element1);
 		expect(sheet.findElementContaining(1, 2)).toBe(element2);
 	});
+	
+	it('can claim ownership of an element', function(){
+		var element = new dia.ElementType().emptyElement();
+		
+		var sheet1 = new dia.Sheet();
+		var sheet2 = new dia.Sheet();
+		
+		sheet1.addElement(element);
+		sheet2.addElement(element);
+		
+		expect(element.sheet).toBe(sheet2);
+		expect(sheet1.elements).toEqual([]);
+		expect(sheet2.elements).toEqual([element]);
+	});
 });

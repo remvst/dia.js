@@ -15,6 +15,7 @@ describe('a data type', function(){
 		
 		expect(type.label).toEqual('datatype');
 		expect(type.validate).toEqual(validator);
+		expect(type.fromJSON('olol')).toBe('olol');
 	});
 	
 	it('can handle JSON imports/exports', function(){
