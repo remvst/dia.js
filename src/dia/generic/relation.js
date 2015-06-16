@@ -119,15 +119,16 @@ dia.generic.RELATION.creatorTool = new dia.CreateTool({
 
 			var fromAnchor = {
 				element: this.from.id,
-				x: 0,
-				y: 0
+				x: fromArea.getWidth() / 2 + Math.cos(angle),
+				y: fromArea.getHeight() / 2 + Math.sin(angle)
 			};
 			var toAnchor = {
 				element: to.id,
-				x: 0,
-				y: 0
+				x: toArea.getWidth() / 2 - Math.cos(angle),
+				y: toArea.getHeight() / 2 - Math.sin(angle)
 			};
 
+			// Let's bind those anchors
 			fromArea.bindAnchorToBounds(fromAnchor);
 			toArea.bindAnchorToBounds(toAnchor);
 
