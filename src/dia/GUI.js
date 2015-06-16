@@ -68,14 +68,20 @@ dia.GUI.prototype.setupInterationManager = function(){
 	
 	this.canvas.addEventListener('mousedown', function(e){
 		if(dia.Dialog.openCount === 0){
+			gui.bufferSheetRender();
+		
 			e.preventDefault();
 
 			var position = gui.getPositionOnSheet(e);
 			gui.interactionManager.mouseDown(position.x, position.y);
+			
+			gui.flushSheetRender();
 		}
 	}, false);
 	this.canvas.addEventListener('mousemove', function(e){
 		if(dia.Dialog.openCount === 0){
+			gui.bufferSheetRender();
+		
 			e.preventDefault();
 
 			var position = gui.getPositionOnSheet(e);
@@ -83,26 +89,40 @@ dia.GUI.prototype.setupInterationManager = function(){
 			
 			var handle = gui.app.sheet.findHandleContaining(position.x, position.y);
 			gui.canvas.style.cursor = handle ? handle.cursor : 'default';
+			
+			gui.flushSheetRender();
 		}
 	}, false);
 	this.canvas.addEventListener('mouseup', function(e){
 		if(dia.Dialog.openCount === 0){
+			gui.bufferSheetRender();
+			
 			e.preventDefault();
 
 			var position = gui.getPositionOnSheet(e);
 			gui.interactionManager.mouseUp(position.x, position.y);
+			
+			gui.flushSheetRender();
 		}
 	}, false);
 	document.addEventListener('keydown', function(e){
 		if(dia.Dialog.openCount === 0){
+			gui.bufferSheetRender();
+			
 			e.preventDefault();
 			gui.interactionManager.keyDown(e.keyCode);
+			
+			gui.flushSheetRender();
 		}
 	}, false);
 	document.addEventListener('keyup', function(e){
 		if(dia.Dialog.openCount === 0){
+			gui.bufferSheetRender();
+			
 			e.preventDefault();
 			gui.interactionManager.keyUp(e.keyCode);
+			
+			gui.flushSheetRender();
 		}
 	}, false);
 	
@@ -155,19 +175,23 @@ dia.GUI.prototype.selectTool = function(tool){
 };
 
 dia.GUI.prototype.renderSheet = function(){
-	var canvas = this.getSheetCanvas(this.app.sheet);
-	canvas.render(this.context);
-	
-	// Rendering selection rectangle (kinda sketchy)
-	var selectionTool = this.app.toolbox.getTool('select');
-	if(selectionTool && selectionTool.selectionStart){
-		this.context.strokeStyle = 'black';
-		this.context.strokeRect(
-			selectionTool.selectionStart.x + .5 - canvas.scrollX,
-			selectionTool.selectionStart.y + .5 - canvas.scrollY,
-			selectionTool.selectionEnd.x - selectionTool.selectionStart.x,
-			selectionTool.selectionEnd.y - selectionTool.selectionStart.y
-		)
+	if(this.bufferRender){
+		this.bufferedRenders++;
+	}else{
+		var canvas = this.getSheetCanvas(this.app.sheet);
+		canvas.render(this.context);
+
+		// Rendering selection rectangle (kinda sketchy)
+		var selectionTool = this.app.toolbox.getTool('select');
+		if(selectionTool && selectionTool.selectionStart){
+			this.context.strokeStyle = 'black';
+			this.context.strokeRect(
+				selectionTool.selectionStart.x + .5 - canvas.scrollX,
+				selectionTool.selectionStart.y + .5 - canvas.scrollY,
+				selectionTool.selectionEnd.x - selectionTool.selectionStart.x,
+				selectionTool.selectionEnd.y - selectionTool.selectionStart.y
+			)
+		}
 	}
 };
 
@@ -208,4 +232,18 @@ dia.GUI.prototype.elementModified = function(e){
 
 dia.GUI.prototype.getSheetCanvas = function(sheet){
 	return this.sheetCanvases[sheet.id];
+};
+
+dia.GUI.prototype.bufferSheetRender = function(){
+	this.bufferRender = true;
+	this.bufferedRenders = 0;
+};
+
+dia.GUI.prototype.flushSheetRender = function(){
+	this.bufferRender = false;
+	
+	if(this.bufferedRenders > 0){
+		this.renderSheet();
+	}
+	this.bufferedRenders = 0;
 };
