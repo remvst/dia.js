@@ -56,6 +56,29 @@ dia.RectangleArea.prototype.surface = function(){
 	return this.getWidth() * this.getHeight();
 };
 
+dia.RectangleArea.prototype.bindAnchorToBounds = function(anchor){
+	var bounds = this.getBounds();
+	
+	var width = this.getWidth(),
+		height = this.getHeight();
+	
+	// Let's put the anchor within our bounds
+	anchor.x = dia.limit(anchor.x, 0, this.getWidth());
+	anchor.y = dia.limit(anchor.y, 0, this.getHeight());
+	
+	// Now let's adjust it
+	var factorX = (anchor.x - width / 2) / width;
+	var factorY = (anchor.y - height / 2) / height;
+	
+	if(Math.abs(factorX) > Math.abs(factorY)){
+		anchor.x = factorX > 0 ? width : 0;
+	}else{
+		anchor.y = factorY > 0 ? height : 0;
+	}
+	
+	return anchor;
+};
+
 dia.Area.defineIntersection('rectangle', 'rectangle', function(a, b){
 	// Let's assume it's another rectangle area
 	var boundsA = a.getBounds();

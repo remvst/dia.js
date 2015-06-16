@@ -852,8 +852,23 @@ dia.MoveAnchorDragHandle = function(element, area, property){
 
 extend(dia.MoveAnchorDragHandle, dia.DragHandle);
 
+dia.MoveAnchorDragHandle.prototype.dragStart = function(){
+	var anchor = this.element.getProperty(this.property);
+	
+	this.accumDX = 0;
+	this.accumDY = 0;
+	
+	this.initialAnchorPositions = {
+		x: anchor.x,
+		y: anchor.y
+	};
+};
+
 dia.MoveAnchorDragHandle.prototype.dragMove = function(dx, dy, x, y){
 	var anchor = this.element.getProperty(this.property);
+	
+	this.accumDX += dx;
+	this.accumDY += dy;
 	
 	// Let's bind the coordinates to the element's side
 	// At the moment we assume its area will be a rectangle
@@ -863,11 +878,12 @@ dia.MoveAnchorDragHandle.prototype.dragMove = function(dx, dy, x, y){
 	// Copying the object is necessary to trigger property change event.
 	var newAnchor = {
 		element: anchoredElement.id,
-		x: dia.limit((x - anchoredArea.getX()) / anchoredArea.getWidth(), 0, 1),
-		y: dia.limit((y - anchoredArea.getY()) / anchoredArea.getHeight(), 0, 1)
+		x: this.initialAnchorPositions.x + this.accumDX,
+		y: this.initialAnchorPositions.y + this.accumDY
 	};
 	
-	dia.adjustAnchorRatios(newAnchor);
+	//dia.adjustAnchorRatios(newAnchor);
+	anchoredArea.bindAnchorToBounds(newAnchor);
 	
 	// Update the object
 	this.element.setProperty(this.property, newAnchor);
@@ -973,6 +989,10 @@ dia.Area.prototype.surface = function(){
 	return 0;
 };
 
+dia.Area.prototype.bindAnchorToBounds = function(anchor){
+	
+};
+
 dia.Area.intersectionMap = {};
 
 dia.Area.defineIntersection = function(type1, type2, func){
@@ -1051,6 +1071,29 @@ dia.RectangleArea.prototype.render = function(c){
 
 dia.RectangleArea.prototype.surface = function(){
 	return this.getWidth() * this.getHeight();
+};
+
+dia.RectangleArea.prototype.bindAnchorToBounds = function(anchor){
+	var bounds = this.getBounds();
+	
+	var width = this.getWidth(),
+		height = this.getHeight();
+	
+	// Let's put the anchor within our bounds
+	anchor.x = dia.limit(anchor.x, 0, this.getWidth());
+	anchor.y = dia.limit(anchor.y, 0, this.getHeight());
+	
+	// Now let's adjust it
+	var factorX = (anchor.x - width / 2) / width;
+	var factorY = (anchor.y - height / 2) / height;
+	
+	if(Math.abs(factorX) > Math.abs(factorY)){
+		anchor.x = factorX > 0 ? width : 0;
+	}else{
+		anchor.y = factorY > 0 ? height : 0;
+	}
+	
+	return anchor;
 };
 
 dia.Area.defineIntersection('rectangle', 'rectangle', function(a, b){
@@ -2271,8 +2314,8 @@ dia.generic.RELATION.setRepresentationFactory(function(element, repr){
 		var fromRepr = element.sheet.getElement(from.element).getRepresentation();
 
 		return {
-			x: fromRepr.area.getX() + fromRepr.area.getWidth() * from.x,
-			y: fromRepr.area.getY() + fromRepr.area.getHeight() * from.y
+			x: fromRepr.area.getX() + from.x,
+			y: fromRepr.area.getY() + from.y
 		};
 	};
 
@@ -2281,8 +2324,8 @@ dia.generic.RELATION.setRepresentationFactory(function(element, repr){
 		var toRepr = element.sheet.getElement(to.element).getRepresentation();
 
 		return {
-			x: toRepr.area.getX() + toRepr.area.getWidth() * to.x,
-			y: toRepr.area.getY() + toRepr.area.getHeight() * to.y
+			x: toRepr.area.getX() + to.x,
+			y: toRepr.area.getY() + to.y
 		};
 	};
 
@@ -2349,17 +2392,17 @@ dia.generic.RELATION.creatorTool = new dia.CreateTool({
 
 			var fromAnchor = {
 				element: this.from.id,
-				x: Math.cos(angle) / 2 + .5,
-				y: Math.sin(angle) / 2 + .5
+				x: 0,
+				y: 0
 			};
 			var toAnchor = {
 				element: to.id,
-				x: -Math.cos(angle) / 2 + .5,
-				y: -Math.sin(angle) / 2 + .5
+				x: 0,
+				y: 0
 			};
 
-			dia.adjustAnchorRatios(fromAnchor, this.from);
-			dia.adjustAnchorRatios(toAnchor, to);
+			fromArea.bindAnchorToBounds(fromAnchor);
+			toArea.bindAnchorToBounds(toAnchor);
 
 			var element = this.type.create({
 				from: fromAnchor,

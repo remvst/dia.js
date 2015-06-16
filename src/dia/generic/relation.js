@@ -41,8 +41,8 @@ dia.generic.RELATION.setRepresentationFactory(function(element, repr){
 		var fromRepr = element.sheet.getElement(from.element).getRepresentation();
 
 		return {
-			x: fromRepr.area.getX() + fromRepr.area.getWidth() * from.x,
-			y: fromRepr.area.getY() + fromRepr.area.getHeight() * from.y
+			x: fromRepr.area.getX() + from.x,
+			y: fromRepr.area.getY() + from.y
 		};
 	};
 
@@ -51,8 +51,8 @@ dia.generic.RELATION.setRepresentationFactory(function(element, repr){
 		var toRepr = element.sheet.getElement(to.element).getRepresentation();
 
 		return {
-			x: toRepr.area.getX() + toRepr.area.getWidth() * to.x,
-			y: toRepr.area.getY() + toRepr.area.getHeight() * to.y
+			x: toRepr.area.getX() + to.x,
+			y: toRepr.area.getY() + to.y
 		};
 	};
 
@@ -119,17 +119,17 @@ dia.generic.RELATION.creatorTool = new dia.CreateTool({
 
 			var fromAnchor = {
 				element: this.from.id,
-				x: Math.cos(angle) / 2 + .5,
-				y: Math.sin(angle) / 2 + .5
+				x: 0,
+				y: 0
 			};
 			var toAnchor = {
 				element: to.id,
-				x: -Math.cos(angle) / 2 + .5,
-				y: -Math.sin(angle) / 2 + .5
+				x: 0,
+				y: 0
 			};
 
-			dia.adjustAnchorRatios(fromAnchor, this.from);
-			dia.adjustAnchorRatios(toAnchor, to);
+			fromArea.bindAnchorToBounds(fromAnchor);
+			toArea.bindAnchorToBounds(toAnchor);
 
 			var element = this.type.create({
 				from: fromAnchor,

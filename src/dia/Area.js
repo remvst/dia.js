@@ -18,6 +18,10 @@ dia.Area.prototype.surface = function(){
 	return 0;
 };
 
+dia.Area.prototype.bindAnchorToBounds = function(anchor){
+	
+};
+
 dia.Area.intersectionMap = {};
 
 dia.Area.defineIntersection = function(type1, type2, func){
