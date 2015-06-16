@@ -1,5 +1,7 @@
 describe('a sheet', function(){
 	it('is initialized correctly', function(){
+		var uuid4 = dia.uuid4;
+		
 		dia.uuid4 = function(){
 			return 'uuid';
 		};
@@ -9,6 +11,8 @@ describe('a sheet', function(){
 		expect(sheet.elements).toEqual([]);
 		expect(sheet.title).toBe(null);
 		expect(sheet.id).toBe('uuid');
+		
+		dia.uuid4 = uuid4;
 	});
 	
 	it('can add elements', function(){

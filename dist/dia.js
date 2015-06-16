@@ -21,68 +21,6 @@ function extend(subClass,superClass){
 	}
 };
 
-function extendPrototype(superClasses,proto){
-    superClasses = superClasses instanceof Array ? superClasses : [superClasses];
-    //superClasses = [superClasses];
-	
-	var propStart = '__prop_';
-    
-	var subProto = {
-        superior : {}
-    };
-    for(var i in superClasses){
-        for(var j in superClasses[i].prototype){
-			var g = superClasses[i].prototype.__lookupGetter__(j), 
-				s = superClasses[i].prototype.__lookupSetter__(j);
-			
-			var propName = j;
-			if(propName.indexOf(propStart) === 0){
-				g = superClasses[i].prototype[j].get;
-				s = superClasses[i].prototype[j].set;
-				propName = j.substr(propStart.length);
-			}
-       
-			if ( g || s ) {
-				var prop = {};
-				if ( g )
-					prop.get = g;
-				if ( s )
-					prop.set = s;
-				Object.defineProperty(subProto,propName,prop);
-				subProto[propStart + j] = prop;
-			}else{
-				subProto[j] = superClasses[i].prototype[j];
-				subProto.superior[j] = superClasses[i].prototype[j];
-			}
-        }
-    }
-    
-    if(proto){
-        for(var i in proto){
-            subProto[i] = proto[i];
-        }
-    }
-	
-	return subProto;
-};
-
-function quickImplementation(object,prototype){
-    for(var i in prototype){
-        object[i] = prototype[i];
-    }
-    return object;
-};
-
-function extendObject(base,additions){
-	var res = {};
-	for(var i in base){
-		res[i] = base[i];
-	}
-	for(var i in additions){
-		res[i] = additions[i];
-	}
-	return res;
-}
 dia.distance = function(x1, y1, x2, y2){
 	return Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
 };
@@ -110,6 +48,8 @@ dia.adjustAnchorRatios = function(anchor){
 	}else{
 		anchor.y = factorY > 0 ? 1 : 0;
 	}
+	
+	return anchor;
 };
 
 dia.EventDispatcher = function(){
@@ -190,7 +130,8 @@ dia.Sheet.prototype.render = function(ctx){
 dia.Sheet.prototype.toJSON = function(){
 	var json = {
 		title: this.title,
-		elements: []
+		elements: [],
+		id: this.id
 	};
 	for(var i = 0 ; i < this.elements.length ; i++){
 		json.elements.push(this.elements[i].toJSON());
@@ -215,7 +156,8 @@ dia.Sheet.prototype.findElementContaining = function(x, y){
 
 dia.Sheet.fromJSON = function(json){
 	var sheet = new dia.Sheet();
-	sheet.title = json.title || this.title;
+	sheet.title = json.title || sheet.title;
+	sheet.id = json.id || sheet.id;
 	
 	var element;
 	for(var i = 0 ; i < json.elements.length ; i++){

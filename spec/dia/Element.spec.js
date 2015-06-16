@@ -1,5 +1,7 @@
 describe('an element', function(){
 	it('is initialized correctly', function(){
+		var uuid4 = dia.uuid4;
+		
 		dia.uuid4 = function(){
 			return 'uuid'
 		};
@@ -12,6 +14,8 @@ describe('an element', function(){
 		expect(element.highlighted).toBe(false);
 		expect(element.type).toBe(type);
 		expect(element.properties).toEqual({});
+		
+		dia.uuid4 = uuid4;
 	});
 	
 	it('cannot be initialized without a type', function(){

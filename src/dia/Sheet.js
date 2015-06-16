@@ -48,7 +48,8 @@ dia.Sheet.prototype.render = function(ctx){
 dia.Sheet.prototype.toJSON = function(){
 	var json = {
 		title: this.title,
-		elements: []
+		elements: [],
+		id: this.id
 	};
 	for(var i = 0 ; i < this.elements.length ; i++){
 		json.elements.push(this.elements[i].toJSON());
@@ -73,7 +74,8 @@ dia.Sheet.prototype.findElementContaining = function(x, y){
 
 dia.Sheet.fromJSON = function(json){
 	var sheet = new dia.Sheet();
-	sheet.title = json.title || this.title;
+	sheet.title = json.title || sheet.title;
+	sheet.id = json.id || sheet.id;
 	
 	var element;
 	for(var i = 0 ; i < json.elements.length ; i++){

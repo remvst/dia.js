@@ -25,4 +25,6 @@ dia.adjustAnchorRatios = function(anchor){
 	}else{
 		anchor.y = factorY > 0 ? 1 : 0;
 	}
+	
+	return anchor;
 };
