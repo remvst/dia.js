@@ -87,6 +87,7 @@ dia.Sheet = function(){
 	this.elements = [];
 	this.elementsMap = {};
 	this.id = dia.uuid4();
+	this.renderables = [];
 };
 
 extend(dia.Sheet, dia.EventDispatcher);
@@ -121,9 +122,28 @@ dia.Sheet.prototype.removeElement = function(element){
 	}
 };
 
+dia.Sheet.prototype.addRenderable = function(r){
+	if(this.renderables.indexOf(r) >= 0){
+		return;
+	}
+	
+	this.renderables.push(r);
+};
+
+dia.Sheet.prototype.removeRenderable = function(r){
+	var index = this.renderables.indexOf(r);
+	if(index >= 0){
+		this.renderables.splice(index, 1);
+	}
+};
+
 dia.Sheet.prototype.render = function(ctx){
 	for(var i = 0 ; i < this.elements.length ; i++){
 		this.elements[i].render(ctx);
+	}
+	
+	for(var i = 0 ; i < this.renderables.length ; i++){
+		this.renderables[i].render(ctx);
 	}
 };
 
@@ -157,7 +177,7 @@ dia.Sheet.prototype.findElementContaining = function(x, y){
 dia.Sheet.prototype.findHandleContaining = function(x, y){
 	var repr,
 		handleArea,
-		handle;
+		handle = null;
 	for(var i = 0 ; i < this.elements.length ; i++){
 		repr = this.elements[i].getRepresentation();
 		for(var j = 0 ; j < repr.handles.length ; j++){

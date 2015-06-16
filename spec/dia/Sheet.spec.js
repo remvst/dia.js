@@ -139,6 +139,36 @@ describe('a sheet', function(){
 		expect(sheet.findElementContaining(1, 2)).toBe(element2);
 	});
 	
+	it('can find a handle containing a point', function(){
+		var type1 = new dia.ElementType();
+		type1.setRepresentationFactory(function(element, repr){
+			var area = new dia.Area();
+			area.contains = function(x, y){ return x === 0 && y === 1; };
+			
+			repr.addHandle(new dia.DragHandle(element, area));
+		});
+		
+		var type2 = new dia.ElementType();
+		type2.setRepresentationFactory(function(element, repr){
+			var area = new dia.Area();
+			area.contains = function(x, y){ return x === 1 && y === 2; };
+			
+			repr.addHandle(new dia.DragHandle(element, area));
+		});
+		
+		var sheet = new dia.Sheet();
+		
+		var element1 = type1.emptyElement();
+		sheet.addElement(element1);
+		
+		var element2 = type2.emptyElement();
+		sheet.addElement(element2);
+		
+		expect(sheet.findHandleContaining(0, 0)).toBe(null);
+		expect(sheet.findHandleContaining(0, 1).element).toBe(element1);
+		expect(sheet.findHandleContaining(1, 2).element).toBe(element2);
+	});
+	
 	it('can claim ownership of an element', function(){
 		var element = new dia.ElementType().emptyElement();
 		
@@ -151,5 +181,57 @@ describe('a sheet', function(){
 		expect(element.sheet).toBe(sheet2);
 		expect(sheet1.elements).toEqual([]);
 		expect(sheet2.elements).toEqual([element]);
+	});
+	
+	it('can be added renderables', function(){
+		var ctx = {
+				save: function(){},
+				restore: function(){}
+			},
+			param1,
+			param2;
+		
+		var r1 = new dia.Renderable(function(p){
+			param1 = p;
+		});
+		var r2 = new dia.Renderable(function(p){
+			param2 = p;
+		});
+		
+		var sheet = new dia.Sheet();
+		sheet.addRenderable(r1);
+		sheet.addRenderable(r2);
+		
+		sheet.render(ctx);
+		
+		expect(param1).toBe(ctx);
+		expect(param2).toBe(ctx);
+	});
+	
+	it('can be removed renderables', function(){
+		var ctx = {
+				save: function(){},
+				restore: function(){}
+			},
+			param1,
+			param2;
+		
+		var r1 = new dia.Renderable(function(p){
+			param1 = p;
+		});
+		var r2 = new dia.Renderable(function(p){
+			param2 = p;
+		});
+		
+		var sheet = new dia.Sheet();
+		sheet.addRenderable(r1);
+		sheet.addRenderable(r2);
+		
+		sheet.removeRenderable(r1);
+		
+		sheet.render(ctx);
+		
+		expect(param1).toBe(undefined);
+		expect(param2).toBe(ctx);
 	});
 });
