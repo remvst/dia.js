@@ -5,6 +5,7 @@ dia.DragHandle = function(element, area){
 	
 	this.element = element;
 	this.area = area || null;
+	this.cursor = '-webkit-grab';
 };
 
 dia.DragHandle.prototype.dragStart = function(x, y){

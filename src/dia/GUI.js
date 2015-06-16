@@ -80,6 +80,9 @@ dia.GUI.prototype.setupInterationManager = function(){
 
 			var position = gui.getPositionOnSheet(e);
 			gui.interactionManager.mouseMove(position.x, position.y, position.absoluteX, position.absoluteY);
+			
+			var handle = gui.app.sheet.findHandleContaining(position.x, position.y);
+			gui.canvas.style.cursor = handle ? handle.cursor : 'default';
 		}
 	}, false);
 	this.canvas.addEventListener('mouseup', function(e){

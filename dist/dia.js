@@ -154,6 +154,22 @@ dia.Sheet.prototype.findElementContaining = function(x, y){
 	return null;
 };
 
+dia.Sheet.prototype.findHandleContaining = function(x, y){
+	var repr,
+		handleArea,
+		handle;
+	for(var i = 0 ; i < this.elements.length ; i++){
+		repr = this.elements[i].getRepresentation();
+		for(var j = 0 ; j < repr.handles.length ; j++){
+			handleArea = repr.handles[j].area;
+			if(handleArea.contains(x, y) && (!handle || handleArea.surface() < handle.area.surface())){
+				handle = repr.handles[j];
+			}
+		}
+	}
+	return handle;
+};
+
 dia.Sheet.fromJSON = function(json){
 	var sheet = new dia.Sheet();
 	sheet.title = json.title || sheet.title;
@@ -787,6 +803,7 @@ dia.DragHandle = function(element, area){
 	
 	this.element = element;
 	this.area = area || null;
+	this.cursor = '-webkit-grab';
 };
 
 dia.DragHandle.prototype.dragStart = function(x, y){
@@ -1906,6 +1923,9 @@ dia.GUI.prototype.setupInterationManager = function(){
 
 			var position = gui.getPositionOnSheet(e);
 			gui.interactionManager.mouseMove(position.x, position.y, position.absoluteX, position.absoluteY);
+			
+			var handle = gui.app.sheet.findHandleContaining(position.x, position.y);
+			gui.canvas.style.cursor = handle ? handle.cursor : 'default';
 		}
 	}, false);
 	this.canvas.addEventListener('mouseup', function(e){

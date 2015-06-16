@@ -72,6 +72,22 @@ dia.Sheet.prototype.findElementContaining = function(x, y){
 	return null;
 };
 
+dia.Sheet.prototype.findHandleContaining = function(x, y){
+	var repr,
+		handleArea,
+		handle;
+	for(var i = 0 ; i < this.elements.length ; i++){
+		repr = this.elements[i].getRepresentation();
+		for(var j = 0 ; j < repr.handles.length ; j++){
+			handleArea = repr.handles[j].area;
+			if(handleArea.contains(x, y) && (!handle || handleArea.surface() < handle.area.surface())){
+				handle = repr.handles[j];
+			}
+		}
+	}
+	return handle;
+};
+
 dia.Sheet.fromJSON = function(json){
 	var sheet = new dia.Sheet();
 	sheet.title = json.title || sheet.title;
