@@ -12,7 +12,7 @@ dia.CircleArea = function(options){
 extend(dia.CircleArea, dia.Area);
 
 dia.CircleArea.prototype.contains = function(x, y){
-	return dia.distance(x, y, this.getX(), this.getY()) < this.getRadius();
+	return dia.distance(x, y, this.getX(), this.getY()) <= this.getRadius();
 };
 
 dia.CircleArea.prototype.render = function(c){
@@ -29,7 +29,7 @@ dia.CircleArea.prototype.render = function(c){
 
 dia.CircleArea.prototype.surface = function(){
 	// TODO check formula
-	return (2 / 3) * Math.PI * Math.pow(this.getRadius(), 2);
+	return Math.PI * Math.pow(this.getRadius(), 2);
 };
 
 dia.CircleArea.prototype.bindAnchorToBounds = function(anchor){
@@ -62,13 +62,4 @@ dia.Area.defineIntersection('rectangle', 'circle', function(rectangle, circle){
 	}
 	
 	return false;
-	
-	var r = new dia.RectangleArea({
-		x: function(){ return areaX - areaRadius; },
-		y: function(){ return areaY - areaRadius; },
-		width: function(){ return areaRadius * 2; },
-		height: function(){ return areaRadius * 2; },
-	});
-	
-	return r.intersectsWith(rectangle);
 });
