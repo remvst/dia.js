@@ -77,6 +77,13 @@ dia.RectangleArea.prototype.bindAnchorToBounds = function(anchor){
 	}
 };
 
+dia.RectangleArea.prototype.getAbsolutePositionFromRelative = function(x, y){
+	return {
+		x: x + this.getX(),
+		y: y + this.getY()
+	};
+};
+
 dia.Area.defineIntersection('rectangle', 'rectangle', function(a, b){
 	// Let's assume it's another rectangle area
 	var boundsA = a.getBounds();

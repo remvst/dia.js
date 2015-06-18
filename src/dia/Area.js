@@ -29,6 +29,10 @@ dia.Area.prototype.getRelativeCenter = function(){
 	};
 };
 
+dia.Area.prototype.getAbsolutePositionFromRelative = function(x, y){
+	return null;
+};
+
 dia.Area.intersectionMap = {};
 
 dia.Area.defineIntersection = function(type1, type2, func){

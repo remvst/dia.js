@@ -84,11 +84,11 @@ dia.Sheet.prototype.getElement = function(id){
 	return this.elementsMap[id] || null;
 };
 
-dia.Sheet.prototype.findElementContaining = function(x, y){
+dia.Sheet.prototype.findElementContaining = function(x, y, additionalCriteria){
 	var area;
 	for(var i = 0 ; i < this.elements.length ; i++){
 		area = this.elements[i].getRepresentation().area;
-		if(area && area.contains(x, y)){
+		if(area && area.contains(x, y) && (!additionalCriteria || additionalCriteria(this.elements[i]))){
 			return this.elements[i];
 		}
 	}

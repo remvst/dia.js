@@ -7,6 +7,7 @@ dia.ElementType = function(options){
 	this.propertyMap = {};
 	this.representationFactory = function(){};
 	this.creatorTool = null;
+	this.anchorable = 'anchorable' in options ? options.anchorable : true;
 	
 	if(this.id){
 		dia.ElementType.register(this);
@@ -83,6 +84,10 @@ dia.ElementType.prototype.clone = function(options){
 	}
 	
 	return type;
+};
+
+dia.ElementType.prototype.isAnchorable = function(){
+	return this.anchorable;
 };
 
 dia.ElementType.register = function(type){

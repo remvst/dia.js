@@ -38,6 +38,13 @@ dia.CircleArea.prototype.bindAnchorToBounds = function(anchor){
 	anchor.y = Math.sin(angle) * this.getRadius();
 };
 
+dia.CircleArea.prototype.getAbsolutePositionFromRelative = function(x, y){
+	return {
+		x: x + this.getX(),
+		y: y + this.getY()
+	};
+};
+
 dia.Area.defineIntersection('rectangle', 'circle', function(rectangle, circle){
 	// Let's assume it's another rectangle area
 	var areaX = circle.getX();

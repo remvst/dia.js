@@ -39,19 +39,6 @@ dia.limit = function(x, min, max){
 	}
 };
 
-dia.adjustAnchorRatios = function(anchor){
-	var factorX = anchor.x - .5;
-	var factorY = anchor.y - .5;
-	
-	if(Math.abs(factorX) > Math.abs(factorY)){
-		anchor.x = factorX > 0 ? 1 : 0;
-	}else{
-		anchor.y = factorY > 0 ? 1 : 0;
-	}
-	
-	return anchor;
-};
-
 dia.EventDispatcher = function(){
 	this.listeners = {};
 };
@@ -128,12 +115,15 @@ dia.Sheet.prototype.addRenderable = function(r){
 	}
 	
 	this.renderables.push(r);
+	
+	this.dispatch('renderableadded', { renderable: r });
 };
 
 dia.Sheet.prototype.removeRenderable = function(r){
 	var index = this.renderables.indexOf(r);
 	if(index >= 0){
 		this.renderables.splice(index, 1);
+		this.dispatch('renderableremoved', { renderable: r });
 	}
 };
 
@@ -163,11 +153,11 @@ dia.Sheet.prototype.getElement = function(id){
 	return this.elementsMap[id] || null;
 };
 
-dia.Sheet.prototype.findElementContaining = function(x, y){
+dia.Sheet.prototype.findElementContaining = function(x, y, additionalCriteria){
 	var area;
 	for(var i = 0 ; i < this.elements.length ; i++){
 		area = this.elements[i].getRepresentation().area;
-		if(area && area.contains(x, y)){
+		if(area && area.contains(x, y) && (!additionalCriteria || additionalCriteria(this.elements[i]))){
 			return this.elements[i];
 		}
 	}
@@ -314,6 +304,7 @@ dia.ElementType = function(options){
 	this.propertyMap = {};
 	this.representationFactory = function(){};
 	this.creatorTool = null;
+	this.anchorable = 'anchorable' in options ? options.anchorable : true;
 	
 	if(this.id){
 		dia.ElementType.register(this);
@@ -390,6 +381,10 @@ dia.ElementType.prototype.clone = function(options){
 	}
 	
 	return type;
+};
+
+dia.ElementType.prototype.isAnchorable = function(){
+	return this.anchorable;
 };
 
 dia.ElementType.register = function(type){
@@ -919,7 +914,40 @@ dia.MoveAnchorDragHandle.prototype.dragMove = function(dx, dy, x, y){
 		y: this.initialAnchorPositions.y + this.accumDY
 	};
 	
-	//dia.adjustAnchorRatios(newAnchor);
+	// Update the object
+	this.element.setProperty(this.property, newAnchor);
+};
+
+dia.MoveAnchorDragHandle.prototype.dragDrop = function(x, y){
+	var anchor = this.element.getProperty(this.property);
+	var anchoredElement = this.element.sheet.getElement(anchor.element);
+	var anchoredArea = anchoredElement.getRepresentation().area;
+	
+	var absolutePosition = anchoredArea.getAbsolutePositionFromRelative(
+		this.initialAnchorPositions.x + this.accumDX,
+		this.initialAnchorPositions.y + this.accumDY
+	);
+	
+	if(!anchoredArea.contains(absolutePosition.x, absolutePosition.y)){
+		var newElement = anchoredElement.sheet.findElementContaining(
+			absolutePosition.x,
+			absolutePosition.y,
+			function(element){
+				return element.type.isAnchorable();
+			}
+		);
+		if(newElement){
+			anchoredElement = newElement;
+			anchoredArea = newElement.getRepresentation().area;
+		}
+	}
+	
+	var newAnchor = {
+		element: anchoredElement.id,
+		x: this.initialAnchorPositions.x + this.accumDX,
+		y: this.initialAnchorPositions.y + this.accumDY
+	};
+	
 	anchoredArea.bindAnchorToBounds(newAnchor);
 	
 	// Update the object
@@ -1037,6 +1065,10 @@ dia.Area.prototype.getRelativeCenter = function(){
 	};
 };
 
+dia.Area.prototype.getAbsolutePositionFromRelative = function(x, y){
+	return null;
+};
+
 dia.Area.intersectionMap = {};
 
 dia.Area.defineIntersection = function(type1, type2, func){
@@ -1138,6 +1170,13 @@ dia.RectangleArea.prototype.bindAnchorToBounds = function(anchor){
 	}
 };
 
+dia.RectangleArea.prototype.getAbsolutePositionFromRelative = function(x, y){
+	return {
+		x: x + this.getX(),
+		y: y + this.getY()
+	};
+};
+
 dia.Area.defineIntersection('rectangle', 'rectangle', function(a, b){
 	// Let's assume it's another rectangle area
 	var boundsA = a.getBounds();
@@ -1186,6 +1225,13 @@ dia.CircleArea.prototype.bindAnchorToBounds = function(anchor){
 	var angle = Math.atan2(anchor.y, anchor.x);
 	anchor.x = Math.cos(angle) * this.getRadius();
 	anchor.y = Math.sin(angle) * this.getRadius();
+};
+
+dia.CircleArea.prototype.getAbsolutePositionFromRelative = function(x, y){
+	return {
+		x: x + this.getX(),
+		y: y + this.getY()
+	};
 };
 
 dia.Area.defineIntersection('rectangle', 'circle', function(rectangle, circle){
@@ -2084,6 +2130,8 @@ dia.GUI.prototype.setupInterationManager = function(){
 	
 	this.app.sheet.listen('elementadded', this.elementAdded.bind(this));
 	this.app.sheet.listen('elementremoved', this.elementRemoved.bind(this));
+	this.app.sheet.listen('renderableadded', this.renderSheet.bind(this));
+	this.app.sheet.listen('renderableremoved', this.renderSheet.bind(this));
 };
 
 dia.GUI.prototype.getPositionOnSheet = function(event){
@@ -2565,7 +2613,8 @@ dia.generic = dia.generic || {};
 
 dia.generic.RELATION = new dia.ElementType({
 	id: 'generic.relation',
-	label: 'Relation'
+	label: 'Relation',
+	anchorable: false
 });
 dia.generic.RELATION.addProperty(new dia.Property({
 	id: 'from',
@@ -2663,11 +2712,15 @@ dia.generic.RELATION.creatorTool = new dia.CreateTool({
 	mouseDown: function(sheet, x, y){
 		this.from = sheet.findElementContaining(x, y);
 	},
+	mouseMove: function(sheet, x, y){
+		if(this.from){
+			this.to = sheet.findElementContaining(x, y);
+		}
+	},
 	mouseUp: function(sheet, x, y){
-		var to = sheet.findElementContaining(x, y);
-		if(to && this.from && to !== this.from){
+		if(this.to && this.from && this.to !== this.from){
 			var fromArea = this.from.getRepresentation().area;
-			var toArea = to.getRepresentation().area;
+			var toArea = this.to.getRepresentation().area;
 
 			var fromPosition = {
 				x: fromArea.getX(),
@@ -2689,7 +2742,7 @@ dia.generic.RELATION.creatorTool = new dia.CreateTool({
 				y: fromRelativeCenter.y + Math.sin(angle)
 			};
 			var toAnchor = {
-				element: to.id,
+				element: this.to.id,
 				x: toRelativeCenter.x - Math.cos(angle),
 				y: toRelativeCenter.y - Math.sin(angle)
 			};

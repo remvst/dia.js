@@ -36,7 +36,40 @@ dia.MoveAnchorDragHandle.prototype.dragMove = function(dx, dy, x, y){
 		y: this.initialAnchorPositions.y + this.accumDY
 	};
 	
-	//dia.adjustAnchorRatios(newAnchor);
+	// Update the object
+	this.element.setProperty(this.property, newAnchor);
+};
+
+dia.MoveAnchorDragHandle.prototype.dragDrop = function(x, y){
+	var anchor = this.element.getProperty(this.property);
+	var anchoredElement = this.element.sheet.getElement(anchor.element);
+	var anchoredArea = anchoredElement.getRepresentation().area;
+	
+	var absolutePosition = anchoredArea.getAbsolutePositionFromRelative(
+		this.initialAnchorPositions.x + this.accumDX,
+		this.initialAnchorPositions.y + this.accumDY
+	);
+	
+	if(!anchoredArea.contains(absolutePosition.x, absolutePosition.y)){
+		var newElement = anchoredElement.sheet.findElementContaining(
+			absolutePosition.x,
+			absolutePosition.y,
+			function(element){
+				return element.type.isAnchorable();
+			}
+		);
+		if(newElement){
+			anchoredElement = newElement;
+			anchoredArea = newElement.getRepresentation().area;
+		}
+	}
+	
+	var newAnchor = {
+		element: anchoredElement.id,
+		x: this.initialAnchorPositions.x + this.accumDX,
+		y: this.initialAnchorPositions.y + this.accumDY
+	};
+	
 	anchoredArea.bindAnchorToBounds(newAnchor);
 	
 	// Update the object
