@@ -13,6 +13,17 @@ describe('a rectangle area', function(){
 		expect(area.getHeight()).toEqual(400);
 	});
 	
+	it('can find its own relative center', function(){
+		var area = new dia.RectangleArea({
+			x: function(){ return 100; },
+			y: function(){ return 200; },
+			width: function(){ return 300; },
+			height: function(){ return 400; }
+		});
+		
+		expect(area.getRelativeCenter()).toEqual({ x: 150, y: 200 });
+	});
+	
 	it('checks containment correctly', function(){
 		var area = new dia.RectangleArea({
 			x: function(){ return 100; },
