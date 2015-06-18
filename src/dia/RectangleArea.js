@@ -84,6 +84,13 @@ dia.RectangleArea.prototype.getAbsolutePositionFromRelative = function(x, y){
 	};
 };
 
+dia.RectangleArea.prototype.getRelativeCenter = function(){
+	return {
+		x: this.getWidth() / 2,
+		y: this.getHeight() / 2
+	};
+};
+
 dia.Area.defineIntersection('rectangle', 'rectangle', function(a, b){
 	// Let's assume it's another rectangle area
 	var boundsA = a.getBounds();
