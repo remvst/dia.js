@@ -46,12 +46,15 @@ dia.Sheet.prototype.addRenderable = function(r){
 	}
 	
 	this.renderables.push(r);
+	
+	this.dispatch('renderableadded', { renderable: r });
 };
 
 dia.Sheet.prototype.removeRenderable = function(r){
 	var index = this.renderables.indexOf(r);
 	if(index >= 0){
 		this.renderables.splice(index, 1);
+		this.dispatch('renderableremoved', { renderable: r });
 	}
 };
 

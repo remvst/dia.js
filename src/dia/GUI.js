@@ -134,6 +134,8 @@ dia.GUI.prototype.setupInterationManager = function(){
 	
 	this.app.sheet.listen('elementadded', this.elementAdded.bind(this));
 	this.app.sheet.listen('elementremoved', this.elementRemoved.bind(this));
+	this.app.sheet.listen('renderableadded', this.renderSheet.bind(this));
+	this.app.sheet.listen('renderableremoved', this.renderSheet.bind(this));
 };
 
 dia.GUI.prototype.getPositionOnSheet = function(event){
