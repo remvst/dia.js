@@ -31,4 +31,40 @@ describe('a graphical representation', function(){
 		
 		expect(repr.handles).toEqual([handle]);
 	});
+	
+	it('can be rendered properly', function(){
+		var element = new dia.Element(new dia.ElementType());
+		var repr = new dia.GraphicalRepresentation(element);
+		
+		var paramRenderable = null,
+			paramHandle = null;
+		repr.addRenderable(new dia.Renderable(function(p){
+			paramRenderable = p;
+		}));
+		
+		var handle = new dia.DragHandle(element, new dia.Area());
+		handle.render = function(p){
+			paramHandle = p;
+		};
+		repr.addHandle(handle);
+		
+		var ctx = {
+			save: function(){},
+			restore: function(){}
+		};
+		
+		repr.render(ctx);
+		
+		expect(paramRenderable).toBe(ctx);
+		expect(paramHandle).toBe(null);
+		
+		// Let's render when highlighted
+		paramRenderable = null;
+		element.highlighted = true;
+		
+		repr.render(ctx);
+		
+		expect(paramRenderable).toBe(ctx);
+		expect(paramHandle).toBe(ctx);
+   	});
 });

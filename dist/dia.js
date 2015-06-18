@@ -561,7 +561,7 @@ dia.ArrayDataType.prototype.createHTMLInput = function(currentValue){
 		inputContainer.appendChild(removerWrapper);
 
 		var remover = document.createElement('button');
-		remover.className = 'btn btn-default';
+		remover.className = 'btn btn-default btn-remove';
 		remover.innerHTML = 'X';
 		remover.addEventListener('click', function(){
 			inputContainer.parentNode.removeChild(inputContainer);
@@ -581,7 +581,7 @@ dia.ArrayDataType.prototype.createHTMLInput = function(currentValue){
 	var nextIndex = currentValue.length;
 
 	var adder = document.createElement('button');
-	adder.className = 'btn btn-default';
+	adder.className = 'btn btn-default btn-add';
 	adder.innerHTML = 'Add an item';
 	adder.addEventListener('click', function(){
 		add('');
@@ -857,23 +857,16 @@ dia.MoveElementDragHandle.prototype.dragStart = function(x, y){
 };
 
 dia.MoveElementDragHandle.prototype.dragMove = function(dx, dy){
-	if(this.lastPosition){
-		var elementX = this.element.getProperty('x');
-		var elementY = this.element.getProperty('y');
+	var elementX = this.element.getProperty('x');
+	var elementY = this.element.getProperty('y');
 
-		this.element.setProperty('x', this.lastPosition.x + dx);
-		this.element.setProperty('y', this.lastPosition.y + dy);
-	
-		this.lastPosition = {
-			x: this.lastPosition.x + dx,
-			y: this.lastPosition.y + dy
-		};
-	}else{
-		this.lastPosition = {
-			x: this.element.getProperty('x'),
-			y: this.element.getProperty('y')
-		};
-	}
+	this.element.setProperty('x', this.lastPosition.x + dx);
+	this.element.setProperty('y', this.lastPosition.y + dy);
+
+	this.lastPosition = {
+		x: this.lastPosition.x + dx,
+		y: this.lastPosition.y + dy
+	};
 };
 
 dia.MoveAnchorDragHandle = function(element, area, property){
@@ -990,10 +983,6 @@ dia.BrokenLineDragHandle.prototype.dragStart = function(x, y){
 };
 
 dia.BrokenLineDragHandle.prototype.dragMove = function(dx, dy, x, y){
-	if(!this.modifiedPoint){
-		return;
-	}
-	
 	var points = this.element.getProperty(this.property);
 	
 	var newPoints = points.slice(0);
@@ -1066,7 +1055,10 @@ dia.Area.prototype.getRelativeCenter = function(){
 };
 
 dia.Area.prototype.getAbsolutePositionFromRelative = function(x, y){
-	return null;
+	return {
+		x: x,
+		y: y
+	};
 };
 
 dia.Area.intersectionMap = {};
@@ -1096,7 +1088,6 @@ dia.RectangleArea = function(options){
 	
 	this.type = 'rectangle';
 	
-	options = options || {};
 	this.getX = options.x;
 	this.getY = options.y;
 	this.getWidth = options.width;
@@ -1168,6 +1159,8 @@ dia.RectangleArea.prototype.bindAnchorToBounds = function(anchor){
 	}else{
 		anchor.y = factorY > 0 ? height : 0;
 	}
+	
+	return anchor;
 };
 
 dia.RectangleArea.prototype.getAbsolutePositionFromRelative = function(x, y){
@@ -1199,7 +1192,6 @@ dia.CircleArea = function(options){
 	
 	this.type = 'circle';
 	
-	options = options || {};
 	this.getX = options.x;
 	this.getY = options.y;
 	this.getRadius = options.radius;
@@ -1232,6 +1224,7 @@ dia.CircleArea.prototype.bindAnchorToBounds = function(anchor){
 	var angle = Math.atan2(anchor.y, anchor.x);
 	anchor.x = Math.cos(angle) * this.getRadius();
 	anchor.y = Math.sin(angle) * this.getRadius();
+	return anchor;
 };
 
 dia.CircleArea.prototype.getAbsolutePositionFromRelative = function(x, y){
@@ -1272,7 +1265,6 @@ dia.LineArea = function(options){
 	
 	this.type = 'line';
 	
-	options = options || {};
 	this.getX1 = options.x1;
 	this.getY1 = options.y1;
 	this.getX2 = options.x2;

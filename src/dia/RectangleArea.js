@@ -3,7 +3,6 @@ dia.RectangleArea = function(options){
 	
 	this.type = 'rectangle';
 	
-	options = options || {};
 	this.getX = options.x;
 	this.getY = options.y;
 	this.getWidth = options.width;
@@ -75,6 +74,8 @@ dia.RectangleArea.prototype.bindAnchorToBounds = function(anchor){
 	}else{
 		anchor.y = factorY > 0 ? height : 0;
 	}
+	
+	return anchor;
 };
 
 dia.RectangleArea.prototype.getAbsolutePositionFromRelative = function(x, y){

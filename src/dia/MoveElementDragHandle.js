@@ -18,21 +18,14 @@ dia.MoveElementDragHandle.prototype.dragStart = function(x, y){
 };
 
 dia.MoveElementDragHandle.prototype.dragMove = function(dx, dy){
-	if(this.lastPosition){
-		var elementX = this.element.getProperty('x');
-		var elementY = this.element.getProperty('y');
+	var elementX = this.element.getProperty('x');
+	var elementY = this.element.getProperty('y');
 
-		this.element.setProperty('x', this.lastPosition.x + dx);
-		this.element.setProperty('y', this.lastPosition.y + dy);
-	
-		this.lastPosition = {
-			x: this.lastPosition.x + dx,
-			y: this.lastPosition.y + dy
-		};
-	}else{
-		this.lastPosition = {
-			x: this.element.getProperty('x'),
-			y: this.element.getProperty('y')
-		};
-	}
+	this.element.setProperty('x', this.lastPosition.x + dx);
+	this.element.setProperty('y', this.lastPosition.y + dy);
+
+	this.lastPosition = {
+		x: this.lastPosition.x + dx,
+		y: this.lastPosition.y + dy
+	};
 };

@@ -55,9 +55,20 @@ describe('a line area', function(){
 			y2: function(){ return 12; },
 			thickness: 5
 		});
+		var area4 = new dia.LineArea({
+			x1: function(){ return 0; },
+			y1: function(){ return 20; },
+			x2: function(){ return 20; },
+			y2: function(){ return 40; },
+			thickness: 5
+		});
 		
 		expect(area1.intersectsWith(area2)).toBe(true);
 		expect(area1.intersectsWith(area3)).toBe(false);
+		expect(area1.intersectsWith(area4)).toBe(false);
+		
+		expect(area2.intersectsWith(area3)).toBe(false);
+		expect(area2.intersectsWith(area4)).toBe(true);
 	});
 	
 	it('can check for intersection with rectangles', function(){
@@ -93,5 +104,38 @@ describe('a line area', function(){
 		expect(line1.intersectsWith(rectangle)).toBe(true);
 		expect(line2.intersectsWith(rectangle)).toBe(true);
 		expect(line3.intersectsWith(rectangle)).toBe(false);
+	});
+	
+	it('can be rendered', function(){
+		var area = new dia.LineArea({
+			x1: function(){ return 0; },
+			y1: function(){ return 0; },
+			x2: function(){ return 20; },
+			y2: function(){ return 20; },
+			thickness: 5
+		});
+		
+		var ctx = {
+			beginPath: function(){},
+			moveTo: function(){},
+			lineTo: function(){},
+			stroke: function(){}
+		};
+		
+		expect(function(){
+			area.render(ctx);
+		}).not.toThrow();
+	});
+	
+	it('has the correct surface', function(){
+		var area = new dia.LineArea({
+			x1: function(){ return 0; },
+			y1: function(){ return 0; },
+			x2: function(){ return 0; },
+			y2: function(){ return 20; },
+			thickness: 5
+		});
+		
+		expect(area.surface()).toEqual(20 * 5);
 	});
 });

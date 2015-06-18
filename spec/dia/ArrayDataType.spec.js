@@ -60,10 +60,21 @@ describe('an array data type', function(){
 		}
 		
 		for(var i = 0 ; i < spans.length ; i++){
-			spans[i].innerHTML = 'z';
+			spans[i].innerHTML = 'z' + i;
 		}
 		
-		expect(complex.getValueFromHTMLInput(input)).toEqual(['z', 'z', 'z', 'z']);
+		// Let's remove one
+		var removers = input.querySelectorAll('.btn-remove');
+		removers[0].click();
+		
+		// Add one
+		var adder = input.querySelector('.btn-add');
+		adder.click();
+		
+		var spansAfter = input.querySelectorAll('dd');
+		spansAfter[spansAfter.length - 1].innerHTML = 'abcd';
+		
+		expect(complex.getValueFromHTMLInput(input)).toEqual(['z1', 'z2', 'z3', 'abcd']);
 	});
 });
 

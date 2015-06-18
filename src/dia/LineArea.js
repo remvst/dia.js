@@ -3,7 +3,6 @@ dia.LineArea = function(options){
 	
 	this.type = 'line';
 	
-	options = options || {};
 	this.getX1 = options.x1;
 	this.getY1 = options.y1;
 	this.getX2 = options.x2;

@@ -100,4 +100,73 @@ describe('a rectangle area', function(){
 		
 		expect(area.surface()).toBe(10);
 	});
+	
+	it('can be rendered', function(){
+		var area = new dia.RectangleArea({
+			x: function(){ return 0; },
+			y: function(){ return 0; },
+			width: function(){ return 2; },
+			height: function(){ return 5; }
+		});
+		
+		var ctx = {
+			strokeRect: function(){}
+		};
+		
+		expect(function(){
+			area.render(ctx);
+		}).not.toThrow();
+	});
+	
+	it('can bind an anchor to its bounds', function(){
+		var area = new dia.RectangleArea({
+			x: function(){ return 100; },
+			y: function(){ return 100; },
+			width: function(){ return 200; },
+			height: function(){ return 200; }
+		});
+		
+		expect(area.bindAnchorToBounds({
+			x: 50,
+			y: 40
+		})).toEqual({
+			x: 50,
+			y: 0
+		});
+		
+		expect(area.bindAnchorToBounds({
+			x: 40,
+			y: 50
+		})).toEqual({
+			x: 0,
+			y: 50
+		});
+		
+		expect(area.bindAnchorToBounds({
+			x: 160,
+			y: 150
+		})).toEqual({
+			x: 200,
+			y: 150
+		});
+		
+		expect(area.bindAnchorToBounds({
+			x: 110,
+			y: 150
+		})).toEqual({
+			x: 110,
+			y: 200
+		});
+	});
+	
+	it('has a relative center', function(){
+		var area = new dia.RectangleArea({
+			x: function(){ return 100; },
+			y: function(){ return 100; },
+			width: function(){ return 30; },
+			height: function(){ return 30; }
+		});
+		
+		expect(area.getRelativeCenter()).toEqual({ x: 15, y: 15 });
+	});
 });

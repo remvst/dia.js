@@ -3,7 +3,6 @@ dia.CircleArea = function(options){
 	
 	this.type = 'circle';
 	
-	options = options || {};
 	this.getX = options.x;
 	this.getY = options.y;
 	this.getRadius = options.radius;
@@ -36,6 +35,7 @@ dia.CircleArea.prototype.bindAnchorToBounds = function(anchor){
 	var angle = Math.atan2(anchor.y, anchor.x);
 	anchor.x = Math.cos(angle) * this.getRadius();
 	anchor.y = Math.sin(angle) * this.getRadius();
+	return anchor;
 };
 
 dia.CircleArea.prototype.getAbsolutePositionFromRelative = function(x, y){

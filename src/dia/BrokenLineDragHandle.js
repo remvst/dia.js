@@ -34,10 +34,6 @@ dia.BrokenLineDragHandle.prototype.dragStart = function(x, y){
 };
 
 dia.BrokenLineDragHandle.prototype.dragMove = function(dx, dy, x, y){
-	if(!this.modifiedPoint){
-		return;
-	}
-	
 	var points = this.element.getProperty(this.property);
 	
 	var newPoints = points.slice(0);

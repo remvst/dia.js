@@ -53,4 +53,43 @@ describe('a broken line area', function(){
 		expect(area.contains(5, 5)).toBe(true);
 		expect(area.contains(17.5, 2.5)).toBe(true);
 	});
+	
+	it('can be rendered', function(){
+		var pts = [
+			{ x: 0, y: 0 },
+			{ x: 10, y: 10 },
+			{ x: 20, y: 0 },
+			{ x: 30, y: 10 }
+		];
+		var area = new dia.BrokenLineArea({
+			points: function(){ return pts; },
+			thickness: 2
+		});
+		
+		var ctx = {
+			beginPath: function(){},
+			moveTo: function(){},
+			lineTo: function(){},
+			stroke: function(){}
+		};
+		
+		expect(function(){
+			area.render(ctx);
+		}).not.toThrow();
+	});
+	
+	it('has the correct surface', function(){
+		var pts = [
+			{ x: 0, y: 0 },
+			{ x: 10, y: 0 },
+			{ x: 20, y: 0 },
+			{ x: 30, y: 0 }
+		];
+		var area = new dia.BrokenLineArea({
+			points: function(){ return pts; },
+			thickness: 2
+		});
+		
+		expect(area.surface()).toEqual(30 * 2);
+	});
 });

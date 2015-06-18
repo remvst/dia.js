@@ -49,7 +49,7 @@ dia.ArrayDataType.prototype.createHTMLInput = function(currentValue){
 		inputContainer.appendChild(removerWrapper);
 
 		var remover = document.createElement('button');
-		remover.className = 'btn btn-default';
+		remover.className = 'btn btn-default btn-remove';
 		remover.innerHTML = 'X';
 		remover.addEventListener('click', function(){
 			inputContainer.parentNode.removeChild(inputContainer);
@@ -69,7 +69,7 @@ dia.ArrayDataType.prototype.createHTMLInput = function(currentValue){
 	var nextIndex = currentValue.length;
 
 	var adder = document.createElement('button');
-	adder.className = 'btn btn-default';
+	adder.className = 'btn btn-default btn-add';
 	adder.innerHTML = 'Add an item';
 	adder.addEventListener('click', function(){
 		add('');

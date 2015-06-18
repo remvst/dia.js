@@ -17,4 +17,10 @@ describe('an area', function(){
 		
 		expect(area.surface()).toBe(0);
 	});
+	
+	it('has a default relative center', function(){
+		var area = new dia.Area();
+		
+		expect(area.getRelativeCenter()).toEqual({ x: 0, y: 0 });
+	});
 });

@@ -106,4 +106,14 @@ describe('a primitive', function(){
 		expect(primitive.getPropertyValue('req1')).toEqual('empty1');
 		expect(primitive.getPropertyValue('req2')).toEqual('empty2');
 	});
+	
+	it('cannot be rendered', function(){
+		var element = new dia.Element(new dia.ElementType());
+		var repr = new dia.GraphicalRepresentation(element);
+		var primitive = new dia.Primitive(repr);
+		
+		expect(function(){
+			primitive.render();
+		}).toThrow();
+	});
 });
