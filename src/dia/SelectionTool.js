@@ -147,3 +147,17 @@ dia.SelectionTool.prototype.keyUp = function(sheet, keyCode){
 		});
 	}
 };
+
+dia.SelectionTool.prototype.getRenderable = function(){
+	return new dia.Renderable(function(c){
+		if(this.selectionStart){
+			c.strokeStyle = 'black';
+			c.strokeRect(
+				this.selectionStart.x + .5,
+				this.selectionStart.y + .5,
+				this.selectionEnd.x - this.selectionStart.x,
+				this.selectionEnd.y - this.selectionStart.y
+			)
+		}
+	}.bind(this));
+};

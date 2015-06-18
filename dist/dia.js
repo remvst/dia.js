@@ -1761,6 +1761,20 @@ dia.SelectionTool.prototype.keyUp = function(sheet, keyCode){
 	}
 };
 
+dia.SelectionTool.prototype.getRenderable = function(){
+	return new dia.Renderable(function(c){
+		if(this.selectionStart){
+			c.strokeStyle = 'black';
+			c.strokeRect(
+				this.selectionStart.x + .5,
+				this.selectionStart.y + .5,
+				this.selectionEnd.x - this.selectionStart.x,
+				this.selectionEnd.y - this.selectionStart.y
+			)
+		}
+	}.bind(this));
+};
+
 dia.Dialog = function(settings){
 	dia.EventDispatcher.call(this);
 	
@@ -1955,6 +1969,12 @@ dia.GUI = function(app){
 		this.app.sheet.elements[i].listen('propertychange', this.boundElementModified);
 	}
 	
+	// Rendering the selection
+	var selectionTool = this.app.toolbox.getTool('select');
+	if(selectionTool){
+		this.app.sheet.addRenderable(selectionTool.getRenderable());
+	}
+	
 	this.setupInterationManager();
 	
 	var selectionTool = this.app.toolbox.getTool('select');
@@ -2116,18 +2136,6 @@ dia.GUI.prototype.renderSheet = function(){
 	}else{
 		var canvas = this.getSheetCanvas(this.app.sheet);
 		canvas.render(this.context);
-
-		// Rendering selection rectangle (kinda sketchy)
-		var selectionTool = this.app.toolbox.getTool('select');
-		if(selectionTool && selectionTool.selectionStart){
-			this.context.strokeStyle = 'black';
-			this.context.strokeRect(
-				selectionTool.selectionStart.x + .5 - canvas.scrollX,
-				selectionTool.selectionStart.y + .5 - canvas.scrollY,
-				selectionTool.selectionEnd.x - selectionTool.selectionStart.x,
-				selectionTool.selectionEnd.y - selectionTool.selectionStart.y
-			)
-		}
 	}
 };
 
