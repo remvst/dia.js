@@ -100,11 +100,15 @@ dia.generic.RELATION.creatorTool = new dia.CreateTool({
 	mouseDown: function(sheet, x, y){
 		this.from = sheet.findElementContaining(x, y);
 	},
+	mouseMove: function(sheet, x, y){
+		if(this.from){
+			this.to = sheet.findElementContaining(x, y);
+		}
+	},
 	mouseUp: function(sheet, x, y){
-		var to = sheet.findElementContaining(x, y);
-		if(to && this.from && to !== this.from){
+		if(this.to && this.from && this.to !== this.from){
 			var fromArea = this.from.getRepresentation().area;
-			var toArea = to.getRepresentation().area;
+			var toArea = this.to.getRepresentation().area;
 
 			var fromPosition = {
 				x: fromArea.getX(),
@@ -126,7 +130,7 @@ dia.generic.RELATION.creatorTool = new dia.CreateTool({
 				y: fromRelativeCenter.y + Math.sin(angle)
 			};
 			var toAnchor = {
-				element: to.id,
+				element: this.to.id,
 				x: toRelativeCenter.x - Math.cos(angle),
 				y: toRelativeCenter.y - Math.sin(angle)
 			};
