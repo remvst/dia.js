@@ -92,4 +92,42 @@ describe('a broken line area', function(){
 		
 		expect(area.surface()).toEqual(30 * 2);
 	});
+	
+	it('can intersect with a rectangle', function(){
+		var pts = [
+			{ x: 0, y: 0 },
+			{ x: 10, y: 0 },
+			{ x: 20, y: 0 },
+			{ x: 30, y: 0 }
+		];
+		var area = new dia.BrokenLineArea({
+			points: function(){ return pts; },
+			thickness: 2
+		});
+		
+		var rectangle1 = new dia.RectangleArea({
+			x: function(){ return -1; },
+			y: function(){ return -1; },
+			width: function(){ return 10; },
+			height: function(){ return 10; }
+		});
+		
+		var rectangle2 = new dia.RectangleArea({
+			x: function(){ return -1; },
+			y: function(){ return -1; },
+			width: function(){ return -10; },
+			height: function(){ return -10; }
+		});
+		
+		var rectangle3 = new dia.RectangleArea({
+			x: function(){ return 5; },
+			y: function(){ return 5; },
+			width: function(){ return 10; },
+			height: function(){ return -10; }
+		});
+		
+		expect(area.intersectsWith(rectangle1)).toBe(true);
+		expect(area.intersectsWith(rectangle2)).toBe(false);
+		expect(area.intersectsWith(rectangle3)).toBe(true);
+	});
 });

@@ -25,6 +25,19 @@ describe('an interaction manager', function(){
 		expect(im.currentPosition).toEqual({x: 100, y: 20, absoluteX: 50, absoluteY: 70 });
 	});
 	
+	it('does not crash if no tool is specified', function(){
+		var im = new dia.InteractionManager();
+		
+		expect(function(){
+			im.mouseDown(0,0);
+			im.mouseMove(1,1);
+			im.mouseUp();
+
+			im.keyDown(32);
+			im.keyUp(32);
+		}).not.toThrow();
+	});
+	
 	it('can use tools', function(){
 		var down = false,
 			move = false,
@@ -47,5 +60,33 @@ describe('an interaction manager', function(){
 		expect(down).toBe(true);
 		expect(move).toBe(true);
 		expect(up).toBe(true);
+	});
+	
+	it('can move the canvas offset using the space bar', function(){
+		$('<div></div>').attr('id', 'toolbox').appendTo('body');
+		$('<canvas></canvas>').attr('id', 'canvas').appendTo('body');
+		
+		var app = new dia.App();
+		app.sheet = new dia.Sheet();
+		
+		var gui = new dia.GUI(app);
+		var im = new dia.InteractionManager(gui);
+		im.setSheet(app.sheet);
+		
+		im.keyDown(32);
+		im.mouseMove(10, 20, 10, 20);
+		
+		var canvas = gui.getSheetCanvas(app.sheet);
+		expect(canvas.scrollX).toBe(-10);
+		expect(canvas.scrollY).toBe(-20);
+		
+		im.keyUp(32);
+		im.mouseMove(20, 30, 20, 30);
+		
+		expect(canvas.scrollX).toBe(-10);
+		expect(canvas.scrollY).toBe(-20);
+		
+		$('#toolbox').remove();
+		$('#canvas').remove();
 	});
 });

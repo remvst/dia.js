@@ -2020,7 +2020,7 @@ dia.GUI = function(app){
 		this.app.sheet.addRenderable(selectionTool.getRenderable());
 	}
 	
-	this.setupInterationManager();
+	this.setupInteractionManager();
 	
 	var selectionTool = this.app.toolbox.getTool('select');
 	if(selectionTool){
@@ -2049,7 +2049,7 @@ dia.GUI.prototype.resizeCanvas = function(){
 	this.sheetCanvases[this.app.sheet.id].setDimensions(width, height);
 };
 
-dia.GUI.prototype.setupInterationManager = function(){
+dia.GUI.prototype.setupInteractionManager = function(){
 	if(this.interactionManager){
 		return;
 	}
