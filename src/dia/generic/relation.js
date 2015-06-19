@@ -100,40 +100,37 @@ dia.generic.RELATION.creatorTool = new dia.CreateTool({
 	type: dia.generic.RELATION,
 	mouseDown: function(sheet, x, y){
 		this.from = sheet.findElementContaining(x, y);
+		this.fromPosition = { x: x, y: y };
 	},
 	mouseMove: function(sheet, x, y){
 		if(this.from){
 			this.to = sheet.findElementContaining(x, y);
+			this.toPosition = { x: x, y: y };
 		}
 	},
 	mouseUp: function(sheet, x, y){
 		if(this.to && this.from && this.to !== this.from){
 			var fromArea = this.from.getRepresentation().area;
 			var toArea = this.to.getRepresentation().area;
-
-			var fromPosition = {
-				x: fromArea.getX(),
-				y: fromArea.getY(),
-			};
-			var toPosition = {
-				x: toArea.getX(),
-				y: toArea.getY(),
-			};
-
-			var angle = Math.atan2(toPosition.y - fromPosition.y, toPosition.x - fromPosition.x);
 			
-			var fromRelativeCenter = fromArea.getRelativeCenter();
-			var toRelativeCenter = toArea.getRelativeCenter();
+			var fromRelativePosition = fromArea.getRelativePositionFromAbsolute(
+				this.fromPosition.x,
+				this.fromPosition.y
+			);
+			var toRelativePosition = toArea.getRelativePositionFromAbsolute(
+				this.toPosition.x,
+				this.toPosition.y
+			);
 
 			var fromAnchor = {
 				element: this.from.id,
-				x: fromRelativeCenter.x + Math.cos(angle),
-				y: fromRelativeCenter.y + Math.sin(angle)
+				x: fromRelativePosition.x,
+				y: fromRelativePosition.y
 			};
 			var toAnchor = {
 				element: this.to.id,
-				x: toRelativeCenter.x - Math.cos(angle),
-				y: toRelativeCenter.y - Math.sin(angle)
+				x: toRelativePosition.x,
+				y: toRelativePosition.y
 			};
 
 			// Let's bind those anchors
