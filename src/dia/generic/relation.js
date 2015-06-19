@@ -22,6 +22,13 @@ dia.generic.RELATION.addProperty(new dia.Property({
 	default: []
 }));
 
+dia.generic.RELATION.addElementDependencies(function(element){
+	return [
+		element.getProperty('from').element,
+	   	element.getProperty('to').element
+	];
+});
+
 dia.generic.RELATION.setRepresentationFactory(function(element, repr){
 	var areaFrom = new dia.RectangleArea({
 		x: function(){ return fromPosition().x - 5 },

@@ -234,4 +234,36 @@ describe('a sheet', function(){
 		expect(param1).toBe(undefined);
 		expect(param2).toBe(ctx);
 	});
+	
+	it('can handle circular dependencies', function(){
+		var type = new dia.ElementType();
+		
+		var element = type.emptyElement();
+		element.id = 'element';
+		
+		var dep1 = type.emptyElement();
+		dep1.id = 'dep1';
+		
+		var dep2 = type.emptyElement();
+		dep2.id = 'dep2';
+		
+		type.addElementDependencies(function(e){
+			if(e === element){
+				return [dep1.id, dep2.id];
+			}else if(e === dep1){
+				return [element.id, dep1.id];
+			}else{
+				return [element.id, dep2.id];
+			}
+		});
+		
+		var sheet = new dia.Sheet();
+		sheet.addElement(element);
+		sheet.addElement(dep1);
+		sheet.addElement(dep2);
+		
+		element.remove();
+		
+		expect(sheet.elements.length).toBe(0);
+	});
 });

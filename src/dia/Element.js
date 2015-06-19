@@ -91,6 +91,17 @@ dia.Element.prototype.isContainedIn = function(rectangleArea){
 	}
 };
 
+dia.Element.prototype.installDependencies = function(){
+	if(this.sheet){
+		this.sheet.clearDependencies(this.id);
+		
+		var dependencies = this.type.getElementDependencies(this);
+		for(var i = 0 ; i < dependencies.length ; i++){
+			this.sheet.addDependency(this.id, dependencies[i]);
+		}
+	}
+};
+
 dia.Element.fromJSON = function(json){
 	var type = dia.ElementType.lookupType(json.type);
 	if(type === null){

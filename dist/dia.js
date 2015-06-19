@@ -75,6 +75,8 @@ dia.Sheet = function(){
 	this.elementsMap = {};
 	this.id = dia.uuid4();
 	this.renderables = [];
+	this.dependencies = {};
+	this.dependents = {};
 };
 
 extend(dia.Sheet, dia.EventDispatcher);
@@ -90,11 +92,16 @@ dia.Sheet.prototype.addElement = function(element){
 	
 	this.elementsMap[element.id] = element;
 	
+	// Dependencies
+	this.dependents[element.id] = [];
+	this.dependencies[element.id] = [];
+	element.installDependencies();
+	
 	this.dispatch('elementadded', { element: element });
 };
 
 dia.Sheet.prototype.removeElement = function(element){
-	if(element.sheet !== this){
+	if(!element || element.sheet !== this){
 		return;
 	}
 
@@ -106,6 +113,18 @@ dia.Sheet.prototype.removeElement = function(element){
 		delete this.elementsMap[element.id];
 		
 		this.dispatch('elementremoved', { element: element });
+		
+		// Removing elements that depend on the one being removed
+		var dependents = this.dependents[element.id].slice(0);
+		for(var i = 0 ; i < dependents.length ; i++){
+			this.removeElement(this.getElement(dependents[i]));
+		}
+		
+		// Clearing the current element's dependencies
+		this.clearDependencies(element.id);
+		
+		delete this.dependents[element.id];
+		delete this.dependencies[element.id];
 	}
 };
 
@@ -178,6 +197,38 @@ dia.Sheet.prototype.findHandleContaining = function(x, y){
 		}
 	}
 	return handle;
+};
+
+dia.Sheet.prototype.addDependency = function(dependentId, dependencyId){
+	if(!this.dependencies[dependentId]){
+		this.dependencies[dependentId] = [];
+	}
+	this.dependencies[dependentId].push(dependencyId);
+	
+	if(!this.dependents[dependencyId]){
+		this.dependents[dependencyId] = [];
+	}
+	this.dependents[dependencyId].push(dependentId);
+};
+
+dia.Sheet.prototype.clearDependencies = function(dependentId){
+	if(!this.dependencies[dependentId]){
+		return;
+	}
+	
+	var dependents,
+		index;
+	for(var i = 0 ; i < this.dependencies[dependentId].length ; i++){
+		dependents = this.dependents[this.dependencies[dependentId][i]];
+		if(dependents){
+			index = dependents.indexOf(dependentId);
+			if(index >= 0){
+				dependents.splice(index, 1);
+			}
+		}
+	}
+	
+	this.dependencies[dependentId] = [];
 };
 
 dia.Sheet.fromJSON = function(json){
@@ -284,6 +335,17 @@ dia.Element.prototype.isContainedIn = function(rectangleArea){
 		return repr.area.intersectsWith(rectangleArea);
 	}else{
 		return false;
+	}
+};
+
+dia.Element.prototype.installDependencies = function(){
+	if(this.sheet){
+		this.sheet.clearDependencies(this.id);
+		
+		var dependencies = this.type.getElementDependencies(this);
+		for(var i = 0 ; i < dependencies.length ; i++){
+			this.sheet.addDependency(this.id, dependencies[i]);
+		}
 	}
 };
 
@@ -2685,6 +2747,13 @@ dia.generic.RELATION.addProperty(new dia.Property({
 	private: true,
 	default: []
 }));
+
+dia.generic.RELATION.addElementDependencies(function(element){
+	return [
+		element.getProperty('from').element,
+	   	element.getProperty('to').element
+	];
+});
 
 dia.generic.RELATION.setRepresentationFactory(function(element, repr){
 	var areaFrom = new dia.RectangleArea({
