@@ -239,13 +239,8 @@ describe('a sheet', function(){
 		var type = new dia.ElementType();
 		
 		var element = type.emptyElement();
-		element.id = 'element';
-		
 		var dep1 = type.emptyElement();
-		dep1.id = 'dep1';
-		
 		var dep2 = type.emptyElement();
-		dep2.id = 'dep2';
 		
 		type.addElementDependencies(function(e){
 			if(e === element){
@@ -265,5 +260,41 @@ describe('a sheet', function(){
 		element.remove();
 		
 		expect(sheet.elements.length).toBe(0);
+	});
+	
+	it('can handle changing dependencies', function(){
+		var type = new dia.ElementType();
+		
+		var element = type.emptyElement();
+		var dep1 = type.emptyElement();
+		var dep2 = type.emptyElement();
+		
+		// Element depends on dep1
+		type.getElementDependencies = function(e){
+			if(e === element){
+				return [dep1.id];
+			}else{
+				return [];
+			}
+		};
+		
+		var sheet = new dia.Sheet();
+		sheet.addElement(element);
+		sheet.addElement(dep1);
+		sheet.addElement(dep2);
+		
+		// Element depends on dep2
+		type.getElementDependencies = function(e){
+			if(e === element){
+				return [dep2.id];
+			}else{
+				return [];
+			}
+		};
+		element.installDependencies();
+		
+		dep2.remove();
+		
+		expect(sheet.elements).toEqual([dep1]);
 	});
 });
