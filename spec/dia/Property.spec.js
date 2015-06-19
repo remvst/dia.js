@@ -11,13 +11,16 @@ describe('a property', function(){
 	});
 	
 	it('is initialized correctly with options', function(){
+		var onChange = new Function();
+		
 		var property = new dia.Property({
 			id: 'title',
 			type: dia.DataType.STRING,
 			label: 'label',
 			description: 'title of the element',
 			default: 'empty',
-			private: true
+			private: true,
+			onChange: onChange
 		});
 		
 		expect(property.id).toEqual('title');
@@ -26,6 +29,7 @@ describe('a property', function(){
 		expect(property.description).toEqual('title of the element');
 		expect(property.default).toEqual('empty');
 		expect(property.private).toBe(true);
+		expect(property.onChange).toBe(onChange);
 	});
 	
 	it('initializes default with falsy values', function(){

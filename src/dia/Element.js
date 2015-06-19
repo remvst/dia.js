@@ -29,23 +29,27 @@ dia.Element.prototype.getProperty = function(id){
 	}
 };
 
-dia.Element.prototype.setProperty = function(id, value){
-	var tmp;
-	if(this.type.hasPropertyId(id)){
-		if(this.type.getProperty(id).type.validate(value)){
-			tmp = this.properties[id];
-			this.properties[id] = value;
-			
-			if(tmp !== value){
-				this.dispatch('propertychange', {
-					element: this,
-					property: this.type.getProperty(id),
-					from: tmp,
-					to: value
-				});
+dia.Element.prototype.setProperty = function(id, newValue){
+	var oldValue,
+		property = this.type.getProperty(id);
+	if(property){
+		oldValue = this.properties[id];
+		
+		if(newValue !== oldValue){
+			if(!property.type.validate(newValue)){
+				throw new Error('Validation error: Property ' + id + ' cannot have value ' + value);
 			}
-		}else{
-			throw new Error('Validation error: Property ' + id + ' cannot have value ' + value);
+			
+			oldValue = this.properties[id];
+			this.properties[id] = newValue;
+			
+			this.dispatch('propertychange', {
+				element: this,
+				property: property,
+				from: oldValue,
+				to: newValue
+			});
+			property.elementChangedValue(this, oldValue, newValue);
 		}
 	}else{
 		throw new Error('Property ' + id + ' does not exist for type ' + this.type.id);

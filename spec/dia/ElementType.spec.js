@@ -148,6 +148,9 @@ describe('an element type', function(){
 		type.creatorTool = new dia.CreateTool({
 			type: type
 		});
+		type.addElementDependencies(function(){
+			return [];
+		});
 		
 		var clone = type.clone({
 			id: 'otherid'
@@ -162,5 +165,25 @@ describe('an element type', function(){
 		expect(clone.properties[1]).not.toBe(type.properties[1]);
 		expect(clone.creatorTool).not.toBe(type.creatorTool);
 		expect(clone.creatorTool.type).toBe(clone);
+		expect(clone.dependencyFunctions).not.toBe(type.dependencyFunctions);
+		expect(clone.dependencyFunctions).toEqual(type.dependencyFunctions);
+	});
+	
+	it('can specify element dependencies', function(){
+		var type = new dia.ElementType();
+		
+		var param = null;
+		type.addElementDependencies(function(p){
+			expect(p).toBe(element);
+			return ['foo', 'bar'];
+		});
+		type.addElementDependencies(function(p){
+			expect(p).toBe(element);
+			return ['yolo'];
+		});
+		
+		var element = type.emptyElement();
+		
+		expect(type.getElementDependencies(element)).toEqual(['foo', 'bar', 'yolo']);
 	});
 });

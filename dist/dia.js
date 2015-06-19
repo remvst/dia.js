@@ -225,23 +225,27 @@ dia.Element.prototype.getProperty = function(id){
 	}
 };
 
-dia.Element.prototype.setProperty = function(id, value){
-	var tmp;
-	if(this.type.hasPropertyId(id)){
-		if(this.type.getProperty(id).type.validate(value)){
-			tmp = this.properties[id];
-			this.properties[id] = value;
-			
-			if(tmp !== value){
-				this.dispatch('propertychange', {
-					element: this,
-					property: this.type.getProperty(id),
-					from: tmp,
-					to: value
-				});
+dia.Element.prototype.setProperty = function(id, newValue){
+	var oldValue,
+		property = this.type.getProperty(id);
+	if(property){
+		oldValue = this.properties[id];
+		
+		if(newValue !== oldValue){
+			if(!property.type.validate(newValue)){
+				throw new Error('Validation error: Property ' + id + ' cannot have value ' + value);
 			}
-		}else{
-			throw new Error('Validation error: Property ' + id + ' cannot have value ' + value);
+			
+			oldValue = this.properties[id];
+			this.properties[id] = newValue;
+			
+			this.dispatch('propertychange', {
+				element: this,
+				property: property,
+				from: oldValue,
+				to: newValue
+			});
+			property.elementChangedValue(this, oldValue, newValue);
 		}
 	}else{
 		throw new Error('Property ' + id + ' does not exist for type ' + this.type.id);
@@ -305,6 +309,7 @@ dia.ElementType = function(options){
 	this.representationFactory = function(){};
 	this.creatorTool = null;
 	this.anchorable = 'anchorable' in options ? options.anchorable : true;
+	this.dependencyFunctions = [];
 	
 	if(this.id){
 		dia.ElementType.register(this);
@@ -380,11 +385,27 @@ dia.ElementType.prototype.clone = function(options){
 		type.addProperty(this.properties[i].clone());
 	}
 	
+	for(var i = 0 ; i < this.dependencyFunctions.length ; i++){
+		type.addElementDependencies(this.dependencyFunctions[i]);
+	}
+	
 	return type;
 };
 
 dia.ElementType.prototype.isAnchorable = function(){
 	return this.anchorable;
+};
+
+dia.ElementType.prototype.addElementDependencies = function(func){
+	this.dependencyFunctions.push(func);
+};
+
+dia.ElementType.prototype.getElementDependencies = function(element){
+	var res = [];
+	for(var i = 0 ; i < this.dependencyFunctions.length ; i++){
+		res = res.concat(this.dependencyFunctions[i].call(this, element));
+	}
+	return res;
 };
 
 dia.ElementType.register = function(type){
@@ -411,6 +432,7 @@ dia.Property = function(options){
 	this.default = 'default' in options ? options.default : null;
 	this.id = options.id || null;
 	this.private = options.private || false;
+	this.onChange = options.onChange || null;
 };
 
 dia.Property.prototype.clone = function(){
@@ -422,6 +444,12 @@ dia.Property.prototype.clone = function(){
 		id: this.id,
 		private: this.private
 	});
+};
+
+dia.Property.prototype.elementChangedValue = function(element, fromValue, toValue){
+	if(this.onChange){
+		this.onChange(element, fromValue, toValue);
+	}
 };
 
 dia.DataType = function(options){

@@ -27,12 +27,16 @@ describe('an element', function(){
 	it('can be set properties', function(){
 		var type = new dia.ElementType();
 		
+		var onChangeParams;
 		var property = new dia.Property({
 			id: 'title',
 			type: dia.DataType.STRING,
 			label: 'title',
 			description: 'title of the element',
-			default: 'empty'
+			default: 'empty',
+			onChange: function(){
+				onChangeParams = Array.prototype.slice.call(arguments, 0);
+			}
 		});
 		type.addProperty(property);
 		
@@ -53,6 +57,7 @@ describe('an element', function(){
 		expect(event.property).toBe(property);
 		expect(event.from).toBe('empty');
 		expect(event.to).toBe('myval');
+		expect(onChangeParams).toEqual([element, 'empty', 'myval']);
 	});
 	
 	it('does not fire propertychange event when setting to the same value', function(){

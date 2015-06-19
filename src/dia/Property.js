@@ -7,6 +7,7 @@ dia.Property = function(options){
 	this.default = 'default' in options ? options.default : null;
 	this.id = options.id || null;
 	this.private = options.private || false;
+	this.onChange = options.onChange || null;
 };
 
 dia.Property.prototype.clone = function(){
@@ -18,4 +19,10 @@ dia.Property.prototype.clone = function(){
 		id: this.id,
 		private: this.private
 	});
+};
+
+dia.Property.prototype.elementChangedValue = function(element, fromValue, toValue){
+	if(this.onChange){
+		this.onChange(element, fromValue, toValue);
+	}
 };
