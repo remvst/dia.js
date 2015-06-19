@@ -45,6 +45,13 @@ dia.CircleArea.prototype.getAbsolutePositionFromRelative = function(x, y){
 	};
 };
 
+dia.CircleArea.prototype.getRelativePositionFromAbsolute = function(x, y){
+	return {
+		x: x - this.getX(),
+		y: y - this.getY()
+	};
+};
+
 dia.Area.defineIntersection('rectangle', 'circle', function(rectangle, circle){
 	// Let's assume it's another rectangle area
 	var areaX = circle.getX();

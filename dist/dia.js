@@ -935,10 +935,15 @@ dia.MoveAnchorDragHandle.prototype.dragDrop = function(x, y){
 		}
 	}
 	
+	var newRelativePosition = anchoredArea.getRelativePositionFromAbsolute(
+		absolutePosition.x,
+		absolutePosition.y
+	);
+	
 	var newAnchor = {
 		element: anchoredElement.id,
-		x: this.initialAnchorPositions.x + this.accumDX,
-		y: this.initialAnchorPositions.y + this.accumDY
+		x: newRelativePosition.x,
+		y: newRelativePosition.y
 	};
 	
 	anchoredArea.bindAnchorToBounds(newAnchor);
@@ -1061,6 +1066,13 @@ dia.Area.prototype.getAbsolutePositionFromRelative = function(x, y){
 	};
 };
 
+dia.Area.prototype.getRelativePositionFromAbsolute = function(x, y){
+	return {
+		x: x,
+		y: y
+	};
+};
+
 dia.Area.intersectionMap = {};
 
 dia.Area.defineIntersection = function(type1, type2, func){
@@ -1170,6 +1182,13 @@ dia.RectangleArea.prototype.getAbsolutePositionFromRelative = function(x, y){
 	};
 };
 
+dia.RectangleArea.prototype.getRelativePositionFromAbsolute = function(x, y){
+	return {
+		x: x - this.getX(),
+		y: y - this.getY()
+	};
+};
+
 dia.RectangleArea.prototype.getRelativeCenter = function(){
 	return {
 		x: this.getWidth() / 2,
@@ -1231,6 +1250,13 @@ dia.CircleArea.prototype.getAbsolutePositionFromRelative = function(x, y){
 	return {
 		x: x + this.getX(),
 		y: y + this.getY()
+	};
+};
+
+dia.CircleArea.prototype.getRelativePositionFromAbsolute = function(x, y){
+	return {
+		x: x - this.getX(),
+		y: y - this.getY()
 	};
 };
 

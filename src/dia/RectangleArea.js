@@ -85,6 +85,13 @@ dia.RectangleArea.prototype.getAbsolutePositionFromRelative = function(x, y){
 	};
 };
 
+dia.RectangleArea.prototype.getRelativePositionFromAbsolute = function(x, y){
+	return {
+		x: x - this.getX(),
+		y: y - this.getY()
+	};
+};
+
 dia.RectangleArea.prototype.getRelativeCenter = function(){
 	return {
 		x: this.getWidth() / 2,

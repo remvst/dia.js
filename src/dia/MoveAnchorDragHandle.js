@@ -64,10 +64,15 @@ dia.MoveAnchorDragHandle.prototype.dragDrop = function(x, y){
 		}
 	}
 	
+	var newRelativePosition = anchoredArea.getRelativePositionFromAbsolute(
+		absolutePosition.x,
+		absolutePosition.y
+	);
+	
 	var newAnchor = {
 		element: anchoredElement.id,
-		x: this.initialAnchorPositions.x + this.accumDX,
-		y: this.initialAnchorPositions.y + this.accumDY
+		x: newRelativePosition.x,
+		y: newRelativePosition.y
 	};
 	
 	anchoredArea.bindAnchorToBounds(newAnchor);
