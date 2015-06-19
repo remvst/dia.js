@@ -2734,12 +2734,22 @@ dia.generic.RELATION = new dia.ElementType({
 dia.generic.RELATION.addProperty(new dia.Property({
 	id: 'from',
 	type: dia.DataType.ANCHOR,
-	private: true
+	private: true,
+	onChange: function(element, fromValue, toValue){
+		if(fromValue && fromValue.element !== toValue.element){
+			element.installDependencies();
+		}
+	}
 }));
 dia.generic.RELATION.addProperty(new dia.Property({
 	id: 'to',
 	type: dia.DataType.ANCHOR,
-	private: true
+	private: true,
+	onChange: function(element, fromValue, toValue){
+		if(fromValue && fromValue.element !== toValue.element){
+			element.installDependencies();
+		}
+	}
 }));
 dia.generic.RELATION.addProperty(new dia.Property({
 	id: 'points',
