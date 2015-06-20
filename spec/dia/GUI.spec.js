@@ -29,6 +29,8 @@ describe('a GUI', function(){
 		app.sheet.addElement(element);
 		
 		var gui = new dia.GUI(app);
+		app.dispatch('newsheet', { sheet: app.sheet });
+		
 		var notified = false;
 		gui.renderSheet = function(){
 			notified = true;
@@ -47,7 +49,9 @@ describe('a GUI', function(){
 	
 	it('renders the toolbox', function(){
 		var app = new dia.App();
-		var gui = new dia.GUI(app);
+		
+		app.toolbox.toolList = [];
+		app.toolbox.toolMap = {};
 		
 		var tool1 = new dia.Tool();
 		tool1.id = 'mytool1';
@@ -57,7 +61,7 @@ describe('a GUI', function(){
 		tool2.id = 'mytool2';
 		app.toolbox.addTool(tool2);
 		
-		gui.renderToolbox();
+		var gui = new dia.GUI(app);
 		
 		expect($('#toolbox button').size()).toEqual(2);
 	});

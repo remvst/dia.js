@@ -1,17 +1,9 @@
 describe('an app', function(){
 	it('is initialized properly', function(){
-		var uuid4 = dia.uuid4;
-		
-		dia.uuid4 = function(){
-			return 'uuid';
-		};
-		
 		var app = new dia.App();
 		
-		expect(app.toolbox).toEqual(new dia.Toolbox());
-		expect(app.sheet).toEqual(new dia.Sheet());
-		
-		dia.uuid4 = uuid4;
+		expect(app.toolbox).not.toBe(null);
+		expect(app.sheet).toBe(null);
 	});
 	
 	it('can start', function(){
@@ -30,9 +22,10 @@ describe('an app', function(){
 		type1.creatorTool = new dia.CreateTool();
 		
 		var app = new dia.App();
-		app.start();
+		app.newSheet();
 		
 		expect(app.toolbox.toolList.indexOf(type1.creatorTool)).not.toEqual(-1);
+		expect(app.sheet).not.toBe(null);
 		
 		dia.uuid4 = uuid4;
 		

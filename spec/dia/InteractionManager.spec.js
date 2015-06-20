@@ -67,11 +67,10 @@ describe('an interaction manager', function(){
 		$('<canvas></canvas>').attr('id', 'canvas').appendTo('body');
 		
 		var app = new dia.App();
-		app.sheet = new dia.Sheet();
-		
 		var gui = new dia.GUI(app);
-		var im = new dia.InteractionManager(gui);
-		im.setSheet(app.sheet);
+		var im = gui.interactionManager;
+		
+		app.newSheet();
 		
 		im.keyDown(32);
 		im.mouseMove(10, 20, 10, 20);

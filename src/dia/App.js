@@ -1,9 +1,8 @@
 dia.App = function(){
+	dia.EventDispatcher.call(this);
+	
 	this.toolbox = new dia.Toolbox();
-	this.sheet = new dia.Sheet();
-};
-
-dia.App.prototype.start = function(){
+	
 	this.toolbox.addTool(new dia.SelectionTool());
 	
 	for(var i in dia.ElementType.types){
@@ -12,6 +11,15 @@ dia.App.prototype.start = function(){
 		}
 	}
 	
-	this.gui = new dia.GUI(this);
-	this.gui.renderToolbox();
+	this.sheet = null;
+};
+
+extend(dia.App, dia.EventDispatcher);
+
+dia.App.prototype.newSheet = function(){
+	this.sheet = new dia.Sheet();
+	
+	this.dispatch('newsheet', {
+		sheet: this.sheet
+	});
 };

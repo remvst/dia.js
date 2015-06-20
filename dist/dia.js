@@ -2096,11 +2096,10 @@ dia.Canvas.prototype.snapElementToGrid = function(element){
 };
 
 dia.App = function(){
+	dia.EventDispatcher.call(this);
+	
 	this.toolbox = new dia.Toolbox();
-	this.sheet = new dia.Sheet();
-};
-
-dia.App.prototype.start = function(){
+	
 	this.toolbox.addTool(new dia.SelectionTool());
 	
 	for(var i in dia.ElementType.types){
@@ -2109,8 +2108,17 @@ dia.App.prototype.start = function(){
 		}
 	}
 	
-	this.gui = new dia.GUI(this);
-	this.gui.renderToolbox();
+	this.sheet = null;
+};
+
+extend(dia.App, dia.EventDispatcher);
+
+dia.App.prototype.newSheet = function(){
+	this.sheet = new dia.Sheet();
+	
+	this.dispatch('newsheet', {
+		sheet: this.sheet
+	});
 };
 
 dia.GUI = function(app){
@@ -2119,26 +2127,12 @@ dia.GUI = function(app){
 	}
 	
 	this.app = app;
-	
-	this.canvas = document.getElementById('canvas');
-	this.context = this.canvas.getContext('2d');
+	this.sheet = null;
 	
 	this.sheetCanvases = {};
 	
-	this.boundElementAdded = this.elementAdded.bind(this);
-	this.boundElementRemoved = this.elementRemoved.bind(this);
-	this.boundElementModified = this.elementModified.bind(this);
-	
-	// In case the sheet already contains elements, let's watch them
-	for(var i = 0 ; i < this.app.sheet.elements.length ; i++){
-		this.app.sheet.elements[i].listen('propertychange', this.boundElementModified);
-	}
-	
-	// Rendering the selection
-	var selectionTool = this.app.toolbox.getTool('select');
-	if(selectionTool){
-		this.app.sheet.addRenderable(selectionTool.getRenderable());
-	}
+	this.canvas = document.getElementById('canvas');
+	this.context = this.canvas.getContext('2d');
 	
 	this.setupInteractionManager();
 	
@@ -2149,12 +2143,12 @@ dia.GUI = function(app){
 		selectionTool.listen('click', this.selectionClick.bind(this));
 	}
 	
+	// 
+	this.app.listen('newsheet', this.newAppSheet.bind(this));
 	
 	// Canvas auto-resize
 	window.addEventListener('resize', this.resizeCanvas.bind(this), false);
 	this.resizeCanvas();
-	
-	this.renderSheet();
 	
 	// UI buttons
 	var saveButton = document.getElementById('button-save-sheet');
@@ -2164,6 +2158,30 @@ dia.GUI = function(app){
 	if(saveButton) saveButton.addEventListener('click', this.saveSheet.bind(this), false);
 	if(newButton) newButton.addEventListener('click', this.newSheet.bind(this), false);
 	if(loadButton) loadButton.addEventListener('click', this.loadSheet.bind(this), false);
+	
+	this.renderToolbox();
+};
+
+dia.GUI.prototype.newAppSheet = function(e){
+	this.app.sheet.listen('elementadded', this.elementAdded.bind(this));
+	this.app.sheet.listen('elementremoved', this.elementRemoved.bind(this));
+	this.app.sheet.listen('renderableadded', this.renderSheet.bind(this));
+	this.app.sheet.listen('renderableremoved', this.renderSheet.bind(this));
+	
+	// In case the sheet already contains elements, let's watch them
+	for(var i = 0 ; i < this.app.sheet.elements.length ; i++){
+		this.app.sheet.elements[i].listen('propertychange', this.elementModified.bind(this));
+	}
+	
+	// Rendering the selection tool
+	var selectionTool = this.app.toolbox.getTool('select');
+	if(selectionTool){
+		this.app.sheet.addRenderable(selectionTool.getRenderable());
+	}
+	
+	this.interactionManager.setSheet(this.app.sheet);
+	
+	this.renderSheet();
 };
 
 dia.GUI.prototype.resizeCanvas = function(){
@@ -2174,8 +2192,6 @@ dia.GUI.prototype.resizeCanvas = function(){
 
 	this.canvas.width = width;
 	this.canvas.height = height;
-
-	this.sheetCanvases[this.app.sheet.id].setDimensions(width, height);
 };
 
 dia.GUI.prototype.setupInteractionManager = function(){
@@ -2184,15 +2200,11 @@ dia.GUI.prototype.setupInteractionManager = function(){
 	}
 	
 	this.interactionManager = new dia.InteractionManager(this);
-	this.interactionManager.setSheet(this.app.sheet);
 	
 	var selectionTool = this.app.toolbox.getTool('select');
 	if(selectionTool){
 		this.interactionManager.setTool(selectionTool);
 	}
-	
-	this.sheetCanvases[this.app.sheet.id] = new dia.Canvas(this.app.sheet);
-	this.sheetCanvases[this.app.sheet.id].listen('scrollchange', this.renderSheet.bind(this));
 	
 	var gui = this;
 	
@@ -2255,11 +2267,6 @@ dia.GUI.prototype.setupInteractionManager = function(){
 			gui.flushSheetRender();
 		}
 	}, false);
-	
-	this.app.sheet.listen('elementadded', this.elementAdded.bind(this));
-	this.app.sheet.listen('elementremoved', this.elementRemoved.bind(this));
-	this.app.sheet.listen('renderableadded', this.renderSheet.bind(this));
-	this.app.sheet.listen('renderableremoved', this.renderSheet.bind(this));
 };
 
 dia.GUI.prototype.getPositionOnSheet = function(event){
@@ -2310,8 +2317,10 @@ dia.GUI.prototype.renderSheet = function(){
 	if(this.bufferRender){
 		this.bufferedRenders++;
 	}else{
-		var canvas = this.getSheetCanvas(this.app.sheet);
-		canvas.render(this.context);
+		if(this.app.sheet){
+			var canvas = this.getSheetCanvas(this.app.sheet);
+			canvas.render(this.context);
+		}
 	}
 };
 
@@ -2335,7 +2344,7 @@ dia.GUI.prototype.selectionClick = function(e){
 };
 
 dia.GUI.prototype.elementAdded = function(e){
-	e.element.listen('propertychange', this.boundElementModified);
+	e.element.listen('propertychange', this.elementModified.bind(this));
 	this.renderSheet();
 };
 
@@ -2351,6 +2360,11 @@ dia.GUI.prototype.elementModified = function(e){
 };
 
 dia.GUI.prototype.getSheetCanvas = function(sheet){
+	if(!this.sheetCanvases[sheet.id]){
+		this.sheetCanvases[sheet.id] = new dia.Canvas(sheet);
+		this.sheetCanvases[sheet.id].setDimensions(this.canvas.width, this.canvas.height);
+		this.sheetCanvases[sheet.id].listen('scrollchange', this.renderSheet.bind(this));
+	}
 	return this.sheetCanvases[sheet.id];
 };
 
