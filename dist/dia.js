@@ -704,6 +704,7 @@ dia.GraphicalRepresentation = function(element){
 	this.element = element;
 	this.renderables = [];
 	this.handles = [];
+	this.guides = [];
 	
 	this.area = null;
 };
