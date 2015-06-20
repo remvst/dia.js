@@ -1,6 +1,8 @@
 dia.Sheet = function(){
 	dia.EventDispatcher.call(this);
 	
+	this.gridSize = 10;
+	
 	this.renderables = [];
 	this.reset();
 };
@@ -86,7 +88,8 @@ dia.Sheet.prototype.toJSON = function(){
 	var json = {
 		title: this.title,
 		elements: [],
-		id: this.id
+		id: this.id,
+		gridSize: this.gridSize
 	};
 	for(var i = 0 ; i < this.elements.length ; i++){
 		json.elements.push(this.elements[i].toJSON());
@@ -170,6 +173,7 @@ dia.Sheet.fromJSON = function(json){
 	var sheet = new dia.Sheet();
 	sheet.title = json.title || sheet.title;
 	sheet.id = json.id || sheet.id;
+	sheet.gridSize = json.gridSize || sheet.gridSize;
 	
 	var element;
 	for(var i = 0 ; i < json.elements.length ; i++){

@@ -13,7 +13,7 @@ describe('a move element drag handle', function(){
 		}).toThrow();
 	});
 	
-	it('can move an element', function(){
+	it('can move an element and snaps it to the grid', function(){
 		var type = new dia.ElementType();
 		type.addProperty(new dia.Property({
 			id: 'x',
@@ -24,7 +24,12 @@ describe('a move element drag handle', function(){
 			default: 2
 		}));
 		
+		var sheet = new dia.Sheet();
+		sheet.gridSize = 2;
+		
 		var element = type.emptyElement();
+		sheet.addElement(element);
+		
 		var handle = new dia.MoveElementDragHandle(element);
 		
 		expect(element.getProperty('x')).toBe(1);
@@ -34,7 +39,7 @@ describe('a move element drag handle', function(){
 		handle.dragMove(5, -3);
 		
 		expect(element.getProperty('x')).toBe(6);
-		expect(element.getProperty('y')).toBe(-1);
+		expect(element.getProperty('y')).toBe(0);
 	});
 	
 	it('will snap elements to each other', function(){

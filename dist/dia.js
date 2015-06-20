@@ -70,6 +70,8 @@ dia.EventDispatcher.prototype.dispatch = function(event, data){
 dia.Sheet = function(){
 	dia.EventDispatcher.call(this);
 	
+	this.gridSize = 10;
+	
 	this.renderables = [];
 	this.reset();
 };
@@ -155,7 +157,8 @@ dia.Sheet.prototype.toJSON = function(){
 	var json = {
 		title: this.title,
 		elements: [],
-		id: this.id
+		id: this.id,
+		gridSize: this.gridSize
 	};
 	for(var i = 0 ; i < this.elements.length ; i++){
 		json.elements.push(this.elements[i].toJSON());
@@ -239,6 +242,7 @@ dia.Sheet.fromJSON = function(json){
 	var sheet = new dia.Sheet();
 	sheet.title = json.title || sheet.title;
 	sheet.id = json.id || sheet.id;
+	sheet.gridSize = json.gridSize || sheet.gridSize;
 	
 	var element;
 	for(var i = 0 ; i < json.elements.length ; i++){
@@ -956,11 +960,11 @@ dia.MoveElementDragHandle.prototype.dragStart = function(x, y){
 };
 
 dia.MoveElementDragHandle.prototype.dragMove = function(dx, dy){
-	var elementX = this.element.getProperty('x');
-	var elementY = this.element.getProperty('y');
+	var expectedX = this.lastPosition.x + dx;
+	var expectedY = this.lastPosition.y + dy;
 
-	this.element.setProperty('x', this.lastPosition.x + dx);
-	this.element.setProperty('y', this.lastPosition.y + dy);
+	this.element.setProperty('x', expectedX);
+	this.element.setProperty('y', expectedY);
 	
 	// Snap to guides
 	var repr = this.element.getRepresentation();
@@ -969,10 +973,19 @@ dia.MoveElementDragHandle.prototype.dragMove = function(dx, dy){
 	for(var i = 0 ; !this.currentSnap && repr && i < repr.guides.length ; i++){
 		this.trySnap(repr.guides[i]);
 	}
+	
+	// Snapping to grid
+	var gs = this.element.sheet.gridSize;
+	if(this.element.getProperty('x') === expectedX){
+		this.element.setProperty('x', Math.round((expectedX) / gs) * gs);
+	}
+	if(this.element.getProperty('y') === expectedY){
+		this.element.setProperty('y', Math.round((expectedY) / gs) * gs);
+	}
 
 	this.lastPosition = {
-		x: this.lastPosition.x + dx,
-		y: this.lastPosition.y + dy
+		x: expectedX,
+		y: expectedY
 	};
 };
 
@@ -2131,8 +2144,6 @@ dia.Canvas = function(sheet){
 	
 	this.width = 0;
 	this.height = 0;
-	
-	this.gridSize = 10;
 };
 
 extend(dia.Canvas, dia.EventDispatcher);
@@ -2160,10 +2171,10 @@ dia.Canvas.prototype.render = function(ctx){
 	
 	// Grid
 	ctx.fillStyle = '#ffffff';
-	for(var x = this.gridSize - (this.scrollX % this.gridSize) ; x < this.width ; x += this.gridSize){
+	for(var x = this.sheet.gridSize - (this.scrollX % this.sheet.gridSize) ; x < this.width ; x += this.sheet.gridSize){
 		ctx.fillRect(x, 0, 1, this.height);
 	}
-	for(var y = this.gridSize - (this.scrollY % this.gridSize) ; y < this.height ; y += this.gridSize){
+	for(var y = this.sheet.gridSize - (this.scrollY % this.sheet.gridSize) ; y < this.height ; y += this.sheet.gridSize){
 		ctx.fillRect(0, y, this.width, 1);
 	}
 	

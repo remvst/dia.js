@@ -22,11 +22,11 @@ dia.MoveElementDragHandle.prototype.dragStart = function(x, y){
 };
 
 dia.MoveElementDragHandle.prototype.dragMove = function(dx, dy){
-	var elementX = this.element.getProperty('x');
-	var elementY = this.element.getProperty('y');
+	var expectedX = this.lastPosition.x + dx;
+	var expectedY = this.lastPosition.y + dy;
 
-	this.element.setProperty('x', this.lastPosition.x + dx);
-	this.element.setProperty('y', this.lastPosition.y + dy);
+	this.element.setProperty('x', expectedX);
+	this.element.setProperty('y', expectedY);
 	
 	// Snap to guides
 	var repr = this.element.getRepresentation();
@@ -35,10 +35,19 @@ dia.MoveElementDragHandle.prototype.dragMove = function(dx, dy){
 	for(var i = 0 ; !this.currentSnap && repr && i < repr.guides.length ; i++){
 		this.trySnap(repr.guides[i]);
 	}
+	
+	// Snapping to grid
+	var gs = this.element.sheet.gridSize;
+	if(this.element.getProperty('x') === expectedX){
+		this.element.setProperty('x', Math.round((expectedX) / gs) * gs);
+	}
+	if(this.element.getProperty('y') === expectedY){
+		this.element.setProperty('y', Math.round((expectedY) / gs) * gs);
+	}
 
 	this.lastPosition = {
-		x: this.lastPosition.x + dx,
-		y: this.lastPosition.y + dy
+		x: expectedX,
+		y: expectedY
 	};
 };
 

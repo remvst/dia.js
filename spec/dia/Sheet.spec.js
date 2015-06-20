@@ -11,6 +11,7 @@ describe('a sheet', function(){
 		expect(sheet.elements).toEqual([]);
 		expect(sheet.title).toBe(null);
 		expect(sheet.id).toBe('uuid');
+		expect(sheet.gridSize).toBe(10);
 		
 		dia.uuid4 = uuid4;
 	});
@@ -99,6 +100,7 @@ describe('a sheet', function(){
 		
 		var sheet = new dia.Sheet();
 		sheet.title = 'bar';
+		sheet.gridSize = 1234;
 		
 		sheet.addElement(type.emptyElement());
 		sheet.addElement(type.emptyElement());
