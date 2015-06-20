@@ -1124,6 +1124,7 @@ dia.BrokenLineDragHandle.prototype.dragDrop = function(x, y){
 
 dia.Area = function(){
 	this.type = null;
+	this.guides = null;
 };
 
 dia.Area.prototype.contains = function(x, y){
@@ -1165,6 +1166,17 @@ dia.Area.prototype.getRelativePositionFromAbsolute = function(x, y){
 		x: x,
 		y: y
 	};
+};
+
+dia.Area.prototype.createGuides = function(){
+	return [];
+};
+
+dia.Area.prototype.getGuides = function(){
+	if(!this.guides){
+		this.guides = this.createGuides();
+	}
+	return this.guides;
 };
 
 dia.Area.intersectionMap = {};
