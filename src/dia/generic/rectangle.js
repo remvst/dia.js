@@ -110,6 +110,8 @@ dia.generic.RECTANGLE.setRepresentationFactory(function(element, repr){
 		width: function(){ return element.getProperty('width'); },
 		height: function(){ return element.getProperty('height'); },
 	});
+	
+	repr.guides = repr.area.getGuides(element);
 
 	var handle = new dia.MoveElementDragHandle(element, repr.area, 'points');
 	repr.addHandle(handle);
