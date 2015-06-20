@@ -2362,6 +2362,8 @@ dia.GUI.prototype.resizeCanvas = function(){
 
 	this.canvas.width = width;
 	this.canvas.height = height;
+	
+	this.renderSheet();
 };
 
 dia.GUI.prototype.setupInteractionManager = function(){
