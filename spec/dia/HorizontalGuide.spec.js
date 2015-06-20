@@ -5,13 +5,15 @@ describe('a horizontal guide', function(){
 		var guide = new dia.HorizontalGuide({
 			element: element,
 			y: function(){ return 10; },
-			offset: function(){ return 20; }
+			offset: function(){ return 20; },
+			x: function(){ return 30; }
 		});
 		
 		expect(guide.type).toBe('horizontal');
 		expect(guide.element).toBe(element);
 		expect(guide.getY()).toBe(10);
 		expect(guide.getOffset()).toBe(20);
+		expect(guide.getX()).toBe(30);
 	});
 	
 	it('should snap to another one', function(){

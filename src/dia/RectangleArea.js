@@ -105,22 +105,26 @@ dia.RectangleArea.prototype.getGuides = function(element){
 	return [
 		new dia.HorizontalGuide({
 			element: element,
+			x: function(){ return area.getX() + area.getWidth() / 2; },
 			y: function(){ return area.getY(); },
 			offset: function(){ return 0; }
 		}),
 		new dia.HorizontalGuide({
 			element: element,
+			x: function(){ return area.getX() + area.getWidth() / 2; },
 			y: function(){ return area.getY() + area.getHeight(); },
 			offset: function(){ return area.getHeight(); }
 		}),
 		new dia.VerticalGuide({
 			element: element,
 			x: function(){ return area.getX(); },
+			y: function(){ return area.getY() + area.getHeight() / 2; },
 			offset: function(){ return 0; }
 		}),
 		new dia.VerticalGuide({
 			element: element,
 			x: function(){ return area.getX() + area.getWidth(); },
+			y: function(){ return area.getY() + area.getHeight() / 2; },
 			offset: function(){ return area.getWidth(); }
 		})
 	];

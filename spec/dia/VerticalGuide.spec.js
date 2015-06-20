@@ -5,12 +5,14 @@ describe('a vertical guide', function(){
 		var guide = new dia.VerticalGuide({
 			element: element,
 			x: function(){ return 10; },
+			y: function(){ return 15; },
 			offset: function(){ return 20; }
 		});
 		
 		expect(guide.type).toBe('vertical');
 		expect(guide.element).toBe(element);
 		expect(guide.getX()).toBe(10);
+		expect(guide.getY()).toBe(15);
 		expect(guide.getOffset()).toBe(20);
 	});
 	
