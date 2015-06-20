@@ -940,11 +940,15 @@ dia.MoveElementDragHandle = function(element, area){
 	}
 	
 	this.start = null;
+	
+	this.currentSnap = null;
 };
 
 extend(dia.MoveElementDragHandle, dia.DragHandle);
 
 dia.MoveElementDragHandle.prototype.dragStart = function(x, y){
+	this.currentSnap = null;
+	
 	this.lastPosition = {
 		x: this.element.getProperty('x'),
 		y: this.element.getProperty('y')
@@ -960,7 +964,9 @@ dia.MoveElementDragHandle.prototype.dragMove = function(dx, dy){
 	
 	// Snap to guides
 	var repr = this.element.getRepresentation();
-	for(var i = 0 ; repr && i < repr.guides.length ; i++){
+	
+	this.currentSnap = null;
+	for(var i = 0 ; !this.currentSnap && repr && i < repr.guides.length ; i++){
 		this.trySnap(repr.guides[i]);
 	}
 
@@ -970,10 +976,24 @@ dia.MoveElementDragHandle.prototype.dragMove = function(dx, dy){
 	};
 };
 
+dia.MoveElementDragHandle.prototype.dragDrop = function(){
+	this.currentSnap = null;
+};
+
+dia.MoveElementDragHandle.prototype.render = function(c){
+	dia.DragHandle.prototype.render.call(this, c);
+	
+	if(this.currentSnap){
+		this.currentSnap.elementGuide.render(c, this.currentSnap.otherGuide);
+	}
+};
+
 dia.MoveElementDragHandle.prototype.trySnap = function(guide){
+	this.currentSnap = null;
+	
 	var handle = this;
 	this.element.sheet.elements.forEach(function(element){
-		if(handle.element === element){
+		if(handle.element === element || handle.currentSnap){
 			// No need to snap with self
 			return;
 		}
@@ -983,6 +1003,12 @@ dia.MoveElementDragHandle.prototype.trySnap = function(guide){
 		for(var i = 0 ; repr && i < repr.guides.length ; i++){
 			if(guide.shouldSnap(repr.guides[i], 10)){
 			  	guide.snap(repr.guides[i]);
+				handle.currentSnap = {
+					elementGuide: guide,
+					otherGuide: repr.guides[i]
+				};
+				
+				break; // Let's snap to only one guide
 			}
 		}
 	});
@@ -2152,7 +2178,7 @@ dia.Guide.prototype.shouldSnap = function(otherGuide, delta){
 	return false;
 };
 
-dia.Guide.prototype.render = function(c){
+dia.Guide.prototype.render = function(c, otherGuide){
 	
 };
 
@@ -2179,8 +2205,9 @@ dia.HorizontalGuide.prototype.shouldSnap = function(guide, delta){
 		&& Math.abs(this.getY() - guide.getY()) < delta;
 };
 
-dia.HorizontalGuide.prototype.render = function(c){
-	
+dia.HorizontalGuide.prototype.render = function(c, otherGuide){
+	c.fillStyle = 'red';
+	c.fillRect(0, this.getY(), 1000, 2);
 };
 
 dia.HorizontalGuide.prototype.snap = function(guide){

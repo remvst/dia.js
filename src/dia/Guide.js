@@ -6,7 +6,7 @@ dia.Guide.prototype.shouldSnap = function(otherGuide, delta){
 	return false;
 };
 
-dia.Guide.prototype.render = function(c){
+dia.Guide.prototype.render = function(c, otherGuide){
 	
 };
 

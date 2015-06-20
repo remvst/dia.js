@@ -17,8 +17,9 @@ dia.HorizontalGuide.prototype.shouldSnap = function(guide, delta){
 		&& Math.abs(this.getY() - guide.getY()) < delta;
 };
 
-dia.HorizontalGuide.prototype.render = function(c){
-	
+dia.HorizontalGuide.prototype.render = function(c, otherGuide){
+	c.fillStyle = 'red';
+	c.fillRect(0, this.getY(), 1000, 2);
 };
 
 dia.HorizontalGuide.prototype.snap = function(guide){
