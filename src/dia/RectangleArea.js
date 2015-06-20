@@ -112,6 +112,16 @@ dia.RectangleArea.prototype.getGuides = function(element){
 			element: element,
 			y: function(){ return area.getY() + area.getHeight(); },
 			offset: function(){ return area.getHeight(); }
+		}),
+		new dia.VerticalGuide({
+			element: element,
+			x: function(){ return area.getX(); },
+			offset: function(){ return 0; }
+		}),
+		new dia.VerticalGuide({
+			element: element,
+			x: function(){ return area.getX() + area.getWidth(); },
+			offset: function(){ return area.getWidth(); }
 		})
 	];
 };

@@ -173,7 +173,7 @@ describe('a rectangle area', function(){
 	it('can create guides for an element', function(){
 		var area = new dia.RectangleArea({
 			x: function(){ return 100; },
-			y: function(){ return 100; },
+			y: function(){ return 120; },
 			width: function(){ return 40; },
 			height: function(){ return 30; }
 		});
@@ -183,11 +183,19 @@ describe('a rectangle area', function(){
 		var guides = area.getGuides(element);
 		
 		expect(guides[0].element).toBe(element);
-		expect(guides[0].getY()).toBe(100);
+		expect(guides[0].getY()).toBe(120);
 		expect(guides[0].getOffset()).toBe(0);
 		
 		expect(guides[1].element).toBe(element);
-		expect(guides[1].getY()).toBe(130);
+		expect(guides[1].getY()).toBe(150);
 		expect(guides[1].getOffset()).toBe(30);
+		
+		expect(guides[2].element).toBe(element);
+		expect(guides[2].getX()).toBe(100);
+		expect(guides[2].getOffset()).toBe(0);
+		
+		expect(guides[3].element).toBe(element);
+		expect(guides[3].getX()).toBe(140);
+		expect(guides[3].getOffset()).toBe(40);
 	});
 });
