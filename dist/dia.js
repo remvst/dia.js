@@ -70,13 +70,8 @@ dia.EventDispatcher.prototype.dispatch = function(event, data){
 dia.Sheet = function(){
 	dia.EventDispatcher.call(this);
 	
-	this.title = null;
-	this.elements = [];
-	this.elementsMap = {};
-	this.id = dia.uuid4();
 	this.renderables = [];
-	this.dependencies = {};
-	this.dependents = {};
+	this.reset();
 };
 
 extend(dia.Sheet, dia.EventDispatcher);
@@ -229,6 +224,15 @@ dia.Sheet.prototype.clearDependencies = function(dependentId){
 	}
 	
 	this.dependencies[dependentId] = [];
+};
+
+dia.Sheet.prototype.reset = function(){
+	this.elements = [];
+	this.elementsMap = {};
+	this.dependencies = {};
+	this.dependents = {};
+	this.id = dia.uuid4();
+	this.title = null;
 };
 
 dia.Sheet.fromJSON = function(json){
@@ -2151,6 +2155,15 @@ dia.GUI = function(app){
 	this.resizeCanvas();
 	
 	this.renderSheet();
+	
+	// UI buttons
+	var saveButton = document.getElementById('button-save-sheet');
+	var newButton = document.getElementById('button-new-sheet');
+	var loadButton = document.getElementById('button-load-sheet');
+	
+	if(saveButton) saveButton.addEventListener('click', this.saveSheet.bind(this), false);
+	if(newButton) newButton.addEventListener('click', this.newSheet.bind(this), false);
+	if(loadButton) loadButton.addEventListener('click', this.loadSheet.bind(this), false);
 };
 
 dia.GUI.prototype.resizeCanvas = function(){
@@ -2353,6 +2366,46 @@ dia.GUI.prototype.flushSheetRender = function(){
 		this.renderSheet();
 	}
 	this.bufferedRenders = 0;
+};
+
+dia.GUI.prototype.loadSheet = function(){
+	var input = document.createElement('textarea');
+	input.className = 'form-control';
+	input.rows = 10;
+	
+	var modal = new dia.Dialog({
+		title: 'Load an existing sheet',
+		content: input
+	});
+	modal.show();
+};
+
+dia.GUI.prototype.saveSheet = function(){
+	var input = document.createElement('textarea');
+	input.className = 'form-control';
+	input.rows = 10;
+	input.value = JSON.stringify(this.app.sheet.toJSON());
+	
+	var modal = new dia.Dialog({
+		title: 'Save the current sheet',
+		content: input
+	});
+	modal.show();
+};
+
+dia.GUI.prototype.newSheet = function(){
+	var modal = new dia.Dialog({
+		title: 'New sheet',
+		content: 'Create a new sheet without saving the current one?'
+	});
+	modal.show();
+	
+	var gui = this;
+	modal.listen('hide', function(e){
+		if(e.confirmed){
+			gui.app.sheet.reset();
+		}
+	});
 };
 
 dia.ElementForm = function(element){

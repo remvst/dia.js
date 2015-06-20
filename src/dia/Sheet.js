@@ -1,13 +1,8 @@
 dia.Sheet = function(){
 	dia.EventDispatcher.call(this);
 	
-	this.title = null;
-	this.elements = [];
-	this.elementsMap = {};
-	this.id = dia.uuid4();
 	this.renderables = [];
-	this.dependencies = {};
-	this.dependents = {};
+	this.reset();
 };
 
 extend(dia.Sheet, dia.EventDispatcher);
@@ -160,6 +155,15 @@ dia.Sheet.prototype.clearDependencies = function(dependentId){
 	}
 	
 	this.dependencies[dependentId] = [];
+};
+
+dia.Sheet.prototype.reset = function(){
+	this.elements = [];
+	this.elementsMap = {};
+	this.dependencies = {};
+	this.dependents = {};
+	this.id = dia.uuid4();
+	this.title = null;
 };
 
 dia.Sheet.fromJSON = function(json){
