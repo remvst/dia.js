@@ -27,19 +27,6 @@ describe('an area', function(){
 	it('has no guides', function(){
 		var area = new dia.Area();
 		
-		expect(area.createGuides()).toEqual([]);
-	});
-	
-	it('can have specified guides', function(){
-		var area = new dia.Area();
-		
-		var createCalls = 0;
-		area.createGuides = function(){
-			createCalls++;
-			return [1, 2];
-		};
-		
-		expect(area.getGuides()).toEqual([1, 2]);
-		expect(createCalls).toBe(1);
+		expect(area.getGuides({})).toEqual([]);
 	});
 });

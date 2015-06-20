@@ -169,4 +169,25 @@ describe('a rectangle area', function(){
 		
 		expect(area.getRelativeCenter()).toEqual({ x: 15, y: 15 });
 	});
+	
+	it('can create guides for an element', function(){
+		var area = new dia.RectangleArea({
+			x: function(){ return 100; },
+			y: function(){ return 100; },
+			width: function(){ return 40; },
+			height: function(){ return 30; }
+		});
+		
+		var element = new dia.ElementType().emptyElement();
+		
+		var guides = area.getGuides(element);
+		
+		expect(guides[0].element).toBe(element);
+		expect(guides[0].getY()).toBe(100);
+		expect(guides[0].getOffset()).toBe(0);
+		
+		expect(guides[1].element).toBe(element);
+		expect(guides[1].getY()).toBe(130);
+		expect(guides[1].getOffset()).toBe(30);
+	});
 });

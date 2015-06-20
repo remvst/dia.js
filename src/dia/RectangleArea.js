@@ -99,6 +99,23 @@ dia.RectangleArea.prototype.getRelativeCenter = function(){
 	};
 };
 
+dia.RectangleArea.prototype.getGuides = function(element){
+	var area = this;
+	
+	return [
+		new dia.HorizontalGuide({
+			element: element,
+			y: function(){ return area.getY(); },
+			offset: function(){ return 0; }
+		}),
+		new dia.HorizontalGuide({
+			element: element,
+			y: function(){ return area.getY() + area.getHeight(); },
+			offset: function(){ return area.getHeight(); }
+		})
+	];
+};
+
 dia.Area.defineIntersection('rectangle', 'rectangle', function(a, b){
 	// Let's assume it's another rectangle area
 	var boundsA = a.getBounds();

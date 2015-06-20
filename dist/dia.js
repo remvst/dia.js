@@ -1168,15 +1168,8 @@ dia.Area.prototype.getRelativePositionFromAbsolute = function(x, y){
 	};
 };
 
-dia.Area.prototype.createGuides = function(){
+dia.Area.prototype.getGuides = function(element){
 	return [];
-};
-
-dia.Area.prototype.getGuides = function(){
-	if(!this.guides){
-		this.guides = this.createGuides();
-	}
-	return this.guides;
 };
 
 dia.Area.intersectionMap = {};
@@ -1300,6 +1293,23 @@ dia.RectangleArea.prototype.getRelativeCenter = function(){
 		x: this.getWidth() / 2,
 		y: this.getHeight() / 2
 	};
+};
+
+dia.RectangleArea.prototype.getGuides = function(element){
+	var area = this;
+	
+	return [
+		new dia.HorizontalGuide({
+			element: element,
+			y: function(){ return area.getY(); },
+			offset: function(){ return 0; }
+		}),
+		new dia.HorizontalGuide({
+			element: element,
+			y: function(){ return area.getY() + area.getHeight(); },
+			offset: function(){ return area.getHeight(); }
+		})
+	];
 };
 
 dia.Area.defineIntersection('rectangle', 'rectangle', function(a, b){

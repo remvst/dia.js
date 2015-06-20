@@ -44,15 +44,8 @@ dia.Area.prototype.getRelativePositionFromAbsolute = function(x, y){
 	};
 };
 
-dia.Area.prototype.createGuides = function(){
+dia.Area.prototype.getGuides = function(element){
 	return [];
-};
-
-dia.Area.prototype.getGuides = function(){
-	if(!this.guides){
-		this.guides = this.createGuides();
-	}
-	return this.guides;
 };
 
 dia.Area.intersectionMap = {};
