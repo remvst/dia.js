@@ -2095,6 +2095,49 @@ dia.Canvas.prototype.snapElementToGrid = function(element){
 	element.setProperty('y', Math.round(y / this.gridSize) * this.gridSize);
 };
 
+dia.Guide = function(){
+	this.type = null;
+};
+
+dia.Guide.prototype.shouldSnap = function(otherGuide, delta){
+	return false;
+};
+
+dia.Guide.prototype.render = function(c){
+	
+};
+
+dia.Guide.prototype.snap = function(guide){
+	
+};
+
+dia.HorizontalGuide = function(options){
+	dia.Guide.call(this);
+	
+	this.type = 'horizontal';
+	
+	this.element = options.element;
+	this.getY = options.y;
+	this.getOffset = options.offset || function(){ return 0; };
+};
+
+extend(dia.HorizontalGuide, dia.Guide);
+
+dia.HorizontalGuide.prototype.shouldSnap = function(guide, delta){
+	delta = delta || 5;
+	
+	return this.type === guide.type
+		&& Math.abs(this.getY() - guide.getY()) < delta;
+};
+
+dia.HorizontalGuide.prototype.render = function(c){
+	
+};
+
+dia.HorizontalGuide.prototype.snap = function(guide){
+	this.element.setProperty('y', guide.getY() - this.getOffset());
+};
+
 dia.App = function(){
 	dia.EventDispatcher.call(this);
 	
