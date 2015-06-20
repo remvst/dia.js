@@ -43,6 +43,7 @@ module.exports = function(grunt) {
 					'src/dia/Canvas.js',
 					'src/dia/Guide.js',
 					'src/dia/HorizontalGuide.js',
+					'src/dia/VerticalGuide.js',
 					'src/dia/App.js',
 					'src/dia/GUI.js',
 					'src/dia/ElementForm.js',
