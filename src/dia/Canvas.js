@@ -51,11 +51,3 @@ dia.Canvas.prototype.render = function(ctx){
 	this.sheet.render(ctx);
 	ctx.restore();
 };
-
-dia.Canvas.prototype.snapElementToGrid = function(element){
-	var x = element.getProperty('x');
-	var y = element.getProperty('y');
-	
-	element.setProperty('x', Math.round(x / this.gridSize) * this.gridSize);
-	element.setProperty('y', Math.round(y / this.gridSize) * this.gridSize);
-};

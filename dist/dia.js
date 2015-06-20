@@ -2134,14 +2134,6 @@ dia.Canvas.prototype.render = function(ctx){
 	ctx.restore();
 };
 
-dia.Canvas.prototype.snapElementToGrid = function(element){
-	var x = element.getProperty('x');
-	var y = element.getProperty('y');
-	
-	element.setProperty('x', Math.round(x / this.gridSize) * this.gridSize);
-	element.setProperty('y', Math.round(y / this.gridSize) * this.gridSize);
-};
-
 dia.Guide = function(){
 	this.type = null;
 };
@@ -2443,9 +2435,6 @@ dia.GUI.prototype.elementRemoved = function(e){
 };
 
 dia.GUI.prototype.elementModified = function(e){
-	if(e.element.type.hasPropertyId('x')){
-		this.getSheetCanvas(this.app.sheet).snapElementToGrid(e.element);
-	}
 	this.renderSheet();
 };
 

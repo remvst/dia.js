@@ -230,9 +230,6 @@ dia.GUI.prototype.elementRemoved = function(e){
 };
 
 dia.GUI.prototype.elementModified = function(e){
-	if(e.element.type.hasPropertyId('x')){
-		this.getSheetCanvas(this.app.sheet).snapElementToGrid(e.element);
-	}
 	this.renderSheet();
 };
 
