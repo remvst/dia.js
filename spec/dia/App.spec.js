@@ -35,11 +35,16 @@ describe('an app', function(){
 	
 	it('can open a new sheet', function(){
 		var app = new dia.App();
-		
 		var sheet = new dia.Sheet();
+		
+		var event;
+		app.listen('newsheet', function(e){
+			event = e;
+		});
 		
 		app.openSheet(sheet);
 		
 		expect(app.sheet).toBe(sheet);
+		expect(event.sheet).toBe(sheet);
 	});
 });

@@ -2045,6 +2045,13 @@ dia.Dialog = function(settings){
 	
 	settings = settings || {};
 	
+	this.hideOnOk = 'hideOnOk' in settings ? settings.hideOnOk : true;
+	this.hideOnCancel = 'hideOnCancel' in settings ? settings.hideOnCancel : true;
+	
+	this.ok = 'ok' in settings ? settings.ok : true;
+	this.cancel = 'cancel' in settings ? settings.cancel : true;
+	this.close = 'close' in settings ? settings.close : true;
+	
 	var mustacheContent = settings.content instanceof HTMLElement ? null : settings.content;
 	
 	var template = dia.Dialog.getTemplate();
@@ -2057,6 +2064,10 @@ dia.Dialog = function(settings){
 	
 	this.root = $(html);
 	
+	if(!this.ok) this.root.find('.modal-footer .btn-primary').remove();
+	if(!this.cancel) this.root.find('.modal-footer .btn-default').remove();
+	if(!this.close) this.root.find('.close').remove();
+	
 	this.root.on('hidden', function () {
         $(this).remove();
     });
@@ -2065,14 +2076,24 @@ dia.Dialog = function(settings){
 		this.root.find('.modal-body').append(settings.content);
 	}
 	
+	var dialog = this;
 	this.root.find('.modal-footer .btn-primary').click(function(){
-		this.hide(true);
+		this.dispatch('clickok');
+		if(this.hideOnOk){
+			this.hide();
+		}
 	}.bind(this));
 	this.root.find('.modal-footer .btn-default').click(function(){
-		this.hide(false);
+		this.dispatch('clickcancel');
+		if(this.hideOnCancel){
+			this.hide();
+		}
 	}.bind(this));
 	this.root.find('.close').click(function(){
-		this.hide();
+		this.hide('clickcancel');
+		if(this.hideOnCancel){
+			this.hide();
+		}
 	}.bind(this));
 	
 	this.visible = false;
@@ -2096,15 +2117,13 @@ dia.Dialog.prototype.show = function(){
 	dia.Dialog.openCount++;
 };
 
-dia.Dialog.prototype.hide = function(confirmed){
+dia.Dialog.prototype.hide = function(){
 	if(!this.visible){
 		return;
 	}
 	
 	this.root.modal('hide');
-	this.dispatch('hide', {
-		confirmed: !!confirmed
-	});
+	this.dispatch('hide');
 	
 	this.visible = false;
 	dia.Dialog.openCount--;
@@ -2132,6 +2151,15 @@ dia.Dialog.getTemplate = function(){
 };
 
 dia.Dialog.openCount = 0;
+
+dia.Dialog.alert = function(title, message){
+	var dialog = new dia.Dialog({
+		title: title,
+		message: message,
+		cancel: false
+	});
+	dialog.show();
+};
 
 dia.Canvas = function(sheet){
 	dia.EventDispatcher.call(this);
@@ -2284,7 +2312,11 @@ dia.App = function(){
 extend(dia.App, dia.EventDispatcher);
 
 dia.App.prototype.newSheet = function(){
-	this.sheet = new dia.Sheet();
+	this.openSheet(new dia.Sheet());
+};
+
+dia.App.prototype.openSheet = function(sheet){
+	this.sheet = sheet;
 	
 	this.dispatch('newsheet', {
 		sheet: this.sheet
@@ -2497,7 +2529,7 @@ dia.GUI.prototype.renderSheet = function(){
 };
 
 dia.GUI.prototype.selectionClick = function(e){
-	if(e.clickCount == 2 && e.element){
+	if(e.clickCount === 2 && e.element){
 		var form = new dia.ElementForm(e.element);
 		var root = form.getHTMLRoot();
 
@@ -2507,10 +2539,12 @@ dia.GUI.prototype.selectionClick = function(e){
 		});
 		dialog.show();
 		
-		dialog.listen('hide', function(e){
-			if(e.confirmed){
-				form.submit();
-			}
+		dialog.listen('clickok', function(){
+			form.submit();
+			this.hide();
+		});
+		dialog.listen('clickcancel', function(){
+			this.hide();
 		});
 	}
 };
@@ -2558,9 +2592,25 @@ dia.GUI.prototype.loadSheet = function(){
 	
 	var modal = new dia.Dialog({
 		title: 'Load an existing sheet',
-		content: input
+		content: input,
+		hideOnOk: false,
+		hideOnCancel: true
 	});
 	modal.show();
+	
+	var gui = this;
+	modal.listen('clickok', function(){
+		var json,
+			sheet;
+		try{
+			json = JSON.parse(input.value);
+			sheet = dia.Sheet.fromJSON(json);
+			gui.app.openSheet(sheet);
+			modal.hide();
+		}catch(ex){
+			dia.Dialog.alert('Error', 'Error while loading: ' + ex);
+		}
+	});
 };
 
 dia.GUI.prototype.saveSheet = function(){
@@ -2571,7 +2621,8 @@ dia.GUI.prototype.saveSheet = function(){
 	
 	var modal = new dia.Dialog({
 		title: 'Save the current sheet',
-		content: input
+		content: input,
+		cancel: false
 	});
 	modal.show();
 };
@@ -2584,10 +2635,8 @@ dia.GUI.prototype.newSheet = function(){
 	modal.show();
 	
 	var gui = this;
-	modal.listen('hide', function(e){
-		if(e.confirmed){
-			gui.app.sheet.reset();
-		}
+	modal.listen('clickok', function(){
+		gui.app.newSheet();
 	});
 };
 

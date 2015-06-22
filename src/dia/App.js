@@ -16,8 +16,12 @@ dia.App = function(){
 
 extend(dia.App, dia.EventDispatcher);
 
-dia.App.prototype.newSheet = function(sheet){
-	this.sheet = sheet || new dia.Sheet();
+dia.App.prototype.newSheet = function(){
+	this.openSheet(new dia.Sheet());
+};
+
+dia.App.prototype.openSheet = function(sheet){
+	this.sheet = sheet;
 	
 	this.dispatch('newsheet', {
 		sheet: this.sheet

@@ -204,7 +204,7 @@ dia.GUI.prototype.renderSheet = function(){
 };
 
 dia.GUI.prototype.selectionClick = function(e){
-	if(e.clickCount == 2 && e.element){
+	if(e.clickCount === 2 && e.element){
 		var form = new dia.ElementForm(e.element);
 		var root = form.getHTMLRoot();
 
@@ -214,10 +214,12 @@ dia.GUI.prototype.selectionClick = function(e){
 		});
 		dialog.show();
 		
-		dialog.listen('hide', function(e){
-			if(e.confirmed){
-				form.submit();
-			}
+		dialog.listen('clickok', function(){
+			form.submit();
+			this.hide();
+		});
+		dialog.listen('clickcancel', function(){
+			this.hide();
 		});
 	}
 };
@@ -265,9 +267,25 @@ dia.GUI.prototype.loadSheet = function(){
 	
 	var modal = new dia.Dialog({
 		title: 'Load an existing sheet',
-		content: input
+		content: input,
+		hideOnOk: false,
+		hideOnCancel: true
 	});
 	modal.show();
+	
+	var gui = this;
+	modal.listen('clickok', function(){
+		var json,
+			sheet;
+		try{
+			json = JSON.parse(input.value);
+			sheet = dia.Sheet.fromJSON(json);
+			gui.app.openSheet(sheet);
+			modal.hide();
+		}catch(ex){
+			dia.Dialog.alert('Error', 'Error while loading: ' + ex);
+		}
+	});
 };
 
 dia.GUI.prototype.saveSheet = function(){
@@ -278,7 +296,8 @@ dia.GUI.prototype.saveSheet = function(){
 	
 	var modal = new dia.Dialog({
 		title: 'Save the current sheet',
-		content: input
+		content: input,
+		cancel: false
 	});
 	modal.show();
 };
@@ -291,9 +310,7 @@ dia.GUI.prototype.newSheet = function(){
 	modal.show();
 	
 	var gui = this;
-	modal.listen('hide', function(e){
-		if(e.confirmed){
-			gui.app.sheet.reset();
-		}
+	modal.listen('clickok', function(){
+		gui.app.newSheet();
 	});
 };

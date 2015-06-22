@@ -19,37 +19,18 @@ describe('a dialog', function(){
 		expect($('.modal')).toBeVisible();
 	});
 	
-	it('can confirm', function(done){
+	it('can hide', function(done){
 		var dialog = new dia.Dialog();
 		
-		var param;
-		dialog.listen('hide', function(e){
-			param = e;
+		var hideCalled = false;
+		dialog.listen('hide', function(){
+			hideCalled = true;
 		});
 		
 		dialog.show();
-		dialog.hide(true);
+		dialog.hide();
 		
-		expect(param.confirmed).toBe(true);
-		
-		setTimeout(function(){
-			expect(dialog.root).not.toBeVisible();
-			done();
-		}, 500);
-	});
-	
-	it('can cancel', function(done){
-		var dialog = new dia.Dialog();
-		
-		var param;
-		dialog.listen('hide', function(e){
-			param = e;
-		});
-		
-		dialog.show();
-		dialog.hide(false);
-		
-		expect(param.confirmed).toBe(false);
+		expect(hideCalled).toBe(true);
 		
 		setTimeout(function(){
 			expect(dialog.root).not.toBeVisible();
