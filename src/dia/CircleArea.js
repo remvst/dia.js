@@ -52,6 +52,37 @@ dia.CircleArea.prototype.getRelativePositionFromAbsolute = function(x, y){
 	};
 };
 
+dia.CircleArea.prototype.getGuides = function(element){
+	var area = this;
+	
+	return [
+		new dia.HorizontalGuide({
+			element: element,
+			x: function(){ return area.getX(); },
+			y: function(){ return area.getY() - area.getRadius(); },
+			offset: function(){ return -area.getRadius(); }
+		}),
+		new dia.HorizontalGuide({
+			element: element,
+			x: function(){ return area.getX(); },
+			y: function(){ return area.getY() + area.getRadius(); },
+			offset: function(){ return area.getRadius(); }
+		}),
+		new dia.VerticalGuide({
+			element: element,
+			x: function(){ return area.getX() - area.getRadius(); },
+			y: function(){ return area.getY(); },
+			offset: function(){ return -area.getRadius(); }
+		}),
+		new dia.VerticalGuide({
+			element: element,
+			x: function(){ return area.getX() + area.getRadius(); },
+			y: function(){ return area.getY(); },
+			offset: function(){ return area.getRadius(); }
+		})
+	];
+};
+
 dia.Area.defineIntersection('rectangle', 'circle', function(rectangle, circle){
 	// Let's assume it's another rectangle area
 	var areaX = circle.getX();

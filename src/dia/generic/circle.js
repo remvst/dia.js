@@ -102,6 +102,8 @@ dia.generic.CIRCLE.setRepresentationFactory(function(element, repr){
 		y: function(){ return element.getProperty('y'); },
 		radius: function(){ return element.getProperty('radius'); }
 	});
+	
+	repr.guides = repr.area.getGuides(element);
 
 	var handle = new dia.MoveElementDragHandle(element, repr.area, 'points');
 	repr.addHandle(handle);

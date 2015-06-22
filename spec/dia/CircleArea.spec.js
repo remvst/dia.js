@@ -120,4 +120,36 @@ describe('a circle area', function(){
 		expect(circle.intersectsWith(area3)).toBe(true);
 		expect(circle.intersectsWith(area4)).toBe(true);
 	});
+	
+	it('can create guides for an element', function(){
+		var area = new dia.CircleArea({
+			x: function(){ return 100; },
+			y: function(){ return 120; },
+			radius: function(){ return 10; }
+		});
+		
+		var element = new dia.ElementType().emptyElement();
+		
+		var guides = area.getGuides(element);
+		
+		expect(guides[0].element).toBe(element);
+		expect(guides[0].getX()).toBe(100);
+		expect(guides[0].getY()).toBe(110);
+		expect(guides[0].getOffset()).toBe(-10);
+		
+		expect(guides[1].element).toBe(element);
+		expect(guides[1].getX()).toBe(100);
+		expect(guides[1].getY()).toBe(130);
+		expect(guides[1].getOffset()).toBe(10);
+		
+		expect(guides[2].element).toBe(element);
+		expect(guides[2].getX()).toBe(90);
+		expect(guides[2].getY()).toBe(120);
+		expect(guides[2].getOffset()).toBe(-10);
+		
+		expect(guides[3].element).toBe(element);
+		expect(guides[3].getX()).toBe(110);
+		expect(guides[3].getY()).toBe(120);
+		expect(guides[3].getOffset()).toBe(10);
+	});
 });
