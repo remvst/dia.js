@@ -32,4 +32,14 @@ describe('an app', function(){
 		$('#toolbox').remove();
 		$('#canvas').remove();
 	});
+	
+	it('can open a new sheet', function(){
+		var app = new dia.App();
+		
+		var sheet = new dia.Sheet();
+		
+		app.openSheet(sheet);
+		
+		expect(app.sheet).toBe(sheet);
+	});
 });
