@@ -2750,7 +2750,8 @@ dia.ElementForm.prototype.submit = function(){
 dia.generic = dia.generic || {};
 
 dia.generic.CIRCLE = new dia.ElementType({
-	id: 'generic.circle'
+	id: 'generic.circle',
+	label: 'Generic circle'
 });
 
 dia.generic.CIRCLE.addProperty(new dia.Property({
@@ -2870,7 +2871,8 @@ dia.generic.CIRCLE.creatorTool = new dia.CreateTool({
 dia.generic = dia.generic || {};
 
 dia.generic.RECTANGLE = new dia.ElementType({
-	id: 'generic.rectangle'
+	id: 'generic.rectangle',
+	label: 'Generic rectangle'
 });
 
 dia.generic.RECTANGLE.addProperty(new dia.Property({
@@ -3015,7 +3017,7 @@ dia.generic = dia.generic || {};
 
 dia.generic.RELATION = new dia.ElementType({
 	id: 'generic.relation',
-	label: 'Relation',
+	label: 'Generic relation',
 	anchorable: false
 });
 dia.generic.RELATION.addProperty(new dia.Property({

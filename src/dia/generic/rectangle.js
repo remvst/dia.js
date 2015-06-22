@@ -1,7 +1,8 @@
 dia.generic = dia.generic || {};
 
 dia.generic.RECTANGLE = new dia.ElementType({
-	id: 'generic.rectangle'
+	id: 'generic.rectangle',
+	label: 'Generic rectangle'
 });
 
 dia.generic.RECTANGLE.addProperty(new dia.Property({

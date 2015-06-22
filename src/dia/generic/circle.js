@@ -1,7 +1,8 @@
 dia.generic = dia.generic || {};
 
 dia.generic.CIRCLE = new dia.ElementType({
-	id: 'generic.circle'
+	id: 'generic.circle',
+	label: 'Generic circle'
 });
 
 dia.generic.CIRCLE.addProperty(new dia.Property({

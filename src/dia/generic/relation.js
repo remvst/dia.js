@@ -2,7 +2,7 @@ dia.generic = dia.generic || {};
 
 dia.generic.RELATION = new dia.ElementType({
 	id: 'generic.relation',
-	label: 'Relation',
+	label: 'Generic relation',
 	anchorable: false
 });
 dia.generic.RELATION.addProperty(new dia.Property({
