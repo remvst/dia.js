@@ -39,6 +39,11 @@ dia.limit = function(x, min, max){
 	}
 };
 
+dia.snap = function(x, gridSize){
+	gridSize = Math.abs(gridSize) || 1;
+	return Math.round(x / gridSize) * gridSize;
+};
+
 dia.EventDispatcher = function(){
 	this.listeners = {};
 };

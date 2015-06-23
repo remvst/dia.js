@@ -16,4 +16,16 @@ describe('math utilities', function(){
 		expect(dia.limit(4, 1, 2)).toBe(2);
 		expect(dia.limit(1.5, 1, 2)).toBe(1.5);
 	});
+	
+	it('can snap', function(){
+		expect(dia.snap(0, 10)).toBe(0);
+		expect(dia.snap(1, 10)).toBe(0);
+		expect(dia.snap(-1, 10)).toBe(0);
+		expect(dia.snap(4, 10)).toBe(0);
+		expect(dia.snap(5, 10)).toBe(10);
+		expect(dia.snap(6, 10)).toBe(10);
+		expect(dia.snap(10, 10)).toBe(10);
+		expect(dia.snap(10, -10)).toBe(10);
+		expect(dia.snap(1, -10)).toBe(0);
+	});
 });
