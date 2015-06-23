@@ -980,12 +980,11 @@ dia.MoveElementDragHandle.prototype.dragMove = function(dx, dy){
 	}
 	
 	// Snapping to grid
-	var gs = this.element.sheet.gridSize;
 	if(this.element.getProperty('x') === expectedX){
-		this.element.setProperty('x', Math.round((expectedX) / gs) * gs);
+		this.element.setProperty('x', dia.snap(expectedX, this.element.sheet.gridSize));
 	}
 	if(this.element.getProperty('y') === expectedY){
-		this.element.setProperty('y', Math.round((expectedY) / gs) * gs);
+		this.element.setProperty('y', dia.snap(expectedY, this.element.sheet.gridSize));
 	}
 
 	this.lastPosition = {
