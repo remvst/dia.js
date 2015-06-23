@@ -1158,8 +1158,8 @@ dia.BrokenLineDragHandle.prototype.dragMove = function(dx, dy, x, y){
 		this.breakIndex = null;
 	}
 	
-	this.modifiedPoint.x = x;
-	this.modifiedPoint.y = y;
+	this.modifiedPoint.x = dia.snap(x, this.element.sheet.gridSize);
+	this.modifiedPoint.y = dia.snap(y, this.element.sheet.gridSize);
 	
 	// Update the object
 	// Copying the object is necessary to trigger property change event.

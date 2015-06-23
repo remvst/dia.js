@@ -10,6 +10,10 @@ describe('a broken line drag handle', function(){
 			points: []
 		});
 		
+		var sheet = new dia.Sheet();
+		sheet.gridSize = 1;
+		sheet.addElement(element);
+		
 		var from = { x: 0, y: 0 };
 		var to = { x: 200, y: 0 };
 		
@@ -51,6 +55,10 @@ describe('a broken line drag handle', function(){
 			points: []
 		});
 		
+		var sheet = new dia.Sheet();
+		sheet.gridSize = 1;
+		sheet.addElement(element);
+		
 		var from = { x: 0, y: 0 };
 		var to = { x: 200, y: 0 };
 		
@@ -85,6 +93,10 @@ describe('a broken line drag handle', function(){
 		var element = type.create({
 			points: []
 		});
+		
+		var sheet = new dia.Sheet();
+		sheet.gridSize = 1;
+		sheet.addElement(element);
 		
 		var from = { x: 0, y: 0 };
 		var to = { x: 200, y: 0 };
