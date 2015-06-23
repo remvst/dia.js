@@ -13,6 +13,7 @@ describe('a move anchor drag handle', function(){
 	
 	it('can move the anchor', function(){
 		var sheet = new dia.Sheet();
+		sheet.gridSize = 1;
 		
 		var anchoredType = new dia.ElementType({
 			id: 'anchored'

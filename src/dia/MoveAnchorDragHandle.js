@@ -32,8 +32,8 @@ dia.MoveAnchorDragHandle.prototype.dragMove = function(dx, dy, x, y){
 	// Copying the object is necessary to trigger property change event.
 	var newAnchor = {
 		element: anchoredElement.id,
-		x: this.initialAnchorPositions.x + this.accumDX,
-		y: this.initialAnchorPositions.y + this.accumDY
+		x: dia.snap(this.initialAnchorPositions.x + this.accumDX, this.element.sheet.gridSize),
+		y: dia.snap(this.initialAnchorPositions.y + this.accumDY, this.element.sheet.gridSize)
 	};
 	
 	// Update the object
@@ -46,8 +46,8 @@ dia.MoveAnchorDragHandle.prototype.dragDrop = function(x, y){
 	var anchoredArea = anchoredElement.getRepresentation().area;
 	
 	var absolutePosition = anchoredArea.getAbsolutePositionFromRelative(
-		this.initialAnchorPositions.x + this.accumDX,
-		this.initialAnchorPositions.y + this.accumDY
+		dia.snap(this.initialAnchorPositions.x + this.accumDX, this.element.sheet.gridSize),
+		dia.snap(this.initialAnchorPositions.y + this.accumDY, this.element.sheet.gridSize)
 	);
 	
 	if(!anchoredArea.contains(absolutePosition.x, absolutePosition.y)){
