@@ -4,11 +4,11 @@ dia.GraphicalRepresentation = function(element){
 	}
 	
 	this.element = element;
-	this.renderables = [];
-	this.handles = [];
-	this.guides = [];
+	this.renderables = []; // list of renderable objects that will render on the canvas
+	this.handles = []; // drag handles used to modify the element
+	this.guides = []; // guides that should help align other elements
 	
-	this.area = null;
+	this.area = null; // area covered by the representation
 };
 
 dia.GraphicalRepresentation.prototype.addRenderable = function(renderable){
