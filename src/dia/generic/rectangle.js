@@ -114,8 +114,8 @@ dia.generic.RECTANGLE.setRepresentationFactory(function(element, repr){
 	
 	repr.guides = repr.area.getGuides(element);
 
-	var handle = new dia.MoveElementDragHandle(element, repr.area, 'points');
-	repr.addHandle(handle);
+	repr.moveHandle = new dia.MoveElementDragHandle(element, repr.area, 'points');
+	repr.addHandle(repr.moveHandle);
 	
 	var resizeBottomRightArea = new dia.RectangleArea({
 		x: function(){ return element.getProperty('x') + element.getProperty('width') - 5; },

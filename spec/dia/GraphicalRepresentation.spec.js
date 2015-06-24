@@ -4,7 +4,10 @@ describe('a graphical representation', function(){
 		var repr = new dia.GraphicalRepresentation(element);
 		
 		expect(repr.renderables).toEqual([]);
+		expect(repr.handles).toEqual([]);
 		expect(repr.guides).toEqual([]);
+		expect(repr.area).toEqual(null);
+		expect(repr.moveHandle).toEqual(null);
 	});
 	
 	it('cannot be initialized without an element', function(){

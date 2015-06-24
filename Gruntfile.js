@@ -27,6 +27,7 @@ module.exports = function(grunt) {
 					'src/dia/Generic.js',
 					'src/dia/DragHandle.js',
 					'src/dia/MoveElementDragHandle.js',
+					'src/dia/MoveRelationDragHandle.js',
 					'src/dia/MoveAnchorDragHandle.js',
 					'src/dia/BrokenLineDragHandle.js',
 					'src/dia/Area.js',

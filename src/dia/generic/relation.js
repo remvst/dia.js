@@ -111,6 +111,8 @@ dia.generic.RELATION.setRepresentationFactory(function(element, repr){
 
 	var toHandle = new dia.MoveAnchorDragHandle(element, areaTo, 'to');
 	repr.addHandle(toHandle);
+	
+	repr.moveHandle = new dia.MoveRelationDragHandle(element, repr.area, 'points');
 });
 
 dia.generic.RELATION.creatorTool = new dia.CreateTool({

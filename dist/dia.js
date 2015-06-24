@@ -716,6 +716,7 @@ dia.GraphicalRepresentation = function(element){
 	this.guides = []; // guides that should help align other elements
 	
 	this.area = null; // area covered by the representation
+	this.moveHandle = null; // area that should be used to move the element around
 };
 
 dia.GraphicalRepresentation.prototype.addRenderable = function(renderable){
@@ -1029,6 +1030,28 @@ dia.MoveElementDragHandle.prototype.trySnap = function(guide){
 			}
 		}
 	});
+};
+
+dia.MoveRelationDragHandle = function(element, area, property){
+	dia.DragHandle.call(this, element, area);
+	
+	this.property = property;
+};
+
+extend(dia.MoveRelationDragHandle, dia.DragHandle);
+
+dia.MoveRelationDragHandle.prototype.dragMove = function(dx, dy){
+	var points = this.element.getProperty(this.property);
+	
+	var newPoints = [];
+	for(var i = 0 ; i < points.length ; i++){
+		newPoints.push({
+			x: points[i].x + dx,
+			y: points[i].y + dy
+		});
+	}
+	
+	this.element.setProperty(this.property, newPoints);
 };
 
 dia.MoveAnchorDragHandle = function(element, area, property){
@@ -2057,7 +2080,28 @@ dia.SelectionTool.prototype.mouseUp = function(sheet, x, y){
 };
 
 dia.SelectionTool.prototype.keyDown = function(sheet, keyCode){
+	var moveX = 0,
+		moveY = 0;
+	switch(keyCode){
+		case 37: moveX = -1; break;
+		case 38: moveY = -1; break;
+		case 39: moveX = 1; break;
+		case 40: moveY = 1; break;
+	}
 	
+	if(moveX || moveY){
+		moveX *= 10;
+		moveY *= 10;
+		
+		this.currentSelection.forEach(function(element){
+			var repr = element.getRepresentation();
+			if(repr && repr.moveHandle){
+				repr.moveHandle.dragStart(0, 0);
+				repr.moveHandle.dragMove(moveX, moveY);
+				repr.moveHandle.dragDrop(0, 0);
+			}
+		});
+	}
 };
 
 dia.SelectionTool.prototype.keyUp = function(sheet, keyCode){
@@ -2896,8 +2940,8 @@ dia.generic.CIRCLE.setRepresentationFactory(function(element, repr){
 	
 	repr.guides = repr.area.getGuides(element);
 
-	var handle = new dia.MoveElementDragHandle(element, repr.area, 'points');
-	repr.addHandle(handle);
+	repr.moveHandle = new dia.MoveElementDragHandle(element, repr.area, 'points');
+	repr.addHandle(repr.moveHandle);
 });
 
 dia.generic.CIRCLE.creatorTool = new dia.CreateTool({
@@ -3028,8 +3072,8 @@ dia.generic.RECTANGLE.setRepresentationFactory(function(element, repr){
 	
 	repr.guides = repr.area.getGuides(element);
 
-	var handle = new dia.MoveElementDragHandle(element, repr.area, 'points');
-	repr.addHandle(handle);
+	repr.moveHandle = new dia.MoveElementDragHandle(element, repr.area, 'points');
+	repr.addHandle(repr.moveHandle);
 	
 	var resizeBottomRightArea = new dia.RectangleArea({
 		x: function(){ return element.getProperty('x') + element.getProperty('width') - 5; },
@@ -3170,6 +3214,8 @@ dia.generic.RELATION.setRepresentationFactory(function(element, repr){
 
 	var toHandle = new dia.MoveAnchorDragHandle(element, areaTo, 'to');
 	repr.addHandle(toHandle);
+	
+	repr.moveHandle = new dia.MoveRelationDragHandle(element, repr.area, 'points');
 });
 
 dia.generic.RELATION.creatorTool = new dia.CreateTool({

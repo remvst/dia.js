@@ -138,7 +138,28 @@ dia.SelectionTool.prototype.mouseUp = function(sheet, x, y){
 };
 
 dia.SelectionTool.prototype.keyDown = function(sheet, keyCode){
+	var moveX = 0,
+		moveY = 0;
+	switch(keyCode){
+		case 37: moveX = -1; break;
+		case 38: moveY = -1; break;
+		case 39: moveX = 1; break;
+		case 40: moveY = 1; break;
+	}
 	
+	if(moveX || moveY){
+		moveX *= 10;
+		moveY *= 10;
+		
+		this.currentSelection.forEach(function(element){
+			var repr = element.getRepresentation();
+			if(repr && repr.moveHandle){
+				repr.moveHandle.dragStart(0, 0);
+				repr.moveHandle.dragMove(moveX, moveY);
+				repr.moveHandle.dragDrop(0, 0);
+			}
+		});
+	}
 };
 
 dia.SelectionTool.prototype.keyUp = function(sheet, keyCode){

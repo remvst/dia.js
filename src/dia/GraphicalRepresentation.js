@@ -9,6 +9,7 @@ dia.GraphicalRepresentation = function(element){
 	this.guides = []; // guides that should help align other elements
 	
 	this.area = null; // area covered by the representation
+	this.moveHandle = null; // area that should be used to move the element around
 };
 
 dia.GraphicalRepresentation.prototype.addRenderable = function(renderable){
