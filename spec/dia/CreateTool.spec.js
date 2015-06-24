@@ -1,7 +1,8 @@
 describe('an create tool', function(){
 	it('is initialized correctly', function(){
 		var type = new dia.ElementType({
-			id: 'myid'
+			id: 'myid',
+			label: 'My type'
 		});
 		var creator = new dia.CreateTool({
 			type: type
@@ -9,6 +10,7 @@ describe('an create tool', function(){
 		
 		expect(creator.currentElement).toBe(null);
 		expect(creator.id).toBe('create-myid');
+		expect(creator.label).toBe('My type');
 	});
 	
 	it('calls the functions correctly', function(){

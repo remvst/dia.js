@@ -7,6 +7,7 @@ dia.SelectionTool = function(){
 	this.currentSelection = [];
 	this.clickCount = 0;
 	this.id = 'select';
+	this.label = 'Selection';
 	
 	this.currentHandle = null;
 	this.currentPosition = {x: 0, y: 0};

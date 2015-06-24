@@ -1830,6 +1830,7 @@ dia.Tool = function(){
 	dia.EventDispatcher.call(this);
 	
 	this.id = null;
+	this.label = null;
 };
 
 extend(dia.Tool, dia.EventDispatcher);
@@ -1866,8 +1867,13 @@ dia.CreateTool = function(options){
 	
 	this.currentElement = null;
 	
-	if(this.type && this.type.id){
-		this.id = 'create-' + this.type.id;
+	if(this.type){
+		if(this.type.id){
+			this.id = 'create-' + this.type.id;
+		}
+		if(this.type.label){
+			this.label = this.type.label;
+		}
 	}
 };
 
@@ -1920,6 +1926,7 @@ dia.SelectionTool = function(){
 	this.currentSelection = [];
 	this.clickCount = 0;
 	this.id = 'select';
+	this.label = 'Selection';
 	
 	this.currentHandle = null;
 	this.currentPosition = {x: 0, y: 0};
@@ -2531,7 +2538,7 @@ dia.GUI.prototype.renderToolbox = function(){
 		tool = this.app.toolbox.toolList[i];
 		button = $('<button></button>')
 					.addClass('btn btn-default btn-block btn-lg')
-					.text(tool.id)
+					.text(tool.label || tool.id)
 					.appendTo(container)
 					.click((function(t){
 						return function(){
@@ -3334,6 +3341,17 @@ dia.uml.CLASS.creatorTool = new dia.CreateTool({
 
 		this.dispatch('elementcreated');
 	}
+});
+
+dia.uml = dia.uml || {};
+
+dia.uml.COMPOSITION = dia.generic.RELATION.clone({
+	id: 'uml.composition',
+	label: 'Composition relation'
+});
+
+dia.uml.COMPOSITION.extendRepresentationFactory(function(element, repr){
+	
 });
 
 dia.uml = dia.uml || {};

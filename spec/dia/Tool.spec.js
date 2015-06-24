@@ -3,6 +3,7 @@ describe('a tool', function(){
 		var tool = new dia.Tool();
 		
 		expect(tool.id).toBe(null);
+		expect(tool.label).toBe(null);
 	});
 	
 	it('has default empty behaviour', function(){

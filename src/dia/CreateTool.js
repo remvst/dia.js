@@ -10,8 +10,13 @@ dia.CreateTool = function(options){
 	
 	this.currentElement = null;
 	
-	if(this.type && this.type.id){
-		this.id = 'create-' + this.type.id;
+	if(this.type){
+		if(this.type.id){
+			this.id = 'create-' + this.type.id;
+		}
+		if(this.type.label){
+			this.label = this.type.label;
+		}
 	}
 };
 

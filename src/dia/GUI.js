@@ -171,7 +171,7 @@ dia.GUI.prototype.renderToolbox = function(){
 		tool = this.app.toolbox.toolList[i];
 		button = $('<button></button>')
 					.addClass('btn btn-default btn-block btn-lg')
-					.text(tool.id)
+					.text(tool.label || tool.id)
 					.appendTo(container)
 					.click((function(t){
 						return function(){
