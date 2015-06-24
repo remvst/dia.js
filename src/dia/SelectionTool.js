@@ -9,6 +9,7 @@ dia.SelectionTool = function(){
 	this.id = 'select';
 	this.label = 'Selection';
 	this.down = false;
+	this.multipleKeyDown = false;
 	
 	this.currentHandle = null;
 	this.currentPosition = {x: 0, y: 0};
@@ -35,7 +36,8 @@ dia.SelectionTool.prototype.mouseDown = function(sheet, x, y){
 		}
 	}
 		
-	if(!this.currentHandle || this.currentSelection.indexOf(this.currentHandle.element) === -1){
+	if(!this.multipleKeyDown && 
+	   (!this.currentHandle || this.currentSelection.indexOf(this.currentHandle.element) === -1)){
 		// Clicked on an element outside of the selection or on no element, let's reset the selection
 		for(var i = 0 ; i < this.currentSelection.length ; i++){
 			this.currentSelection[i].highlighted = false;
@@ -46,7 +48,7 @@ dia.SelectionTool.prototype.mouseDown = function(sheet, x, y){
 	if(this.currentHandle){
 		// Let's highlight that element
 		if(this.currentSelection.indexOf(this.currentHandle.element) === -1){
-			this.currentSelection = [this.currentHandle.element];
+			this.currentSelection.push(this.currentHandle.element);
 			this.currentHandle.element.highlighted = true;
 			this.dispatch('selectionchange', { selection: this.currentSelection });
 		}
@@ -186,6 +188,10 @@ dia.SelectionTool.prototype.keyDown = function(sheet, keyCode){
 		case 38: moveY = -1; break;
 		case 39: moveX = 1; break;
 		case 40: moveY = 1; break;
+		case 17:
+		case 91:
+			this.multipleKeyDown = true;
+			break;
 	}
 	
 	if(moveX || moveY){
@@ -208,6 +214,8 @@ dia.SelectionTool.prototype.keyUp = function(sheet, keyCode){
 		this.currentSelection.forEach(function(element){
 			element.remove();
 		});
+	}else if(keyCode === 91 || keyCode === 17){
+		this.multipleKeyDown = false;
 	}
 };
 
