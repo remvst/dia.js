@@ -8,6 +8,7 @@ dia.SelectionTool = function(){
 	this.clickCount = 0;
 	this.id = 'select';
 	this.label = 'Selection';
+	this.down = false;
 	
 	this.currentHandle = null;
 	this.currentPosition = {x: 0, y: 0};
@@ -16,6 +17,8 @@ dia.SelectionTool = function(){
 extend(dia.SelectionTool, dia.Tool);
 
 dia.SelectionTool.prototype.mouseDown = function(sheet, x, y){
+	this.down = true;
+	
 	// Before selecting anything, let's try to find a handle to drag
 	this.currentHandle = null;
 	
@@ -41,13 +44,24 @@ dia.SelectionTool.prototype.mouseDown = function(sheet, x, y){
 	}
 
 	if(this.currentHandle){
-		this.currentHandle.dragStart(x, y);
-		
 		// Let's highlight that element
 		if(this.currentSelection.indexOf(this.currentHandle.element) === -1){
 			this.currentSelection = [this.currentHandle.element];
 			this.currentHandle.element.highlighted = true;
 			this.dispatch('selectionchange', { selection: this.currentSelection });
+		}
+		
+		var repr = this.currentHandle.element.getRepresentation();
+		if(this.currentHandle === repr.moveHandle){
+			this.currentSelection.forEach(function(element){
+				var repr = element.getRepresentation();
+				if(repr && repr.moveHandle){
+					repr.moveHandle.dragStart(x, y);
+				}
+			});
+			this.currentHandle = null;
+		}else{
+			this.currentHandle.dragStart(x, y);
 		}
 	}else{
 		// No handle, let's do selection mode
@@ -60,17 +74,32 @@ dia.SelectionTool.prototype.mouseDown = function(sheet, x, y){
 };
 
 dia.SelectionTool.prototype.mouseMove = function(sheet, x, y){
-	if(this.selectionStart){
-		this.selectionEnd = { x: x, y: y };
-		
-		this.dispatch('selectionmove');
-	}else if(this.currentHandle){
-		this.currentHandle.dragMove(
-			x - this.currentPosition.x,
-			y - this.currentPosition.y,
-			x,
-			y
-		);
+	var tool = this;
+	if(this.down){
+		if(this.selectionStart){
+			this.selectionEnd = { x: x, y: y };
+
+			this.dispatch('selectionmove');
+		}else if(this.currentHandle){
+			this.currentHandle.dragMove(
+				x - this.currentPosition.x,
+				y - this.currentPosition.y,
+				x,
+				y
+			);
+		}else{
+			this.currentSelection.forEach(function(element){
+				var repr = element.getRepresentation();
+				if(repr && repr.moveHandle){
+					repr.moveHandle.dragMove(
+						x - tool.currentPosition.x,
+						y - tool.currentPosition.y,
+						x,
+						y
+					);
+				}
+			});
+		}
 	}
 	
 	this.currentPosition = {x: x, y: y};
@@ -81,6 +110,8 @@ dia.SelectionTool.prototype.mouseMove = function(sheet, x, y){
 };
 
 dia.SelectionTool.prototype.mouseUp = function(sheet, x, y){
+	this.down = false;
+	
 	if(this.selectionStart){
 		// If we were selection, let's apply that selection
 		var tool = this;
@@ -108,6 +139,16 @@ dia.SelectionTool.prototype.mouseUp = function(sheet, x, y){
 		this.dispatch('selectionchange', { selection: this.currentSelection });
 	}else if(this.currentHandle){
 		this.currentHandle.dragDrop(this.currentPosition.x, this.currentPosition.y);
+	}else{
+		this.currentSelection.forEach(function(element){
+			var repr = element.getRepresentation();
+			if(repr && repr.moveHandle){
+				repr.moveHandle.dragDrop(
+					x,
+					y
+				);
+			}
+		});
 	}
 	
 	if(!this.mouseMoved){
