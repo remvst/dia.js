@@ -17,6 +17,7 @@ module.exports = function(grunt) {
 					'src/dia/Property.js',
 					'src/dia/DataType.js',
 					'src/dia/ArrayDataType.js',
+					'src/dia/EnumerationDataType.js',
 					'src/dia/GraphicalRepresentation.js',
 					'src/dia/Renderable.js',
 					'src/dia/Primitive.js',
