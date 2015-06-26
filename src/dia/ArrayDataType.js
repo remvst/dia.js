@@ -92,3 +92,4 @@ dia.DataType.STRING_ARRAY = new dia.ArrayDataType(dia.DataType.STRING);
 dia.DataType.INTEGER_ARRAY = new dia.ArrayDataType(dia.DataType.INTEGER);
 dia.DataType.FLOAT_ARRAY = new dia.ArrayDataType(dia.DataType.FLOAT);
 dia.DataType.POINT_ARRAY = new dia.ArrayDataType(dia.DataType.POINT);
+dia.DataType.ANY_ARRAY = new dia.ArrayDataType(dia.DataType.ANY);
