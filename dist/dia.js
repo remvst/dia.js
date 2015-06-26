@@ -717,6 +717,7 @@ dia.DataType.STRING_ARRAY = new dia.ArrayDataType(dia.DataType.STRING);
 dia.DataType.INTEGER_ARRAY = new dia.ArrayDataType(dia.DataType.INTEGER);
 dia.DataType.FLOAT_ARRAY = new dia.ArrayDataType(dia.DataType.FLOAT);
 dia.DataType.POINT_ARRAY = new dia.ArrayDataType(dia.DataType.POINT);
+dia.DataType.ANY_ARRAY = new dia.ArrayDataType(dia.DataType.ANY);
 
 dia.GraphicalRepresentation = function(element){
 	if(!element){
@@ -3240,7 +3241,7 @@ dia.generic.RELATION.addProperty(new dia.Property({
 }));
 dia.generic.RELATION.addProperty(new dia.Property({
 	id: 'points',
-	type: dia.DataType.ANY,
+	type: dia.DataType.POINT_ARRAY,
 	private: true,
 	default: []
 }));

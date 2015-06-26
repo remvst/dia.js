@@ -27,7 +27,7 @@ dia.generic.RELATION.addProperty(new dia.Property({
 }));
 dia.generic.RELATION.addProperty(new dia.Property({
 	id: 'points',
-	type: dia.DataType.ANY,
+	type: dia.DataType.POINT_ARRAY,
 	private: true,
 	default: []
 }));
