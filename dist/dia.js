@@ -3355,7 +3355,7 @@ dia.generic.RELATION.setRepresentationFactory(function(element, repr){
 
 		c.beginPath();
 		c.moveTo(fromPos.x, fromPos.y);
-		c.lineTo(fromPos.x + Math.cos(fromPos.angle) * 25, fromPos.y + Math.sin(fromPos.angle) * 25);
+		c.lineTo(fromPos.x + Math.cos(fromPos.angle) * 10, fromPos.y + Math.sin(fromPos.angle) * 10);
 
 		var points = element.getProperty('points');
 		for(var i = 0 ; i < points.length ; i++){
@@ -3374,12 +3374,12 @@ dia.generic.RELATION.setRepresentationFactory(function(element, repr){
 			var to = toPosition();
 			
 			var fromExtension = {
-				x: from.x + Math.cos(from.angle) * 25,
-				y: from.y + Math.sin(from.angle) * 25
+				x: from.x + Math.cos(from.angle) * 10,
+				y: from.y + Math.sin(from.angle) * 10
 			};
 			var toExtension = {
-				x: to.x + Math.cos(to.angle) * 25,
-				y: to.y + Math.sin(to.angle) * 25
+				x: to.x + Math.cos(to.angle) * 10,
+				y: to.y + Math.sin(to.angle) * 10
 			};
 
 			return [from, fromExtension].concat(element.getProperty('points')).concat([toExtension, to]);
