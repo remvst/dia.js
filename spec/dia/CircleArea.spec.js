@@ -66,7 +66,8 @@ describe('a circle area', function(){
 			y: 0
 		})).toEqual({
 			x: 10,
-			y: 0
+			y: 0,
+			angle: 0
 		});
 		
 		// Floating point numbers make testing this harder

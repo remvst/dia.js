@@ -27,7 +27,6 @@ dia.CircleArea.prototype.render = function(c){
 };
 
 dia.CircleArea.prototype.surface = function(){
-	// TODO check formula
 	return Math.PI * Math.pow(this.getRadius(), 2);
 };
 
@@ -35,6 +34,7 @@ dia.CircleArea.prototype.bindAnchorToBounds = function(anchor){
 	var angle = Math.atan2(anchor.y, anchor.x);
 	anchor.x = Math.cos(angle) * this.getRadius();
 	anchor.y = Math.sin(angle) * this.getRadius();
+	anchor.angle = angle;
 	return anchor;
 };
 

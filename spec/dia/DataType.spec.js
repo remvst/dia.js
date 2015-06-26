@@ -129,27 +129,38 @@ describe('built in anchor data type', function(){
 		expect(dia.DataType.ANCHOR.validateValue({
 			element: 123,
 			x: 1,
-			y: 1
+			y: 1,
+			angle: 0
 		})).toBe(false);
 		expect(dia.DataType.ANCHOR.validateValue({
 			element: 'anid',
 			x: 1,
-			y: 'lawl'
+			y: 'lawl',
+			angle: 0
 		})).toBe(false);
 		expect(dia.DataType.ANCHOR.validateValue({
 			element: 'anid',
 			x: 1,
-			y: -1
+			y: 2,
+			angle: 'a'
+		})).toBe(false);
+		expect(dia.DataType.ANCHOR.validateValue({
+			element: 'anid',
+			x: 1,
+			y: -1,
+			angle: 0
 		})).toBe(true);
 		expect(dia.DataType.ANCHOR.validateValue({
 			element: 'anid',
 			x: 1,
-			y: 1
+			y: 1,
+			angle: 0
 		})).toBe(true);
 		expect(dia.DataType.ANCHOR.validateValue({
 			element: 'anid',
 			x: 12,
-			y: -10
+			y: -10,
+			angle: 0
 		})).toBe(true);
 	});
 });

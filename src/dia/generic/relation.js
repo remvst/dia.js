@@ -60,7 +60,8 @@ dia.generic.RELATION.setRepresentationFactory(function(element, repr){
 
 		return {
 			x: fromRepr.area.getX() + from.x,
-			y: fromRepr.area.getY() + from.y
+			y: fromRepr.area.getY() + from.y,
+			angle: from.angle
 		};
 	};
 
@@ -70,7 +71,8 @@ dia.generic.RELATION.setRepresentationFactory(function(element, repr){
 
 		return {
 			x: toRepr.area.getX() + to.x,
-			y: toRepr.area.getY() + to.y
+			y: toRepr.area.getY() + to.y,
+			angle: to.angle
 		};
 	};
 
@@ -83,6 +85,7 @@ dia.generic.RELATION.setRepresentationFactory(function(element, repr){
 
 		c.beginPath();
 		c.moveTo(fromPos.x, fromPos.y);
+		c.lineTo(fromPos.x + Math.cos(fromPos.angle) * 25, fromPos.y + Math.sin(fromPos.angle) * 25);
 
 		var points = element.getProperty('points');
 		for(var i = 0 ; i < points.length ; i++){
@@ -90,6 +93,7 @@ dia.generic.RELATION.setRepresentationFactory(function(element, repr){
 			c.fillRect(points[i].x - 2, points[i].y - 2, 4, 4);
 		}
 
+		c.lineTo(toPos.x + Math.cos(toPos.angle) * 25, toPos.y + Math.sin(toPos.angle) * 25);
 		c.lineTo(toPos.x, toPos.y);
 		c.stroke();
 	}));
@@ -98,8 +102,17 @@ dia.generic.RELATION.setRepresentationFactory(function(element, repr){
 		points: function(){
 			var from = fromPosition();
 			var to = toPosition();
+			
+			var fromExtension = {
+				x: from.x + Math.cos(from.angle) * 25,
+				y: from.y + Math.sin(from.angle) * 25
+			};
+			var toExtension = {
+				x: to.x + Math.cos(to.angle) * 25,
+				y: to.y + Math.sin(to.angle) * 25
+			};
 
-			return [from].concat(element.getProperty('points')).concat([to]);
+			return [from, fromExtension].concat(element.getProperty('points')).concat([toExtension, to]);
 		}
 	});
 
@@ -144,12 +157,14 @@ dia.generic.RELATION.creatorTool = new dia.CreateTool({
 			var fromAnchor = {
 				element: this.from.id,
 				x: fromRelativePosition.x,
-				y: fromRelativePosition.y
+				y: fromRelativePosition.y,
+				angle: 0
 			};
 			var toAnchor = {
 				element: this.to.id,
 				x: toRelativePosition.x,
-				y: toRelativePosition.y
+				y: toRelativePosition.y,
+				angle: 0
 			};
 
 			// Let's bind those anchors

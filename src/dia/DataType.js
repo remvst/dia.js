@@ -79,7 +79,8 @@ dia.DataType.ANCHOR = new dia.DataType({
 		return !!(value
 			&& typeof value.x === 'number'
 			&& typeof value.y === 'number'
-			&& typeof value.element === 'string');
+			&& typeof value.element === 'string'
+			&& typeof value.angle === 'number');
 		
 	}
 });

@@ -131,7 +131,8 @@ describe('a rectangle area', function(){
 			y: 40
 		})).toEqual({
 			x: 50,
-			y: 0
+			y: 0,
+			angle: -Math.PI / 2
 		});
 		
 		expect(area.bindAnchorToBounds({
@@ -139,7 +140,8 @@ describe('a rectangle area', function(){
 			y: 50
 		})).toEqual({
 			x: 0,
-			y: 50
+			y: 50,
+			angle: Math.PI
 		});
 		
 		expect(area.bindAnchorToBounds({
@@ -147,7 +149,8 @@ describe('a rectangle area', function(){
 			y: 150
 		})).toEqual({
 			x: 200,
-			y: 150
+			y: 150,
+			angle: 0
 		});
 		
 		expect(area.bindAnchorToBounds({
@@ -155,7 +158,8 @@ describe('a rectangle area', function(){
 			y: 150
 		})).toEqual({
 			x: 110,
-			y: 200
+			y: 200,
+			angle: Math.PI / 2
 		});
 	});
 	

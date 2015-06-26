@@ -33,7 +33,8 @@ dia.MoveAnchorDragHandle.prototype.dragMove = function(dx, dy, x, y){
 	var newAnchor = {
 		element: anchoredElement.id,
 		x: dia.snap(this.initialAnchorPositions.x + this.accumDX, this.element.sheet.gridSize),
-		y: dia.snap(this.initialAnchorPositions.y + this.accumDY, this.element.sheet.gridSize)
+		y: dia.snap(this.initialAnchorPositions.y + this.accumDY, this.element.sheet.gridSize),
+		angle: anchor.angle
 	};
 	
 	// Update the object

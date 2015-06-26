@@ -75,6 +75,17 @@ dia.RectangleArea.prototype.bindAnchorToBounds = function(anchor){
 		anchor.y = factorY > 0 ? height : 0;
 	}
 	
+	// Let's set the outgoing angle
+	if(anchor.x === 0){
+		anchor.angle = Math.PI;
+	}else if(anchor.x === width){
+		anchor.angle = 0;
+	}else if(anchor.y === 0){
+		anchor.angle = -Math.PI / 2;
+	}else{
+		anchor.angle = Math.PI / 2;
+	}
+	
 	return anchor;
 };
 
