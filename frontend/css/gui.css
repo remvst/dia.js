@@ -30,6 +30,4 @@ html, body{
 
 #canvas{
 	display: block;
-	margin: auto;
-	outline: 1px solid black;
 }
