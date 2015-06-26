@@ -1,14 +1,14 @@
 dia.EnumerationDataType = function(settings){
 	dia.DataType.call(this);
 	
-	this.label = settings.label || null;
+	this.label = settings.label || 'choice';
 	this.values = settings.values || settings;
 };
 
 extend(dia.EnumerationDataType, dia.DataType);
 
 dia.EnumerationDataType.prototype.validateValue = function(value){
-	return this.values.indexOf(value) >= 0;
+	return this.values.indexOf(value) !== -1;
 };
 
 dia.EnumerationDataType.prototype.createHTMLInput = function(currentValue){
@@ -19,7 +19,7 @@ dia.EnumerationDataType.prototype.createHTMLInput = function(currentValue){
 	
 	for(var i = 0 ; i < this.values.length ; i++){
 		option = document.createElement('option');
-		option.value = this.values[i];
+		option.valueRef = this.values[i];
 		option.innerHTML = this.values[i].toString();
 		select.appendChild(option);
 		
@@ -32,5 +32,5 @@ dia.EnumerationDataType.prototype.createHTMLInput = function(currentValue){
 };
 
 dia.EnumerationDataType.prototype.getValueFromHTMLInput = function(html){
-	return html.options[html.selectedIndex].value;
+	return html.options[html.selectedIndex].valueRef;
 };

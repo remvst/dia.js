@@ -14,11 +14,11 @@ describe('an array data type', function(){
 		});
 		var complex = new dia.ArrayDataType(simple);
 		
-		expect(complex.validate([])).toBe(true);
-		expect(complex.validate(['rem'])).toBe(true);
-		expect(complex.validate(['rem', 'rem'])).toBe(true);
-		expect(complex.validate(['rem', 1, 'rem'])).toBe(true);
-		expect(complex.validate([2, 1])).toBe(true);
+		expect(complex.validateValue([])).toBe(true);
+		expect(complex.validateValue(['rem'])).toBe(true);
+		expect(complex.validateValue(['rem', 'rem'])).toBe(true);
+		expect(complex.validateValue(['rem', 1, 'rem'])).toBe(false);
+		expect(complex.validateValue([2, 1])).toBe(false);
 	});
 	
 	it('does JSON imports/exports correctly', function(){
