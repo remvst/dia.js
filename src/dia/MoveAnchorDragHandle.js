@@ -37,6 +37,12 @@ dia.MoveAnchorDragHandle.prototype.dragMove = function(dx, dy, x, y){
 		angle: anchor.angle
 	};
 	
+	// If the anchor is still within the anchored element, let's bind it to the bounds
+	var absolutePosition = anchoredArea.getAbsolutePositionFromRelative(newAnchor.x, newAnchor.y);
+	if(anchoredArea.contains(absolutePosition.x, absolutePosition.y)){
+		anchoredArea.bindAnchorToBounds(newAnchor);
+	}
+	
 	// Update the object
 	this.element.setProperty(this.property, newAnchor);
 };
