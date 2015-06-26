@@ -78,7 +78,7 @@ describe('a broken line area', function(){
 		}).not.toThrow();
 	});
 	
-	it('has the correct surface', function(){
+	it('has the correct surface and length', function(){
 		var pts = [
 			{ x: 0, y: 0 },
 			{ x: 10, y: 0 },
@@ -90,7 +90,37 @@ describe('a broken line area', function(){
 			thickness: 2
 		});
 		
+		expect(area.getLength()).toEqual(30);
 		expect(area.surface()).toEqual(30 * 2);
+	});
+	
+	it('can calculate positions at specific ratios', function(){
+		var pts = [
+			{ x: 0, y: 0 },
+			{ x: 10, y: -10 },
+			{ x: 20, y: 0 },
+			{ x: 30, y: -10 }
+		];
+		var area = new dia.BrokenLineArea({
+			points: function(){ return pts; },
+			thickness: 2
+		});
+		
+		var round = function(p){
+			p.x = Math.round(p.x);
+			p.y = Math.round(p.y);
+			return p;
+		};
+		
+		expect(round(area.getPositionAtRatio(0))).toEqual({ x: 0, y: 0 });
+		expect(round(area.getPositionAtRatio(.5))).toEqual({ x: 15, y: -5 });
+		expect(round(area.getPositionAtRatio(1))).toEqual({ x: 30, y: -10 });
+		
+		expect(round(area.getPositionAtRatio(1 / 3))).toEqual({ x: 10, y: -10 });
+		expect(round(area.getPositionAtRatio(2 / 3))).toEqual({ x: 20, y: 0 });
+		
+		expect(round(area.getPositionAtRatio(1 / 6))).toEqual({ x: 5, y: -5 });
+		expect(round(area.getPositionAtRatio(5 / 6))).toEqual({ x: 25, y: -5 });
 	});
 	
 	it('can intersect with a rectangle', function(){
