@@ -93,7 +93,7 @@ dia.generic.RELATION.setRepresentationFactory(function(element, repr){
 			c.fillRect(points[i].x - 2, points[i].y - 2, 4, 4);
 		}
 
-		c.lineTo(toPos.x + Math.cos(toPos.angle) * 25, toPos.y + Math.sin(toPos.angle) * 25);
+		c.lineTo(toPos.x + Math.cos(toPos.angle) * 10, toPos.y + Math.sin(toPos.angle) * 10);
 		c.lineTo(toPos.x, toPos.y);
 		c.stroke();
 	}));
