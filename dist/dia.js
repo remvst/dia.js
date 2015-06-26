@@ -613,6 +613,16 @@ dia.DataType.ANCHOR = new dia.DataType({
 	}
 });
 
+dia.DataType.POINT = new dia.DataType({
+	label: 'point',
+	validate: function(value){
+		return !!(value
+			&& typeof value.x === 'number'
+			&& typeof value.y === 'number');
+		
+	}
+});
+
 dia.ArrayDataType = function(containedType){
 	dia.DataType.call(this);
 	
@@ -1736,6 +1746,10 @@ dia.BrokenLineArea.prototype.render = function(c){
 };
 
 dia.BrokenLineArea.prototype.surface = function(){
+	return this.getLength() * this.thickness;
+};
+
+dia.BrokenLineArea.prototype.getLength = function(){
 	var points = this.getPoints(),
 		length = 0;
 	for(var i = 0 ; i < points.length - 1 ; i++){
@@ -1744,7 +1758,41 @@ dia.BrokenLineArea.prototype.surface = function(){
 			points[i + 1].x, points[i + 1].y
 		);
 	}
-	return length * this.thickness;
+	return length;
+};
+
+dia.BrokenLineArea.prototype.getPositionAtRatio = function(ratio){
+	ratio = dia.limit(ratio, 0, 1);
+	
+	var totalLength = this.getLength(),
+		expectedLength = totalLength * ratio,
+		points = this.getPoints(),
+		length = 0,
+		nextLength;
+	
+	for(var i = 0 ; i < points.length - 1 ; i++){
+		nextLength = length + dia.distance(
+			points[i].x, points[i].y,
+			points[i + 1].x, points[i + 1].y
+		);
+		
+		if(expectedLength >= length && expectedLength <= nextLength){
+			break;
+		}else{
+			length = nextLength;
+		}
+	}
+	
+	var segmentLength = nextLength - length,
+		distanceLeft = expectedLength - length,
+		segmentRatio = distanceLeft / segmentLength;
+	
+	// i = point before
+	// i + 1 = point after
+	return {
+		x: segmentRatio * (points[i + 1].x - points[i].x) + points[i].x,
+		y: segmentRatio * (points[i + 1].y - points[i].y) + points[i].y
+	};
 };
 
 dia.Area.defineIntersection('line', 'brokenline', function(line, brokenLine){

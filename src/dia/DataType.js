@@ -83,3 +83,13 @@ dia.DataType.ANCHOR = new dia.DataType({
 		
 	}
 });
+
+dia.DataType.POINT = new dia.DataType({
+	label: 'point',
+	validate: function(value){
+		return !!(value
+			&& typeof value.x === 'number'
+			&& typeof value.y === 'number');
+		
+	}
+});

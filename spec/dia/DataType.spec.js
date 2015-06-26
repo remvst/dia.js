@@ -153,3 +153,37 @@ describe('built in anchor data type', function(){
 		})).toBe(true);
 	});
 });
+
+describe('built in point type', function(){
+	it('validates correctly', function(){
+		expect(dia.DataType.POINT.validateValue('hello')).toBe(false);
+		expect(dia.DataType.POINT.validateValue(123)).toBe(false);
+		expect(dia.DataType.POINT.validateValue(-123)).toBe(false);
+		expect(dia.DataType.POINT.validateValue(123.54)).toBe(false);
+		expect(dia.DataType.POINT.validateValue('')).toBe(false);
+		expect(dia.DataType.POINT.validateValue(null)).toBe(false);
+		expect(dia.DataType.POINT.validateValue(false)).toBe(false);
+		expect(dia.DataType.POINT.validateValue(NaN)).toBe(false);
+		
+		expect(dia.DataType.POINT.validateValue({
+			x: '',
+			y: 1
+		})).toBe(false);
+		expect(dia.DataType.POINT.validateValue({
+			x: 1,
+			y: 'lawl'
+		})).toBe(false);
+		expect(dia.DataType.POINT.validateValue({
+			x: 1,
+			y: -1
+		})).toBe(true);
+		expect(dia.DataType.POINT.validateValue({
+			x: 1,
+			y: 1
+		})).toBe(true);
+		expect(dia.DataType.POINT.validateValue({
+			x: 12,
+			y: -10
+		})).toBe(true);
+	});
+});
