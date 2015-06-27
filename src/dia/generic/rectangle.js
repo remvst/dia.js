@@ -135,8 +135,10 @@ dia.generic.RECTANGLE.creatorTool = new dia.CreateTool({
 	type: dia.generic.RECTANGLE,
 	mouseDown: function(sheet, x, y){
 		var element = this.type.create({
-			x: x,
-			y: y
+			x: dia.snap(x - 50, sheet.gridSize),
+			y: dia.snap(y - 50, sheet.gridSize),
+			width: 100,
+			height: 100
 		});
 		sheet.addElement(element);
 		this.dispatch('elementcreated');

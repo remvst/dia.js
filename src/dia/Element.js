@@ -37,7 +37,7 @@ dia.Element.prototype.setProperty = function(id, newValue){
 		
 		if(newValue !== oldValue){
 			if(!property.type.validate(newValue)){
-				throw new Error('Validation error: Property ' + id + ' cannot have value ' + value);
+				throw new Error('Validation error: Property ' + id + ' cannot have value ' + newValue);
 			}
 			
 			oldValue = this.properties[id];

@@ -297,7 +297,7 @@ dia.Element.prototype.setProperty = function(id, newValue){
 		
 		if(newValue !== oldValue){
 			if(!property.type.validate(newValue)){
-				throw new Error('Validation error: Property ' + id + ' cannot have value ' + value);
+				throw new Error('Validation error: Property ' + id + ' cannot have value ' + newValue);
 			}
 			
 			oldValue = this.properties[id];
@@ -3260,8 +3260,10 @@ dia.generic.RECTANGLE.creatorTool = new dia.CreateTool({
 	type: dia.generic.RECTANGLE,
 	mouseDown: function(sheet, x, y){
 		var element = this.type.create({
-			x: x,
-			y: y
+			x: dia.snap(x - 50, sheet.gridSize),
+			y: dia.snap(y - 50, sheet.gridSize),
+			width: 100,
+			height: 100
 		});
 		sheet.addElement(element);
 		this.dispatch('elementcreated');
