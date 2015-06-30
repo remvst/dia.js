@@ -76,6 +76,26 @@ dia.generic.RELATION.setRepresentationFactory(function(element, repr){
 		height: function(){ return 10; }
 	});
 
+	repr.getPoints = function(){
+		var from = repr.fromPosition();
+		var to = repr.toPosition();
+
+		var fromExtension = {
+			x: from.x + Math.cos(from.angle) * repr.extension,
+			y: from.y + Math.sin(from.angle) * repr.extension
+		};
+		var toExtension = {
+			x: to.x + Math.cos(to.angle) * repr.extension,
+			y: to.y + Math.sin(to.angle) * repr.extension
+		};
+
+		if(repr.extension > 0){
+			return [from, fromExtension].concat(element.getProperty('points')).concat([toExtension, to]);
+		}else{
+			return [from].concat(element.getProperty('points')).concat([to]);
+		}
+	};
+
 	repr.addRenderable(new dia.Renderable(function(c){
 		var fromPos = repr.fromPosition();
 		var toPos = repr.toPosition();
@@ -83,39 +103,24 @@ dia.generic.RELATION.setRepresentationFactory(function(element, repr){
 		c.strokeStyle = '#000';
 		c.fillStyle = '#000';
 
-		c.beginPath();
-		c.moveTo(fromPos.x, fromPos.y);
-		c.lineTo(fromPos.x + Math.cos(fromPos.angle) * 10, fromPos.y + Math.sin(fromPos.angle) * 10);
+		var points = repr.getPoints();
 
-		var points = element.getProperty('points');
-		for(var i = 0 ; i < points.length ; i++){
+		c.beginPath();
+		c.moveTo(points[0].x, points[0].y);
+		for(var i = 1 ; i < points.length ; i++){
 			c.lineTo(points[i].x, points[i].y);
+		}
+		c.stroke();
+
+		for(var i = 1 ; i < points.length - 1 ; i++){
 			c.fillRect(points[i].x - 2, points[i].y - 2, 4, 4);
 		}
-
-		c.lineTo(toPos.x + Math.cos(toPos.angle) * 10, toPos.y + Math.sin(toPos.angle) * 10);
-		c.lineTo(toPos.x, toPos.y);
-		c.stroke();
 	}));
 
 	repr.extension = 10;
 
 	repr.area = new dia.BrokenLineArea({
-		points: function(){
-			var from = repr.fromPosition();
-			var to = repr.toPosition();
-
-			var fromExtension = {
-				x: from.x + Math.cos(from.angle) * repr.extension,
-				y: from.y + Math.sin(from.angle) * repr.extension
-			};
-			var toExtension = {
-				x: to.x + Math.cos(to.angle) * repr.extension,
-				y: to.y + Math.sin(to.angle) * repr.extension
-			};
-
-			return [from, fromExtension].concat(element.getProperty('points')).concat([toExtension, to]);
-		}
+		points: repr.getPoints
 	});
 
 	var handle = new dia.BrokenLineDragHandle(element, repr.area, 'points');

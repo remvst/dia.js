@@ -3149,21 +3149,7 @@ dia.generic.RELATION.addElementDependencies(function(element){
 });
 
 dia.generic.RELATION.setRepresentationFactory(function(element, repr){
-	var areaFrom = new dia.RectangleArea({
-		x: function(){ return fromPosition().x - 5 },
-		y: function(){ return fromPosition().y - 5 },
-		width: function(){ return 10; },
-		height: function(){ return 10; }
-	});
-
-	var areaTo = new dia.RectangleArea({
-		x: function(){ return toPosition().x - 5 },
-		y: function(){ return toPosition().y - 5 },
-		width: function(){ return 10; },
-		height: function(){ return 10; }
-	});
-
-	var fromPosition = function(){
+	repr.fromPosition = function(){
 		var from = element.getProperty('from');
 		var fromRepr = element.sheet.getElement(from.element).getRepresentation();
 
@@ -3174,7 +3160,7 @@ dia.generic.RELATION.setRepresentationFactory(function(element, repr){
 		};
 	};
 
-	var toPosition = function(){
+	repr.toPosition = function(){
 		var to = element.getProperty('to');
 		var toRepr = element.sheet.getElement(to.element).getRepresentation();
 
@@ -3185,55 +3171,91 @@ dia.generic.RELATION.setRepresentationFactory(function(element, repr){
 		};
 	};
 
+	repr.areaFrom = new dia.RectangleArea({
+		x: function(){ return repr.fromPosition().x - 5 },
+		y: function(){ return repr.fromPosition().y - 5 },
+		width: function(){ return 10; },
+		height: function(){ return 10; }
+	});
+
+	repr.areaTo = new dia.RectangleArea({
+		x: function(){ return repr.toPosition().x - 5 },
+		y: function(){ return repr.toPosition().y - 5 },
+		width: function(){ return 10; },
+		height: function(){ return 10; }
+	});
+
+	repr.getPoints = function(){
+		var from = repr.fromPosition();
+		var to = repr.toPosition();
+
+		var fromExtension = {
+			x: from.x + Math.cos(from.angle) * repr.extension,
+			y: from.y + Math.sin(from.angle) * repr.extension
+		};
+		var toExtension = {
+			x: to.x + Math.cos(to.angle) * repr.extension,
+			y: to.y + Math.sin(to.angle) * repr.extension
+		};
+
+		if(repr.extension > 0){
+			return [from, fromExtension].concat(element.getProperty('points')).concat([toExtension, to]);
+		}else{
+			return [from].concat(element.getProperty('points')).concat([to]);
+		}
+	};
+
 	repr.addRenderable(new dia.Renderable(function(c){
-		var fromPos = fromPosition();
-		var toPos = toPosition();
+		var fromPos = repr.fromPosition();
+		var toPos = repr.toPosition();
 
 		c.strokeStyle = '#000';
 		c.fillStyle = '#000';
 
-		c.beginPath();
-		c.moveTo(fromPos.x, fromPos.y);
-		c.lineTo(fromPos.x + Math.cos(fromPos.angle) * 10, fromPos.y + Math.sin(fromPos.angle) * 10);
+		var points = repr.getPoints();
 
-		var points = element.getProperty('points');
-		for(var i = 0 ; i < points.length ; i++){
+		c.beginPath();
+		c.moveTo(points[0].x, points[0].y);
+		for(var i = 1 ; i < points.length ; i++){
 			c.lineTo(points[i].x, points[i].y);
+		}
+		c.stroke();
+
+		for(var i = 1 ; i < points.length - 1 ; i++){
 			c.fillRect(points[i].x - 2, points[i].y - 2, 4, 4);
 		}
-
-		c.lineTo(toPos.x + Math.cos(toPos.angle) * 10, toPos.y + Math.sin(toPos.angle) * 10);
-		c.lineTo(toPos.x, toPos.y);
-		c.stroke();
 	}));
+
+	repr.extension = 10;
 
 	repr.area = new dia.BrokenLineArea({
 		points: function(){
-			var from = fromPosition();
-			var to = toPosition();
-			
+			var from = repr.fromPosition();
+			var to = repr.toPosition();
+
 			var fromExtension = {
-				x: from.x + Math.cos(from.angle) * 10,
-				y: from.y + Math.sin(from.angle) * 10
+				x: from.x + Math.cos(from.angle) * repr.extension,
+				y: from.y + Math.sin(from.angle) * repr.extension
 			};
 			var toExtension = {
-				x: to.x + Math.cos(to.angle) * 10,
-				y: to.y + Math.sin(to.angle) * 10
+				x: to.x + Math.cos(to.angle) * repr.extension,
+				y: to.y + Math.sin(to.angle) * repr.extension
 			};
 
 			return [from, fromExtension].concat(element.getProperty('points')).concat([toExtension, to]);
 		}
+		//points: repr.getPoints
 	});
 
 	var handle = new dia.BrokenLineDragHandle(element, repr.area, 'points');
 	repr.addHandle(handle);
 
-	var fromHandle = new dia.MoveAnchorDragHandle(element, areaFrom, 'from');
+	var fromHandle = new dia.MoveAnchorDragHandle(element, repr.areaFrom, 'from');
 	repr.addHandle(fromHandle);
 
-	var toHandle = new dia.MoveAnchorDragHandle(element, areaTo, 'to');
+	var toHandle = new dia.MoveAnchorDragHandle(element, repr.areaTo, 'to');
 	repr.addHandle(toHandle);
-	
+
 	repr.moveHandle = new dia.MoveRelationDragHandle(element, repr.area, 'points');
 });
 
@@ -3253,7 +3275,7 @@ dia.generic.RELATION.creatorTool = new dia.CreateTool({
 		if(this.to && this.from && this.to !== this.from){
 			var fromArea = this.from.getRepresentation().area;
 			var toArea = this.to.getRepresentation().area;
-			
+
 			var fromRelativePosition = fromArea.getRelativePositionFromAbsolute(
 				this.fromPosition.x,
 				this.fromPosition.y
@@ -3418,7 +3440,27 @@ dia.uml.COMPOSITION = dia.generic.RELATION.clone({
 });
 
 dia.uml.COMPOSITION.extendRepresentationFactory(function(element, repr){
-	
+	repr.extension = 0;
+
+	repr.addRenderable(new dia.Renderable(function(c){
+		var points = repr.getPoints();
+
+		var p1 = points[points.length - 1];
+		var p2 = points[points.length - 2];
+
+		var angle = Math.atan2(p2.y - p1.y, p2.x - p1.x);
+
+		c.translate(p1.x, p1.y);
+		c.rotate(angle);
+
+		c.fillStyle = '#000';
+		c.beginPath();
+		c.moveTo(0, 0);
+		c.lineTo(20, 10);
+		c.lineTo(40, 0);
+		c.lineTo(20, -10);
+		c.fill();
+	}));
 });
 
 dia.uml = dia.uml || {};

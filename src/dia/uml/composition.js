@@ -6,5 +6,25 @@ dia.uml.COMPOSITION = dia.generic.RELATION.clone({
 });
 
 dia.uml.COMPOSITION.extendRepresentationFactory(function(element, repr){
-	
+	repr.extension = 0;
+
+	repr.addRenderable(new dia.Renderable(function(c){
+		var points = repr.getPoints();
+
+		var p1 = points[points.length - 1];
+		var p2 = points[points.length - 2];
+
+		var angle = Math.atan2(p2.y - p1.y, p2.x - p1.x);
+
+		c.translate(p1.x, p1.y);
+		c.rotate(angle);
+
+		c.fillStyle = '#000';
+		c.beginPath();
+		c.moveTo(0, 0);
+		c.lineTo(20, 10);
+		c.lineTo(40, 0);
+		c.lineTo(20, -10);
+		c.fill();
+	}));
 });
