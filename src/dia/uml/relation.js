@@ -66,9 +66,9 @@ dia.uml.RELATION.extendRepresentationFactory(function(element, repr){
 				c.fillStyle = '#000';
 				c.beginPath();
 				c.moveTo(0, 0);
-				c.lineTo(20, 10);
-				c.lineTo(40, 0);
-				c.lineTo(20, -10);
+				c.lineTo(10, 5);
+				c.lineTo(20, 0);
+				c.lineTo(10, -5);
 				c.fill();
 			break;
 			case 'aggregation':
@@ -77,9 +77,9 @@ dia.uml.RELATION.extendRepresentationFactory(function(element, repr){
 				c.lineWidth = 1;
 				c.beginPath();
 				c.moveTo(0, 0);
-				c.lineTo(20, 10);
-				c.lineTo(40, 0);
-				c.lineTo(20, -10);
+				c.lineTo(10, 5);
+				c.lineTo(20, 0);
+				c.lineTo(10, -5);
 				c.closePath();
 				c.fill();
 				c.stroke();
@@ -91,8 +91,8 @@ dia.uml.RELATION.extendRepresentationFactory(function(element, repr){
 				c.lineWidth = 1;
 				c.beginPath();
 				c.moveTo(0, 0);
-				c.lineTo(20, 10);
-				c.lineTo(20, -10);
+				c.lineTo(10, 5);
+				c.lineTo(10, -5);
 				c.closePath();
 				c.fill();
 				c.stroke();
@@ -103,32 +103,32 @@ dia.uml.RELATION.extendRepresentationFactory(function(element, repr){
 
 		var fromLabelAngle = angleFrom + Math.PI / 2;
 		var fromLabelPosition = {
-			x: p4.x - Math.cos(angleFrom) * 20 + Math.cos(fromLabelAngle) * 20,
-			y: p4.y - Math.sin(angleFrom) * 20 +  Math.sin(fromLabelAngle) * 20
+			x: p4.x - Math.cos(angleFrom) * 10 + Math.cos(fromLabelAngle) * 10,
+			y: p4.y - Math.sin(angleFrom) * 10 +  Math.sin(fromLabelAngle) * 10
 		};
 
 		c.fillStyle = '#000';
-		c.font = '14pt Arial';
+		c.font = '10pt Arial';
 		c.textAlign = 'center';
 		c.textBaseline = 'middle';
 		c.fillText(element.getProperty('cardinalityFrom'), fromLabelPosition.x, fromLabelPosition.y);
 
 		var toLabelAngle = angleTo + Math.PI / 2;
 		var toLabelPosition = {
-			x: p1.x + Math.cos(angleTo) * 20 + Math.cos(toLabelAngle) * 20,
-			y: p1.y + Math.sin(angleTo) * 20 +  Math.sin(toLabelAngle) * 20
+			x: p1.x + Math.cos(angleTo) * 10 + Math.cos(toLabelAngle) * 10,
+			y: p1.y + Math.sin(angleTo) * 10 +  Math.sin(toLabelAngle) * 10
 		};
 
 		c.fillStyle = '#000';
-		c.font = '14pt Arial';
+		c.font = '10pt Arial';
 		c.textAlign = 'center';
 		c.textBaseline = 'middle';
 		c.fillText(element.getProperty('cardinalityTo'), toLabelPosition.x, toLabelPosition.y);
 
 		var middlePosition = repr.area.getPositionAtRatio(.5);
 		var labelPosition = {
-			x: middlePosition.x + Math.cos(middlePosition.angle + Math.PI / 2) * 20,
-			y: middlePosition.y + Math.sin(middlePosition.angle + Math.PI / 2) * 20
+			x: middlePosition.x + Math.cos(middlePosition.angle + Math.PI / 2) * 10,
+			y: middlePosition.y + Math.sin(middlePosition.angle + Math.PI / 2) * 10
 		}
 		c.fillText(element.getProperty('label'), labelPosition.x, labelPosition.y);
 	}));
