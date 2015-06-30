@@ -1,29 +1,41 @@
 dia.uml = dia.uml || {};
 
-dia.uml.COMPOSITION = dia.generic.RELATION.clone({
+dia.uml.RELATION = dia.generic.RELATION.clone({
 	id: 'uml.composition',
 	label: 'Composition relation'
 });
 
-dia.uml.COMPOSITION.addProperty(new dia.Property({
+dia.uml.RELATION.addProperty(new dia.Property({
+	id: 'type',
+	type: new dia.EnumerationDataType([
+		'relation',
+		'composition',
+		'aggregation',
+		'implementation',
+		'inheritance'
+	]),
+	default: 'relation'
+}));
+
+dia.uml.RELATION.addProperty(new dia.Property({
 	id: 'cardinalityFrom',
 	type: dia.DataType.STRING,
-	default: '*'
+	default: ''
 }));
 
-dia.uml.COMPOSITION.addProperty(new dia.Property({
+dia.uml.RELATION.addProperty(new dia.Property({
 	id: 'cardinalityTo',
 	type: dia.DataType.STRING,
-	default: '*'
+	default: ''
 }));
 
-dia.uml.COMPOSITION.addProperty(new dia.Property({
+dia.uml.RELATION.addProperty(new dia.Property({
 	id: 'label',
 	type: dia.DataType.STRING,
-	default: 'contains'
+	default: ''
 }));
 
-dia.uml.COMPOSITION.extendRepresentationFactory(function(element, repr){
+dia.uml.RELATION.extendRepresentationFactory(function(element, repr){
 	repr.getPoints = function(){
 		return [repr.fromPosition()].concat(element.getProperty('points')).concat([repr.toPosition()]);
 	};
@@ -45,13 +57,43 @@ dia.uml.COMPOSITION.extendRepresentationFactory(function(element, repr){
 		c.translate(p1.x, p1.y);
 		c.rotate(angleTo);
 
-		c.fillStyle = '#000';
-		c.beginPath();
-		c.moveTo(0, 0);
-		c.lineTo(20, 10);
-		c.lineTo(40, 0);
-		c.lineTo(20, -10);
-		c.fill();
+		switch(element.getProperty('type')){
+			case 'composition':
+				c.fillStyle = '#000';
+				c.beginPath();
+				c.moveTo(0, 0);
+				c.lineTo(20, 10);
+				c.lineTo(40, 0);
+				c.lineTo(20, -10);
+				c.fill();
+			break;
+			case 'aggregation':
+				c.fillStyle = '#ffffff';
+				c.strokeStyle = '#000';
+				c.lineWidth = 1;
+				c.beginPath();
+				c.moveTo(0, 0);
+				c.lineTo(20, 10);
+				c.lineTo(40, 0);
+				c.lineTo(20, -10);
+				c.closePath();
+				c.fill();
+				c.stroke();
+			break;
+			case 'inheritance':
+			case 'implementation':
+				c.fillStyle = '#ffffff';
+				c.strokeStyle = '#000';
+				c.lineWidth = 1;
+				c.beginPath();
+				c.moveTo(0, 0);
+				c.lineTo(20, 10);
+				c.lineTo(20, -10);
+				c.closePath();
+				c.fill();
+				c.stroke();
+			break;
+		}
 
 		c.restore();
 
@@ -86,4 +128,12 @@ dia.uml.COMPOSITION.extendRepresentationFactory(function(element, repr){
 		}
 		c.fillText(element.getProperty('label'), labelPosition.x, labelPosition.y);
 	}));
+
+	repr.getLineDash = function(){
+		if(element.getProperty('type') === 'implementation'){
+			return [10, 10];
+		}else{
+			return [];
+		}
+	};
 });

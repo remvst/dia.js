@@ -105,6 +105,8 @@ dia.generic.RELATION.setRepresentationFactory(function(element, repr){
 
 		var points = repr.getPoints();
 
+		c.setLineDash(repr.getLineDash());
+
 		c.beginPath();
 		c.moveTo(points[0].x, points[0].y);
 		for(var i = 1 ; i < points.length ; i++){
@@ -137,6 +139,10 @@ dia.generic.RELATION.setRepresentationFactory(function(element, repr){
 	repr.addHandle(repr.toHandle);
 
 	repr.moveHandle = new dia.MoveRelationDragHandle(element, repr.area, 'points');
+
+	repr.getLineDash = function(){
+		return [];
+	};
 });
 
 dia.generic.RELATION.creatorTool = new dia.CreateTool({
