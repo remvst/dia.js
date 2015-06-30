@@ -1951,348 +1951,6 @@ dia.InteractionManager.prototype.keyUp = function(keyCode){
 	this.downKeys[keyCode] = false;
 };
 
-dia.Toolbox = function(){
-	this.toolMap = {};
-	this.toolList = [];
-};
-
-dia.Toolbox.prototype.addTool = function(tool){
-	if(!this.toolMap[tool.id]){
-		this.toolMap[tool.id] = tool;
-		this.toolList.push(tool);
-	}
-};
-
-dia.Toolbox.prototype.getTool = function(id){
-	return this.toolMap[id] || null;
-};
-
-dia.Tool = function(){
-	dia.EventDispatcher.call(this);
-	
-	this.id = null;
-	this.label = null;
-};
-
-extend(dia.Tool, dia.EventDispatcher);
-
-dia.Tool.prototype.mouseDown = function(sheet, x, y){
-	
-};
-
-dia.Tool.prototype.mouseMove = function(sheet, x, y){
-	
-};
-
-dia.Tool.prototype.mouseUp = function(sheet, x, y){
-	
-};
-
-dia.Tool.prototype.keyDown = function(sheet, keyCode){
-	
-};
-
-dia.Tool.prototype.keyUp = function(sheet, keyCode){
-	
-};
-
-dia.CreateTool = function(options){
-	dia.Tool.call(this);
-	
-	options = options || {};
-	
-	this.type = options.type || null;
-	this.onMouseDown = options.mouseDown || new Function();
-	this.onMouseMove = options.mouseMove || new Function();
-	this.onMouseUp = options.mouseUp || new Function();
-	
-	this.currentElement = null;
-	
-	if(this.type){
-		if(this.type.id){
-			this.id = 'create-' + this.type.id;
-		}
-		if(this.type.label){
-			this.label = this.type.label;
-		}
-	}
-};
-
-extend(dia.CreateTool, dia.Tool);
-
-dia.CreateTool.prototype.mouseDown = function(sheet, x, y){
-	this.onMouseDown.call(this, sheet, x, y);
-};
-
-dia.CreateTool.prototype.mouseMove = function(sheet, x, y){
-	this.onMouseMove.call(this, sheet, x, y);
-};
-
-dia.CreateTool.prototype.mouseUp = function(sheet, x, y){
-	this.onMouseUp.call(this, sheet, x, y);
-	
-	this.currentElement = null;
-};
-
-dia.CreateTool.prototype.extend = function(options){
-	var original = this;
-	
-	options.mouseDown = options.mouseDown || new Function();
-	options.mouseMove = options.mouseMove || new Function();
-	options.mouseUp = options.mouseUp || new Function();
-	
-	return new dia.CreateTool({
-		type: options.type || this.type,
-		mouseDown: function(sheet, x, y){
-			original.onMouseDown.call(this, sheet, x, y);
-			options.mouseDown.call(this, sheet, x, y);
-		},
-		mouseMove: function(sheet, x, y){
-			original.onMouseMove.call(this, sheet, x, y);
-			options.mouseMove.call(this, sheet, x, y);
-		},
-		mouseUp: function(sheet, x, y){
-			original.onMouseUp.call(this, sheet, x, y);
-			options.mouseUp.call(this, sheet, x, y);
-		}
-	});
-};
-
-dia.SelectionTool = function(){
-	dia.Tool.call(this);
-	
-	this.selectionStart = null;
-	this.selectionEnd = null;
-	this.previousClick = null;
-	this.currentSelection = [];
-	this.clickCount = 0;
-	this.id = 'select';
-	this.label = 'Selection';
-	this.down = false;
-	this.multipleKeyDown = false;
-	
-	this.currentHandle = null;
-	this.currentPosition = {x: 0, y: 0};
-};
-
-extend(dia.SelectionTool, dia.Tool);
-
-dia.SelectionTool.prototype.mouseDown = function(sheet, x, y){
-	this.down = true;
-	
-	// Before selecting anything, let's try to find a handle to drag
-	this.currentHandle = null;
-	
-	var repr,
-		handleArea;
-	for(var i = 0 ; i < sheet.elements.length ; i++){
-		repr = sheet.elements[i].getRepresentation();
-		for(var j = 0 ; j < repr.handles.length ; j++){
-			handleArea = repr.handles[j].area;
-			if(handleArea.contains(x, y) && 
-			   (!this.currentHandle || handleArea.surface() < this.currentHandle.area.surface())){
-				this.currentHandle = repr.handles[j];
-			}
-		}
-	}
-		
-	if(!this.multipleKeyDown && 
-	   (!this.currentHandle || this.currentSelection.indexOf(this.currentHandle.element) === -1)){
-		// Clicked on an element outside of the selection or on no element, let's reset the selection
-		for(var i = 0 ; i < this.currentSelection.length ; i++){
-			this.currentSelection[i].highlighted = false;
-		}
-		this.currentSelection = [];
-	}
-
-	if(this.currentHandle){
-		// Let's highlight that element
-		if(this.currentSelection.indexOf(this.currentHandle.element) === -1){
-			this.currentSelection.push(this.currentHandle.element);
-			this.currentHandle.element.highlighted = true;
-			this.dispatch('selectionchange', { selection: this.currentSelection });
-		}
-		
-		var repr = this.currentHandle.element.getRepresentation();
-		if(this.currentHandle === repr.moveHandle){
-			this.currentSelection.forEach(function(element){
-				var repr = element.getRepresentation();
-				if(repr && repr.moveHandle){
-					repr.moveHandle.dragStart(x, y);
-				}
-			});
-			this.currentHandle = null;
-		}else{
-			this.currentHandle.dragStart(x, y);
-		}
-	}else{
-		// No handle, let's do selection mode
-		this.selectionStart = { x: x, y: y };
-		this.selectionEnd = { x: x, y: y };
-	}
-	
-	this.currentPosition = {x: x, y: y};
-	this.mouseMoved = false;
-};
-
-dia.SelectionTool.prototype.mouseMove = function(sheet, x, y){
-	var tool = this;
-	if(this.down){
-		if(this.selectionStart){
-			this.selectionEnd = { x: x, y: y };
-
-			this.dispatch('selectionmove');
-		}else if(this.currentHandle){
-			this.currentHandle.dragMove(
-				x - this.currentPosition.x,
-				y - this.currentPosition.y,
-				x,
-				y
-			);
-		}else{
-			this.currentSelection.forEach(function(element){
-				var repr = element.getRepresentation();
-				if(repr && repr.moveHandle){
-					repr.moveHandle.dragMove(
-						x - tool.currentPosition.x,
-						y - tool.currentPosition.y,
-						x,
-						y
-					);
-				}
-			});
-		}
-	}
-	
-	this.currentPosition = {x: x, y: y};
-	
-	// Cancel click
-	this.mouseMoved = true;
-	this.clickCount = 0;
-};
-
-dia.SelectionTool.prototype.mouseUp = function(sheet, x, y){
-	this.down = false;
-	
-	if(this.selectionStart){
-		// If we were selection, let's apply that selection
-		var tool = this;
-		var area = new dia.RectangleArea({
-			x: function(){ return tool.selectionStart.x; },
-			y: function(){ return tool.selectionStart.y; },
-			width: function(){ return tool.selectionEnd.x - tool.selectionStart.x; },
-			height: function(){ return tool.selectionEnd.y - tool.selectionStart.y; }
-		});
-		
-		for(var i = 0 ; i < this.currentSelection.length ; i++){
-			this.currentSelection[i].highlighted = false;
-		}
-
-		this.currentSelection = [];
-
-		for(var i in sheet.elements){
-			if(sheet.elements[i].isContainedIn(area)){
-				this.currentSelection.push(sheet.elements[i]);
-				sheet.elements[i].highlighted = true;
-			}
-		}
-	
-		this.selectionStart = null;
-		this.dispatch('selectionchange', { selection: this.currentSelection });
-	}else if(this.currentHandle){
-		this.currentHandle.dragDrop(this.currentPosition.x, this.currentPosition.y);
-	}else{
-		this.currentSelection.forEach(function(element){
-			var repr = element.getRepresentation();
-			if(repr && repr.moveHandle){
-				repr.moveHandle.dragDrop(
-					x,
-					y
-				);
-			}
-		});
-	}
-	
-	if(!this.mouseMoved){
-		if(!this.previousClick 
-		   || x === this.previousClick.x
-		   && y === this.previousClick.y
-		   && Date.now() - this.previousClick.time < 500){
-
-			this.clickCount++;
-		}else{
-			this.clickCount = 1;
-		}
-		
-		this.previousClick = {
-			x: x,
-			y: y,
-			time: Date.now()
-		};
-		this.dispatch('click', {
-			clickCount: this.clickCount,
-			element: (this.currentHandle ? this.currentHandle.element : this.currentSelection[0]) || null
-		});
-	}
-	
-	this.currentHandle = null;
-	this.currentPosition = {x: x, y: y};
-	this.selectionEnd = null;
-};
-
-dia.SelectionTool.prototype.keyDown = function(sheet, keyCode){
-	var moveX = 0,
-		moveY = 0;
-	switch(keyCode){
-		case 37: moveX = -1; break;
-		case 38: moveY = -1; break;
-		case 39: moveX = 1; break;
-		case 40: moveY = 1; break;
-		case 17:
-		case 91:
-			this.multipleKeyDown = true;
-			break;
-	}
-	
-	if(moveX || moveY){
-		moveX *= 10;
-		moveY *= 10;
-		
-		this.currentSelection.forEach(function(element){
-			var repr = element.getRepresentation();
-			if(repr && repr.moveHandle){
-				repr.moveHandle.dragStart(0, 0);
-				repr.moveHandle.dragMove(moveX, moveY);
-				repr.moveHandle.dragDrop(0, 0);
-			}
-		});
-	}
-};
-
-dia.SelectionTool.prototype.keyUp = function(sheet, keyCode){
-	if(keyCode === 8){
-		this.currentSelection.forEach(function(element){
-			element.remove();
-		});
-	}else if(keyCode === 91 || keyCode === 17){
-		this.multipleKeyDown = false;
-	}
-};
-
-dia.SelectionTool.prototype.getRenderable = function(){
-	return new dia.Renderable(function(c){
-		if(this.selectionStart){
-			c.strokeStyle = 'black';
-			c.strokeRect(
-				this.selectionStart.x + .5,
-				this.selectionStart.y + .5,
-				this.selectionEnd.x - this.selectionStart.x,
-				this.selectionEnd.y - this.selectionStart.y
-			)
-		}
-	}.bind(this));
-};
-
 dia.Dialog = function(settings){
 	dia.EventDispatcher.call(this);
 	
@@ -2464,86 +2122,6 @@ dia.Canvas.prototype.render = function(ctx){
 	ctx.translate(-this.scrollX, -this.scrollY);
 	this.sheet.render(ctx);
 	ctx.restore();
-};
-
-dia.Guide = function(){
-	this.type = null;
-};
-
-dia.Guide.prototype.shouldSnap = function(otherGuide, delta){
-	return false;
-};
-
-dia.Guide.prototype.render = function(c, otherGuide){
-	
-};
-
-dia.Guide.prototype.snap = function(guide){
-	
-};
-
-dia.HorizontalGuide = function(options){
-	dia.Guide.call(this);
-	
-	this.type = 'horizontal';
-	
-	this.element = options.element;
-	this.getX = options.x;
-	this.getY = options.y;
-	this.getOffset = options.offset || function(){ return 0; };
-};
-
-extend(dia.HorizontalGuide, dia.Guide);
-
-dia.HorizontalGuide.prototype.shouldSnap = function(guide, delta){
-	delta = delta || 5;
-	
-	return this.type === guide.type
-		&& Math.abs(this.getY() - guide.getY()) < delta;
-};
-
-dia.HorizontalGuide.prototype.render = function(c, otherGuide){
-	var myX = this.getX();
-	var otherX = otherGuide.getX();
-	
-	c.fillStyle = 'red';
-	c.fillRect(myX, this.getY(), otherX - myX, 1);
-};
-
-dia.HorizontalGuide.prototype.snap = function(guide){
-	this.element.setProperty('y', guide.getY() - this.getOffset());
-};
-
-dia.VerticalGuide = function(options){
-	dia.Guide.call(this);
-	
-	this.type = 'vertical';
-	
-	this.element = options.element;
-	this.getX = options.x;
-	this.getY = options.y;
-	this.getOffset = options.offset || function(){ return 0; };
-};
-
-extend(dia.VerticalGuide, dia.Guide);
-
-dia.VerticalGuide.prototype.shouldSnap = function(guide, delta){
-	delta = delta || 5;
-	
-	return this.type === guide.type
-		&& Math.abs(this.getX() - guide.getX()) < delta;
-};
-
-dia.VerticalGuide.prototype.render = function(c, otherGuide){
-	var myY = this.getY();
-	var otherY = otherGuide.getY();
-	
-	c.fillStyle = 'red';
-	c.fillRect(this.getX(), myY, 1, otherY - myY);
-};
-
-dia.VerticalGuide.prototype.snap = function(guide){
-	this.element.setProperty('x', guide.getX() - this.getOffset());
 };
 
 dia.App = function(){
@@ -2998,6 +2576,428 @@ dia.ElementForm.prototype.submit = function(){
 		
 		form.element.setProperty(property.id, newValue);
 	});
+};
+
+dia.Toolbox = function(){
+	this.toolMap = {};
+	this.toolList = [];
+};
+
+dia.Toolbox.prototype.addTool = function(tool){
+	if(!this.toolMap[tool.id]){
+		this.toolMap[tool.id] = tool;
+		this.toolList.push(tool);
+	}
+};
+
+dia.Toolbox.prototype.getTool = function(id){
+	return this.toolMap[id] || null;
+};
+
+dia.Tool = function(){
+	dia.EventDispatcher.call(this);
+	
+	this.id = null;
+	this.label = null;
+};
+
+extend(dia.Tool, dia.EventDispatcher);
+
+dia.Tool.prototype.mouseDown = function(sheet, x, y){
+	
+};
+
+dia.Tool.prototype.mouseMove = function(sheet, x, y){
+	
+};
+
+dia.Tool.prototype.mouseUp = function(sheet, x, y){
+	
+};
+
+dia.Tool.prototype.keyDown = function(sheet, keyCode){
+	
+};
+
+dia.Tool.prototype.keyUp = function(sheet, keyCode){
+	
+};
+
+dia.CreateTool = function(options){
+	dia.Tool.call(this);
+	
+	options = options || {};
+	
+	this.type = options.type || null;
+	this.onMouseDown = options.mouseDown || new Function();
+	this.onMouseMove = options.mouseMove || new Function();
+	this.onMouseUp = options.mouseUp || new Function();
+	
+	this.currentElement = null;
+	
+	if(this.type){
+		if(this.type.id){
+			this.id = 'create-' + this.type.id;
+		}
+		if(this.type.label){
+			this.label = this.type.label;
+		}
+	}
+};
+
+extend(dia.CreateTool, dia.Tool);
+
+dia.CreateTool.prototype.mouseDown = function(sheet, x, y){
+	this.onMouseDown.call(this, sheet, x, y);
+};
+
+dia.CreateTool.prototype.mouseMove = function(sheet, x, y){
+	this.onMouseMove.call(this, sheet, x, y);
+};
+
+dia.CreateTool.prototype.mouseUp = function(sheet, x, y){
+	this.onMouseUp.call(this, sheet, x, y);
+	
+	this.currentElement = null;
+};
+
+dia.CreateTool.prototype.extend = function(options){
+	var original = this;
+	
+	options.mouseDown = options.mouseDown || new Function();
+	options.mouseMove = options.mouseMove || new Function();
+	options.mouseUp = options.mouseUp || new Function();
+	
+	return new dia.CreateTool({
+		type: options.type || this.type,
+		mouseDown: function(sheet, x, y){
+			original.onMouseDown.call(this, sheet, x, y);
+			options.mouseDown.call(this, sheet, x, y);
+		},
+		mouseMove: function(sheet, x, y){
+			original.onMouseMove.call(this, sheet, x, y);
+			options.mouseMove.call(this, sheet, x, y);
+		},
+		mouseUp: function(sheet, x, y){
+			original.onMouseUp.call(this, sheet, x, y);
+			options.mouseUp.call(this, sheet, x, y);
+		}
+	});
+};
+
+dia.SelectionTool = function(){
+	dia.Tool.call(this);
+	
+	this.selectionStart = null;
+	this.selectionEnd = null;
+	this.previousClick = null;
+	this.currentSelection = [];
+	this.clickCount = 0;
+	this.id = 'select';
+	this.label = 'Selection';
+	this.down = false;
+	this.multipleKeyDown = false;
+	
+	this.currentHandle = null;
+	this.currentPosition = {x: 0, y: 0};
+};
+
+extend(dia.SelectionTool, dia.Tool);
+
+dia.SelectionTool.prototype.mouseDown = function(sheet, x, y){
+	this.down = true;
+	
+	// Before selecting anything, let's try to find a handle to drag
+	this.currentHandle = null;
+	
+	var repr,
+		handleArea;
+	for(var i = 0 ; i < sheet.elements.length ; i++){
+		repr = sheet.elements[i].getRepresentation();
+		for(var j = 0 ; j < repr.handles.length ; j++){
+			handleArea = repr.handles[j].area;
+			if(handleArea.contains(x, y) && 
+			   (!this.currentHandle || handleArea.surface() < this.currentHandle.area.surface())){
+				this.currentHandle = repr.handles[j];
+			}
+		}
+	}
+		
+	if(!this.multipleKeyDown && 
+	   (!this.currentHandle || this.currentSelection.indexOf(this.currentHandle.element) === -1)){
+		// Clicked on an element outside of the selection or on no element, let's reset the selection
+		for(var i = 0 ; i < this.currentSelection.length ; i++){
+			this.currentSelection[i].highlighted = false;
+		}
+		this.currentSelection = [];
+	}
+
+	if(this.currentHandle){
+		// Let's highlight that element
+		if(this.currentSelection.indexOf(this.currentHandle.element) === -1){
+			this.currentSelection.push(this.currentHandle.element);
+			this.currentHandle.element.highlighted = true;
+			this.dispatch('selectionchange', { selection: this.currentSelection });
+		}
+		
+		var repr = this.currentHandle.element.getRepresentation();
+		if(this.currentHandle === repr.moveHandle){
+			this.currentSelection.forEach(function(element){
+				var repr = element.getRepresentation();
+				if(repr && repr.moveHandle){
+					repr.moveHandle.dragStart(x, y);
+				}
+			});
+			this.currentHandle = null;
+		}else{
+			this.currentHandle.dragStart(x, y);
+		}
+	}else{
+		// No handle, let's do selection mode
+		this.selectionStart = { x: x, y: y };
+		this.selectionEnd = { x: x, y: y };
+	}
+	
+	this.currentPosition = {x: x, y: y};
+	this.mouseMoved = false;
+};
+
+dia.SelectionTool.prototype.mouseMove = function(sheet, x, y){
+	var tool = this;
+	if(this.down){
+		if(this.selectionStart){
+			this.selectionEnd = { x: x, y: y };
+
+			this.dispatch('selectionmove');
+		}else if(this.currentHandle){
+			this.currentHandle.dragMove(
+				x - this.currentPosition.x,
+				y - this.currentPosition.y,
+				x,
+				y
+			);
+		}else{
+			this.currentSelection.forEach(function(element){
+				var repr = element.getRepresentation();
+				if(repr && repr.moveHandle){
+					repr.moveHandle.dragMove(
+						x - tool.currentPosition.x,
+						y - tool.currentPosition.y,
+						x,
+						y
+					);
+				}
+			});
+		}
+	}
+	
+	this.currentPosition = {x: x, y: y};
+	
+	// Cancel click
+	this.mouseMoved = true;
+	this.clickCount = 0;
+};
+
+dia.SelectionTool.prototype.mouseUp = function(sheet, x, y){
+	this.down = false;
+	
+	if(this.selectionStart){
+		// If we were selection, let's apply that selection
+		var tool = this;
+		var area = new dia.RectangleArea({
+			x: function(){ return tool.selectionStart.x; },
+			y: function(){ return tool.selectionStart.y; },
+			width: function(){ return tool.selectionEnd.x - tool.selectionStart.x; },
+			height: function(){ return tool.selectionEnd.y - tool.selectionStart.y; }
+		});
+		
+		for(var i = 0 ; i < this.currentSelection.length ; i++){
+			this.currentSelection[i].highlighted = false;
+		}
+
+		this.currentSelection = [];
+
+		for(var i in sheet.elements){
+			if(sheet.elements[i].isContainedIn(area)){
+				this.currentSelection.push(sheet.elements[i]);
+				sheet.elements[i].highlighted = true;
+			}
+		}
+	
+		this.selectionStart = null;
+		this.dispatch('selectionchange', { selection: this.currentSelection });
+	}else if(this.currentHandle){
+		this.currentHandle.dragDrop(this.currentPosition.x, this.currentPosition.y);
+	}else{
+		this.currentSelection.forEach(function(element){
+			var repr = element.getRepresentation();
+			if(repr && repr.moveHandle){
+				repr.moveHandle.dragDrop(
+					x,
+					y
+				);
+			}
+		});
+	}
+	
+	if(!this.mouseMoved){
+		if(!this.previousClick 
+		   || x === this.previousClick.x
+		   && y === this.previousClick.y
+		   && Date.now() - this.previousClick.time < 500){
+
+			this.clickCount++;
+		}else{
+			this.clickCount = 1;
+		}
+		
+		this.previousClick = {
+			x: x,
+			y: y,
+			time: Date.now()
+		};
+		this.dispatch('click', {
+			clickCount: this.clickCount,
+			element: (this.currentHandle ? this.currentHandle.element : this.currentSelection[0]) || null
+		});
+	}
+	
+	this.currentHandle = null;
+	this.currentPosition = {x: x, y: y};
+	this.selectionEnd = null;
+};
+
+dia.SelectionTool.prototype.keyDown = function(sheet, keyCode){
+	var moveX = 0,
+		moveY = 0;
+	switch(keyCode){
+		case 37: moveX = -1; break;
+		case 38: moveY = -1; break;
+		case 39: moveX = 1; break;
+		case 40: moveY = 1; break;
+		case 17:
+		case 91:
+			this.multipleKeyDown = true;
+			break;
+	}
+	
+	if(moveX || moveY){
+		moveX *= 10;
+		moveY *= 10;
+		
+		this.currentSelection.forEach(function(element){
+			var repr = element.getRepresentation();
+			if(repr && repr.moveHandle){
+				repr.moveHandle.dragStart(0, 0);
+				repr.moveHandle.dragMove(moveX, moveY);
+				repr.moveHandle.dragDrop(0, 0);
+			}
+		});
+	}
+};
+
+dia.SelectionTool.prototype.keyUp = function(sheet, keyCode){
+	if(keyCode === 8){
+		this.currentSelection.forEach(function(element){
+			element.remove();
+		});
+	}else if(keyCode === 91 || keyCode === 17){
+		this.multipleKeyDown = false;
+	}
+};
+
+dia.SelectionTool.prototype.getRenderable = function(){
+	return new dia.Renderable(function(c){
+		if(this.selectionStart){
+			c.strokeStyle = 'black';
+			c.strokeRect(
+				this.selectionStart.x + .5,
+				this.selectionStart.y + .5,
+				this.selectionEnd.x - this.selectionStart.x,
+				this.selectionEnd.y - this.selectionStart.y
+			)
+		}
+	}.bind(this));
+};
+
+dia.Guide = function(){
+	this.type = null;
+};
+
+dia.Guide.prototype.shouldSnap = function(otherGuide, delta){
+	return false;
+};
+
+dia.Guide.prototype.render = function(c, otherGuide){
+	
+};
+
+dia.Guide.prototype.snap = function(guide){
+	
+};
+
+dia.HorizontalGuide = function(options){
+	dia.Guide.call(this);
+	
+	this.type = 'horizontal';
+	
+	this.element = options.element;
+	this.getX = options.x;
+	this.getY = options.y;
+	this.getOffset = options.offset || function(){ return 0; };
+};
+
+extend(dia.HorizontalGuide, dia.Guide);
+
+dia.HorizontalGuide.prototype.shouldSnap = function(guide, delta){
+	delta = delta || 5;
+	
+	return this.type === guide.type
+		&& Math.abs(this.getY() - guide.getY()) < delta;
+};
+
+dia.HorizontalGuide.prototype.render = function(c, otherGuide){
+	var myX = this.getX();
+	var otherX = otherGuide.getX();
+	
+	c.fillStyle = 'red';
+	c.fillRect(myX, this.getY(), otherX - myX, 1);
+};
+
+dia.HorizontalGuide.prototype.snap = function(guide){
+	this.element.setProperty('y', guide.getY() - this.getOffset());
+};
+
+dia.VerticalGuide = function(options){
+	dia.Guide.call(this);
+	
+	this.type = 'vertical';
+	
+	this.element = options.element;
+	this.getX = options.x;
+	this.getY = options.y;
+	this.getOffset = options.offset || function(){ return 0; };
+};
+
+extend(dia.VerticalGuide, dia.Guide);
+
+dia.VerticalGuide.prototype.shouldSnap = function(guide, delta){
+	delta = delta || 5;
+	
+	return this.type === guide.type
+		&& Math.abs(this.getX() - guide.getX()) < delta;
+};
+
+dia.VerticalGuide.prototype.render = function(c, otherGuide){
+	var myY = this.getY();
+	var otherY = otherGuide.getY();
+	
+	c.fillStyle = 'red';
+	c.fillRect(this.getX(), myY, 1, otherY - myY);
+};
+
+dia.VerticalGuide.prototype.snap = function(guide){
+	this.element.setProperty('x', guide.getX() - this.getOffset());
 };
 
 dia.generic = dia.generic || {};
