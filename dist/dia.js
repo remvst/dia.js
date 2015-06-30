@@ -3538,11 +3538,12 @@ dia.uml = dia.uml || {};
 
 dia.uml.RELATION = dia.generic.RELATION.clone({
 	id: 'uml.composition',
-	label: 'Composition relation'
+	label: 'UML relation'
 });
 
 dia.uml.RELATION.addProperty(new dia.Property({
 	id: 'type',
+	label: 'Relation type',
 	type: new dia.EnumerationDataType([
 		'relation',
 		'composition',
@@ -3555,18 +3556,21 @@ dia.uml.RELATION.addProperty(new dia.Property({
 
 dia.uml.RELATION.addProperty(new dia.Property({
 	id: 'cardinalityFrom',
+	label: 'Cardinality from',
 	type: dia.DataType.STRING,
 	default: ''
 }));
 
 dia.uml.RELATION.addProperty(new dia.Property({
 	id: 'cardinalityTo',
+	label: 'Cardinality to',
 	type: dia.DataType.STRING,
 	default: ''
 }));
 
 dia.uml.RELATION.addProperty(new dia.Property({
 	id: 'label',
+	label: 'Relation label',
 	type: dia.DataType.STRING,
 	default: ''
 }));
