@@ -22,11 +22,6 @@ module.exports = function(grunt) {
 
 					'src/dia/graphic/GraphicalRepresentation.js',
 					'src/dia/graphic/Renderable.js',
-					'src/dia/graphic/Primitive.js',
-					'src/dia/graphic/RectanglePrimitive.js',
-					'src/dia/graphic/LinePrimitive.js',
-					'src/dia/graphic/BrokenLinePrimitive.js',
-					'src/dia/graphic/TextPrimitive.js',
 
 					'src/dia/handle/DragHandle.js',
 					'src/dia/handle/MoveElementDragHandle.js',
