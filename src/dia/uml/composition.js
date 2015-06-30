@@ -17,6 +17,12 @@ dia.uml.COMPOSITION.addProperty(new dia.Property({
 	default: '*'
 }));
 
+dia.uml.COMPOSITION.addProperty(new dia.Property({
+	id: 'label',
+	type: dia.DataType.STRING,
+	default: 'contains'
+}));
+
 dia.uml.COMPOSITION.extendRepresentationFactory(function(element, repr){
 	repr.getPoints = function(){
 		return [repr.fromPosition()].concat(element.getProperty('points')).concat([repr.toPosition()]);
@@ -72,5 +78,12 @@ dia.uml.COMPOSITION.extendRepresentationFactory(function(element, repr){
 		c.textAlign = 'center';
 		c.textBaseline = 'middle';
 		c.fillText(element.getProperty('cardinalityTo'), toLabelPosition.x, toLabelPosition.y);
+
+		var middlePosition = repr.area.getPositionAtRatio(.5);
+		var labelPosition = {
+			x: middlePosition.x + Math.cos(middlePosition.angle + Math.PI / 2) * 20,
+			y: middlePosition.y + Math.sin(middlePosition.angle + Math.PI / 2) * 20
+		}
+		c.fillText(element.getProperty('label'), labelPosition.x, labelPosition.y);
 	}));
 });
