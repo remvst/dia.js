@@ -40,21 +40,7 @@ dia.generic.RELATION.addElementDependencies(function(element){
 });
 
 dia.generic.RELATION.setRepresentationFactory(function(element, repr){
-	var areaFrom = new dia.RectangleArea({
-		x: function(){ return fromPosition().x - 5 },
-		y: function(){ return fromPosition().y - 5 },
-		width: function(){ return 10; },
-		height: function(){ return 10; }
-	});
-
-	var areaTo = new dia.RectangleArea({
-		x: function(){ return toPosition().x - 5 },
-		y: function(){ return toPosition().y - 5 },
-		width: function(){ return 10; },
-		height: function(){ return 10; }
-	});
-
-	var fromPosition = function(){
+	repr.fromPosition = function(){
 		var from = element.getProperty('from');
 		var fromRepr = element.sheet.getElement(from.element).getRepresentation();
 
@@ -65,7 +51,7 @@ dia.generic.RELATION.setRepresentationFactory(function(element, repr){
 		};
 	};
 
-	var toPosition = function(){
+	repr.toPosition = function(){
 		var to = element.getProperty('to');
 		var toRepr = element.sheet.getElement(to.element).getRepresentation();
 
@@ -76,9 +62,23 @@ dia.generic.RELATION.setRepresentationFactory(function(element, repr){
 		};
 	};
 
+	repr.areaFrom = new dia.RectangleArea({
+		x: function(){ return repr.fromPosition().x - 5 },
+		y: function(){ return repr.fromPosition().y - 5 },
+		width: function(){ return 10; },
+		height: function(){ return 10; }
+	});
+
+	repr.areaTo = new dia.RectangleArea({
+		x: function(){ return repr.toPosition().x - 5 },
+		y: function(){ return repr.toPosition().y - 5 },
+		width: function(){ return 10; },
+		height: function(){ return 10; }
+	});
+
 	repr.addRenderable(new dia.Renderable(function(c){
-		var fromPos = fromPosition();
-		var toPos = toPosition();
+		var fromPos = repr.fromPosition();
+		var toPos = repr.toPosition();
 
 		c.strokeStyle = '#000';
 		c.fillStyle = '#000';
@@ -98,18 +98,20 @@ dia.generic.RELATION.setRepresentationFactory(function(element, repr){
 		c.stroke();
 	}));
 
+	repr.extension = 10;
+
 	repr.area = new dia.BrokenLineArea({
 		points: function(){
-			var from = fromPosition();
-			var to = toPosition();
-			
+			var from = repr.fromPosition();
+			var to = repr.toPosition();
+
 			var fromExtension = {
-				x: from.x + Math.cos(from.angle) * 10,
-				y: from.y + Math.sin(from.angle) * 10
+				x: from.x + Math.cos(from.angle) * repr.extension,
+				y: from.y + Math.sin(from.angle) * repr.extension
 			};
 			var toExtension = {
-				x: to.x + Math.cos(to.angle) * 10,
-				y: to.y + Math.sin(to.angle) * 10
+				x: to.x + Math.cos(to.angle) * repr.extension,
+				y: to.y + Math.sin(to.angle) * repr.extension
 			};
 
 			return [from, fromExtension].concat(element.getProperty('points')).concat([toExtension, to]);
@@ -119,12 +121,12 @@ dia.generic.RELATION.setRepresentationFactory(function(element, repr){
 	var handle = new dia.BrokenLineDragHandle(element, repr.area, 'points');
 	repr.addHandle(handle);
 
-	var fromHandle = new dia.MoveAnchorDragHandle(element, areaFrom, 'from');
+	var fromHandle = new dia.MoveAnchorDragHandle(element, repr.areaFrom, 'from');
 	repr.addHandle(fromHandle);
 
-	var toHandle = new dia.MoveAnchorDragHandle(element, areaTo, 'to');
+	var toHandle = new dia.MoveAnchorDragHandle(element, repr.areaTo, 'to');
 	repr.addHandle(toHandle);
-	
+
 	repr.moveHandle = new dia.MoveRelationDragHandle(element, repr.area, 'points');
 });
 
@@ -144,7 +146,7 @@ dia.generic.RELATION.creatorTool = new dia.CreateTool({
 		if(this.to && this.from && this.to !== this.from){
 			var fromArea = this.from.getRepresentation().area;
 			var toArea = this.to.getRepresentation().area;
-			
+
 			var fromRelativePosition = fromArea.getRelativePositionFromAbsolute(
 				this.fromPosition.x,
 				this.fromPosition.y
