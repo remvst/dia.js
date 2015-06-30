@@ -120,17 +120,21 @@ dia.generic.RELATION.setRepresentationFactory(function(element, repr){
 	repr.extension = 10;
 
 	repr.area = new dia.BrokenLineArea({
-		points: repr.getPoints
+		points: function(){
+			// No direct call, in case a subclass needs to override getPoints()
+			return repr.getPoints();
+		}
 	});
 
-	var handle = new dia.BrokenLineDragHandle(element, repr.area, 'points');
-	repr.addHandle(handle);
+	repr.mainHandle = new dia.BrokenLineDragHandle(element, repr.area, 'points');
+	repr.mainHandle.breakOffset = -1;
+	repr.addHandle(repr.mainHandle);
 
-	var fromHandle = new dia.MoveAnchorDragHandle(element, repr.areaFrom, 'from');
-	repr.addHandle(fromHandle);
+	repr.fromHandle = new dia.MoveAnchorDragHandle(element, repr.areaFrom, 'from');
+	repr.addHandle(repr.fromHandle);
 
-	var toHandle = new dia.MoveAnchorDragHandle(element, repr.areaTo, 'to');
-	repr.addHandle(toHandle);
+	repr.toHandle = new dia.MoveAnchorDragHandle(element, repr.areaTo, 'to');
+	repr.addHandle(repr.toHandle);
 
 	repr.moveHandle = new dia.MoveRelationDragHandle(element, repr.area, 'points');
 });

@@ -1045,10 +1045,11 @@ dia.MoveAnchorDragHandle.prototype.dragDrop = function(x, y){
 
 dia.BrokenLineDragHandle = function(element, area, property){
 	dia.DragHandle.call(this, element, area);
-	
+
 	this.property = property;
 	this.breakIndex = null;
 	this.modifiedPoint = null;
+	this.breakOffset = 0;
 };
 
 extend(dia.BrokenLineDragHandle, dia.DragHandle);
@@ -1056,10 +1057,10 @@ extend(dia.BrokenLineDragHandle, dia.DragHandle);
 dia.BrokenLineDragHandle.prototype.dragStart = function(x, y){
 	this.breakIndex = null;
 	this.modifiedPoint = null;
-	
+
 	// Let's find the line we should split into two
 	var index = this.area.indexOfLineThatContains(x, y);
-	
+
 	if(index !== -1){
 		var points = this.element.getProperty(this.property);
 		var point1 = points[index - 1];
@@ -1080,16 +1081,16 @@ dia.BrokenLineDragHandle.prototype.dragStart = function(x, y){
 
 dia.BrokenLineDragHandle.prototype.dragMove = function(dx, dy, x, y){
 	var points = this.element.getProperty(this.property);
-	
+
 	var newPoints = points.slice(0);
 	if(this.breakIndex !== null){
-		newPoints.splice(this.breakIndex, 0, this.modifiedPoint);
+		newPoints.splice(this.breakIndex + this.breakOffset, 0, this.modifiedPoint);
 		this.breakIndex = null;
 	}
-	
+
 	this.modifiedPoint.x = dia.snap(x, this.element.sheet.gridSize);
 	this.modifiedPoint.y = dia.snap(y, this.element.sheet.gridSize);
-	
+
 	// Update the object
 	// Copying the object is necessary to trigger property change event.
 	this.element.setProperty(this.property, newPoints);
@@ -1099,22 +1100,22 @@ dia.BrokenLineDragHandle.prototype.dragDrop = function(x, y){
 	if(!this.modifiedPoint){
 		return;
 	}
-	
+
 	var points = this.element.getProperty(this.property);
 	var modifiedIndex = points.indexOf(this.modifiedPoint);
-	
+
 	var point1 = points[modifiedIndex - 1];
 	var point2 = points[modifiedIndex + 1];
-	
+
 	var newPoints;
 	if(point1 && dia.distance(this.modifiedPoint.x, this.modifiedPoint.y, point1.x, point1.y) <= 10
 	   || point2 && dia.distance(this.modifiedPoint.x, this.modifiedPoint.y, point2.x, point2.y) <= 10){
 		var newPoints = points.slice(0);
 		newPoints.splice(modifiedIndex, 1);
-		
+
 		this.element.setProperty(this.property, newPoints);
 	}
-	
+
 	this.breakIndex = null;
 	this.modifiedPoint = null;
 };
@@ -1591,7 +1592,7 @@ dia.Area.defineIntersection('line', 'rectangle', function(line, rectangle){
 
 dia.BrokenLineArea = function(options){
 	dia.Area.call(this);
-	
+
 	this.getPoints = options.points;
 	this.thickness = options.thickness || 10;
 	this.type = 'brokenline'
@@ -1605,7 +1606,7 @@ dia.BrokenLineArea.prototype.contains = function(x, y){
 
 dia.BrokenLineArea.prototype.indexOfLineThatContains = function(x, y){
 	var points = this.getPoints(),
-		area, 
+		area,
 		minDistance,
 		dist,
 		closest = -1;
@@ -1617,7 +1618,7 @@ dia.BrokenLineArea.prototype.indexOfLineThatContains = function(x, y){
 			y2: function(){ return points[i + 1].y; },
 			thickness: this.thickness
 		});
-		
+
 		if(area.contains(x, y)){
 			dist = area.distance(x, y);
 			if(closest === -1 || dist < minDistance){
@@ -1626,7 +1627,7 @@ dia.BrokenLineArea.prototype.indexOfLineThatContains = function(x, y){
 			}
 		}
 	}
-	
+
 	return closest;
 };
 
@@ -1634,7 +1635,7 @@ dia.BrokenLineArea.prototype.render = function(c){
 	c.strokeStyle = 'red';
 	c.lineWidth = this.thickness / 4;
 	c.beginPath();
-	
+
 	var points = this.getPoints();
 	for(var i = 0 ; i < points.length ; i++){
 		c.lineTo(points[i].x, points[i].y);
@@ -1660,30 +1661,30 @@ dia.BrokenLineArea.prototype.getLength = function(){
 
 dia.BrokenLineArea.prototype.getPositionAtRatio = function(ratio){
 	ratio = dia.limit(ratio, 0, 1);
-	
+
 	var totalLength = this.getLength(),
 		expectedLength = totalLength * ratio,
 		points = this.getPoints(),
 		length = 0,
 		nextLength;
-	
+
 	for(var i = 0 ; i < points.length - 1 ; i++){
 		nextLength = length + dia.distance(
 			points[i].x, points[i].y,
 			points[i + 1].x, points[i + 1].y
 		);
-		
+
 		if(expectedLength >= length && expectedLength <= nextLength){
 			break;
 		}else{
 			length = nextLength;
 		}
 	}
-	
+
 	var segmentLength = nextLength - length,
 		distanceLeft = expectedLength - length,
 		segmentRatio = distanceLeft / segmentLength;
-	
+
 	// i = point before
 	// i + 1 = point after
 	return {
@@ -1703,12 +1704,12 @@ dia.Area.defineIntersection('line', 'brokenline', function(line, brokenLine){
 			y2: function(){ return points[i + 1].y; },
 			thickness: brokenLine.thickness
 		});
-		
+
 		if(area.intersectsWith(line)){
 			return true;
 		}
 	}
-	
+
 	return false;
 });
 
@@ -1723,12 +1724,12 @@ dia.Area.defineIntersection('rectangle', 'brokenline', function(rectangle, broke
 			y2: function(){ return points[i + 1].y; },
 			thickness: brokenLine.thickness
 		});
-		
+
 		if(area.intersectsWith(rectangle)){
 			return true;
 		}
 	}
-	
+
 	return false;
 });
 
@@ -3230,31 +3231,20 @@ dia.generic.RELATION.setRepresentationFactory(function(element, repr){
 
 	repr.area = new dia.BrokenLineArea({
 		points: function(){
-			var from = repr.fromPosition();
-			var to = repr.toPosition();
-
-			var fromExtension = {
-				x: from.x + Math.cos(from.angle) * repr.extension,
-				y: from.y + Math.sin(from.angle) * repr.extension
-			};
-			var toExtension = {
-				x: to.x + Math.cos(to.angle) * repr.extension,
-				y: to.y + Math.sin(to.angle) * repr.extension
-			};
-
-			return [from, fromExtension].concat(element.getProperty('points')).concat([toExtension, to]);
+			// No direct call, in case a subclass needs to override getPoints()
+			return repr.getPoints();
 		}
-		//points: repr.getPoints
 	});
 
-	var handle = new dia.BrokenLineDragHandle(element, repr.area, 'points');
-	repr.addHandle(handle);
+	repr.mainHandle = new dia.BrokenLineDragHandle(element, repr.area, 'points');
+	repr.mainHandle.breakOffset = -1;
+	repr.addHandle(repr.mainHandle);
 
-	var fromHandle = new dia.MoveAnchorDragHandle(element, repr.areaFrom, 'from');
-	repr.addHandle(fromHandle);
+	repr.fromHandle = new dia.MoveAnchorDragHandle(element, repr.areaFrom, 'from');
+	repr.addHandle(repr.fromHandle);
 
-	var toHandle = new dia.MoveAnchorDragHandle(element, repr.areaTo, 'to');
-	repr.addHandle(toHandle);
+	repr.toHandle = new dia.MoveAnchorDragHandle(element, repr.areaTo, 'to');
+	repr.addHandle(repr.toHandle);
 
 	repr.moveHandle = new dia.MoveRelationDragHandle(element, repr.area, 'points');
 });
@@ -3440,7 +3430,11 @@ dia.uml.COMPOSITION = dia.generic.RELATION.clone({
 });
 
 dia.uml.COMPOSITION.extendRepresentationFactory(function(element, repr){
-	repr.extension = 0;
+	repr.getPoints = function(){
+		return [repr.fromPosition()].concat(element.getProperty('points')).concat([repr.toPosition()]);
+	};
+
+	repr.mainHandle.breakOffset = 0;
 
 	repr.addRenderable(new dia.Renderable(function(c){
 		var points = repr.getPoints();

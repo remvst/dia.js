@@ -6,7 +6,11 @@ dia.uml.COMPOSITION = dia.generic.RELATION.clone({
 });
 
 dia.uml.COMPOSITION.extendRepresentationFactory(function(element, repr){
-	repr.extension = 0;
+	repr.getPoints = function(){
+		return [repr.fromPosition()].concat(element.getProperty('points')).concat([repr.toPosition()]);
+	};
+
+	repr.mainHandle.breakOffset = 0;
 
 	repr.addRenderable(new dia.Renderable(function(c){
 		var points = repr.getPoints();
