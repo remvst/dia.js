@@ -1,10 +1,10 @@
 dia.Element = function(type){
 	dia.EventDispatcher.call(this);
-	
+
 	if(!type){
 		throw new Error('Cannot initialize element without a type.');
 	}
-	
+
 	this.id = dia.uuid4();
 	this.sheet = null;
 	this.type = type;
@@ -34,15 +34,15 @@ dia.Element.prototype.setProperty = function(id, newValue){
 		property = this.type.getProperty(id);
 	if(property){
 		oldValue = this.properties[id];
-		
+
 		if(newValue !== oldValue){
 			if(!property.type.validate(newValue)){
 				throw new Error('Validation error: Property ' + id + ' cannot have value ' + newValue);
 			}
-			
+
 			oldValue = this.properties[id];
 			this.properties[id] = newValue;
-			
+
 			this.dispatch('propertychange', {
 				element: this,
 				property: property,
@@ -63,7 +63,7 @@ dia.Element.prototype.toJSON = function(){
 		property = this.type.getProperty(id);
 		properties[id] = property.type.toJSON(this.properties[id]);
 	}
-	
+
 	return {
 		type: this.type.id,
 		id: this.id,
@@ -94,7 +94,7 @@ dia.Element.prototype.isContainedIn = function(rectangleArea){
 dia.Element.prototype.installDependencies = function(){
 	if(this.sheet){
 		this.sheet.clearDependencies(this.id);
-		
+
 		var dependencies = this.type.getElementDependencies(this);
 		for(var i = 0 ; i < dependencies.length ; i++){
 			this.sheet.addDependency(this.id, dependencies[i]);
@@ -102,14 +102,22 @@ dia.Element.prototype.installDependencies = function(){
 	}
 };
 
+dia.Element.prototype.execute = function(functionId){
+	var fn = this.type.getFunction(functionId);
+	if(!fn){
+		throw new Error('Function ' + functionId + ' does not seem to exist.');
+	}
+	fn.apply(this);
+};
+
 dia.Element.fromJSON = function(json){
 	var type = dia.ElementType.lookupType(json.type);
 	if(type === null){
 		throw new Error('Type could not be found');
 	}
-	
+
 	var element = type.create(json.properties);
 	element.id = json.id;
-	
+
 	return element;
 };
