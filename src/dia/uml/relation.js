@@ -2,7 +2,8 @@ dia.uml = dia.uml || {};
 
 dia.uml.RELATION = dia.generic.RELATION.clone({
 	id: 'uml.composition',
-	label: 'UML relation'
+	label: 'UML relation',
+	layer: 0
 });
 
 dia.uml.RELATION.addProperty(new dia.Property({

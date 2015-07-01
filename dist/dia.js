@@ -74,9 +74,14 @@ dia.EventDispatcher.prototype.dispatch = function(event, data){
 
 dia.Sheet = function(){
 	dia.EventDispatcher.call(this);
-	
+
 	this.gridSize = 10;
-	
+
+	this.layers = [];
+	for(var i = 0 ; i < 5 ; i++){
+		this.layers.push([]);
+	}
+
 	this.renderables = [];
 	this.reset();
 };
@@ -91,14 +96,15 @@ dia.Sheet.prototype.addElement = function(element){
 	element.remove();
 	this.elements.push(element);
 	element.sheet = this;
-	
+
 	this.elementsMap[element.id] = element;
-	
+	this.layers[element.type.layer].push(element);
+
 	// Dependencies
 	this.dependents[element.id] = [];
 	this.dependencies[element.id] = [];
 	element.installDependencies();
-	
+
 	this.dispatch('elementadded', { element: element });
 };
 
@@ -111,20 +117,25 @@ dia.Sheet.prototype.removeElement = function(element){
 	if(index >= 0){
 		this.elements.splice(index, 1);
 		element.sheet = null;
-		
+
 		delete this.elementsMap[element.id];
-		
+
+		var layerIndex = this.layers[element.type.layer].indexOf(element);
+		if(layerIndex >= 0){
+			this.layers[element.type.layer].splice(layerIndex, 1);
+		}
+
 		this.dispatch('elementremoved', { element: element });
-		
+
 		// Removing elements that depend on the one being removed
 		var dependents = this.dependents[element.id].slice(0);
 		for(var i = 0 ; i < dependents.length ; i++){
 			this.removeElement(this.getElement(dependents[i]));
 		}
-		
+
 		// Clearing the current element's dependencies
 		this.clearDependencies(element.id);
-		
+
 		delete this.dependents[element.id];
 		delete this.dependencies[element.id];
 	}
@@ -134,9 +145,9 @@ dia.Sheet.prototype.addRenderable = function(r){
 	if(this.renderables.indexOf(r) >= 0){
 		return;
 	}
-	
+
 	this.renderables.push(r);
-	
+
 	this.dispatch('renderableadded', { renderable: r });
 };
 
@@ -149,10 +160,12 @@ dia.Sheet.prototype.removeRenderable = function(r){
 };
 
 dia.Sheet.prototype.render = function(ctx){
-	for(var i = 0 ; i < this.elements.length ; i++){
-		this.elements[i].render(ctx);
+	for(var i = 0 ; i < this.layers.length ; i++){
+		for(var j = 0 ; j < this.layers[i].length ; j++){
+			this.layers[i][j].render(ctx);
+		}
 	}
-	
+
 	for(var i = 0 ; i < this.renderables.length ; i++){
 		this.renderables[i].render(ctx);
 	}
@@ -207,7 +220,7 @@ dia.Sheet.prototype.addDependency = function(dependentId, dependencyId){
 		this.dependencies[dependentId] = [];
 	}
 	this.dependencies[dependentId].push(dependencyId);
-	
+
 	if(!this.dependents[dependencyId]){
 		this.dependents[dependencyId] = [];
 	}
@@ -218,7 +231,7 @@ dia.Sheet.prototype.clearDependencies = function(dependentId){
 	if(!this.dependencies[dependentId]){
 		return;
 	}
-	
+
 	var dependents,
 		index;
 	for(var i = 0 ; i < this.dependencies[dependentId].length ; i++){
@@ -230,7 +243,7 @@ dia.Sheet.prototype.clearDependencies = function(dependentId){
 			}
 		}
 	}
-	
+
 	this.dependencies[dependentId] = [];
 };
 
@@ -248,13 +261,13 @@ dia.Sheet.fromJSON = function(json){
 	sheet.title = json.title || sheet.title;
 	sheet.id = json.id || sheet.id;
 	sheet.gridSize = json.gridSize || sheet.gridSize;
-	
+
 	var element;
 	for(var i = 0 ; i < json.elements.length ; i++){
 		element = dia.Element.fromJSON(json.elements[i]);
 		sheet.addElement(element);
 	}
-	
+
 	return sheet;
 };
 
@@ -395,6 +408,7 @@ dia.ElementType = function(options){
 	this.dependencyFunctions = [];
 	this.functions = [];
 	this.functionMap = {};
+	this.layer = 'layer' in options ? options.layer : 2;
 
 	if(this.id){
 		dia.ElementType.register(this);
@@ -457,7 +471,8 @@ dia.ElementType.prototype.clone = function(options){
 	var type = new dia.ElementType({
 		id: options.id || this.id,
 		label: options.label || this.label,
-		anchorable: 'anchorable' in options ? options.anchorable : this.anchorable
+		anchorable: 'anchorable' in options ? options.anchorable : this.anchorable,
+		layer: 'layer' in options ? options.layer : this.layer
 	});
 	type.representationFactory = this.representationFactory;
 
@@ -3377,7 +3392,8 @@ dia.uml = dia.uml || {};
 
 dia.uml.CLASS = new dia.ElementType({
 	id: 'uml.class',
-	label: 'Class'
+	label: 'Class',
+	layer: 2
 });
 dia.uml.CLASS.addProperty(new dia.Property({
 	id: 'x',
@@ -3598,7 +3614,8 @@ dia.uml = dia.uml || {};
 
 dia.uml.RELATION = dia.generic.RELATION.clone({
 	id: 'uml.composition',
-	label: 'UML relation'
+	label: 'UML relation',
+	layer: 0
 });
 
 dia.uml.RELATION.addProperty(new dia.Property({

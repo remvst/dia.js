@@ -11,6 +11,7 @@ dia.ElementType = function(options){
 	this.dependencyFunctions = [];
 	this.functions = [];
 	this.functionMap = {};
+	this.layer = 'layer' in options ? options.layer : 2;
 
 	if(this.id){
 		dia.ElementType.register(this);
@@ -73,7 +74,8 @@ dia.ElementType.prototype.clone = function(options){
 	var type = new dia.ElementType({
 		id: options.id || this.id,
 		label: options.label || this.label,
-		anchorable: 'anchorable' in options ? options.anchorable : this.anchorable
+		anchorable: 'anchorable' in options ? options.anchorable : this.anchorable,
+		layer: 'layer' in options ? options.layer : this.layer
 	});
 	type.representationFactory = this.representationFactory;
 

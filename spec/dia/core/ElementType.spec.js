@@ -7,18 +7,21 @@ describe('an element type', function(){
 		expect(type.properties).toEqual([]);
 		expect(type.propertyMap).toEqual({});
 		expect(type.creatorTool).toBe(null);
+		expect(type.layer).toBe(2);
 	});
 
 	it('is initialized correctly with options', function(){
 		var type = new dia.ElementType({
 			id: 'mytype',
-			label: 'mylabel'
+			label: 'mylabel',
+			layer: 3
 		});
 
 		expect(type.id).toEqual('mytype');
 		expect(type.label).toEqual('mylabel');
 		expect(type.properties).toEqual([]);
 		expect(type.propertyMap).toEqual({});
+		expect(type.layer).toBe(3);
 	});
 
 	it('can have properties', function(){

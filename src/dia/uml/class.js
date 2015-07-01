@@ -2,7 +2,8 @@ dia.uml = dia.uml || {};
 
 dia.uml.CLASS = new dia.ElementType({
 	id: 'uml.class',
-	label: 'Class'
+	label: 'Class',
+	layer: 2
 });
 dia.uml.CLASS.addProperty(new dia.Property({
 	id: 'x',
