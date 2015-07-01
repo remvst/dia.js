@@ -9,6 +9,7 @@ dia.ElementType = function(options){
 	this.creatorTool = null;
 	this.anchorable = 'anchorable' in options ? options.anchorable : true;
 	this.dependencyFunctions = [];
+	this.functionMap = {};
 
 	if(this.id){
 		dia.ElementType.register(this);
@@ -89,6 +90,10 @@ dia.ElementType.prototype.clone = function(options){
 		type.addElementDependencies(this.dependencyFunctions[i]);
 	}
 
+	for(var key in this.functionMap){
+		type.addFunction(this.functionMap[key]);
+	}
+
 	return type;
 };
 
@@ -106,6 +111,14 @@ dia.ElementType.prototype.getElementDependencies = function(element){
 		res = res.concat(this.dependencyFunctions[i].call(this, element));
 	}
 	return res;
+};
+
+dia.ElementType.prototype.addFunction = function(func){
+	this.functionMap[func.id] = func;
+};
+
+dia.ElementType.prototype.getFunction = function(id){
+	return this.functionMap[id] || null;
 };
 
 dia.ElementType.register = function(type){

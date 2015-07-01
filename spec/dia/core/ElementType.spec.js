@@ -152,6 +152,10 @@ describe('an element type', function(){
 		type.addElementDependencies(function(){
 			return [];
 		});
+		type.addFunction(new dia.ElementTypeFunction({
+			id: 'someid',
+			apply: new Function()
+		}));
 
 		var clone = type.clone({
 			id: 'otherid'
@@ -169,6 +173,8 @@ describe('an element type', function(){
 		expect(clone.creatorTool.type).toBe(clone);
 		expect(clone.dependencyFunctions).not.toBe(type.dependencyFunctions);
 		expect(clone.dependencyFunctions).toEqual(type.dependencyFunctions);
+		expect(clone.functionMap).not.toBe(type.functionMap);
+		expect(clone.getFunction('someid')).toBeTruthy();
 	});
 
 	it('can specify element dependencies', function(){
@@ -187,5 +193,17 @@ describe('an element type', function(){
 		var element = type.emptyElement();
 
 		expect(type.getElementDependencies(element)).toEqual(['foo', 'bar', 'yolo']);
+	});
+
+	it('can have functions', function(){
+		var type = new dia.ElementType();
+
+		var fn = new dia.ElementTypeFunction({
+			id: 'someid',
+			apply: new Function()
+		});
+
+		type.addFunction(fn);
+		expect(type.getFunction('someid')).toBe(fn);
 	});
 });

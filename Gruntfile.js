@@ -15,6 +15,7 @@ module.exports = function(grunt) {
 					'src/dia/core/Sheet.js',
 					'src/dia/core/Element.js',
 					'src/dia/core/ElementType.js',
+					'src/dia/core/ElementTypeFunction.js',
 					'src/dia/core/Property.js',
 					'src/dia/core/DataType.js',
 					'src/dia/core/ArrayDataType.js',
