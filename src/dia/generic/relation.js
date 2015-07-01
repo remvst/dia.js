@@ -201,3 +201,15 @@ dia.generic.RELATION.creatorTool = new dia.CreateTool({
 		this.from = null;
 	}
 });
+
+dia.generic.RELATION.addFunction(new dia.ElementTypeFunction({
+	id: 'invert',
+	label: 'Invert relation',
+	apply: function(element){
+		var fromProp = element.getProperty('from');
+		var toProp = element.getProperty('to');
+
+		element.setProperty('from', toProp);
+		element.setProperty('to', fromProp);
+	}
+}));

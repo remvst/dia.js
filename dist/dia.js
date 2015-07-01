@@ -393,6 +393,7 @@ dia.ElementType = function(options){
 	this.creatorTool = null;
 	this.anchorable = 'anchorable' in options ? options.anchorable : true;
 	this.dependencyFunctions = [];
+	this.functions = [];
 	this.functionMap = {};
 
 	if(this.id){
@@ -498,7 +499,12 @@ dia.ElementType.prototype.getElementDependencies = function(element){
 };
 
 dia.ElementType.prototype.addFunction = function(func){
-	this.functionMap[func.id] = func;
+	if(!this.functionMap[func.id]){
+		this.functionMap[func.id] = func;
+		this.functions.push(func);
+	}else{
+		throw new Error('Tried to add two functions with ID ' + func.id);
+	}
 };
 
 dia.ElementType.prototype.getFunction = function(id){
@@ -2346,7 +2352,7 @@ dia.ElementForm = function(element){
 	if(!element){
 		throw new Error('Cannot create ElementForm without element parameter.');
 	}
-	
+
 	this.element = element;
 	this.htmlRoot = null;
 	this.inputMap = {};
@@ -2363,40 +2369,50 @@ dia.ElementForm.prototype.getHTMLRoot = function(){
 dia.ElementForm.prototype.createHTMLRoot = function(){
 	var root = document.createElement('div'),
 		form = this;
-	
+
 	this.element.type.properties.forEach(function(property){
 		if(property.private){
 			return;
 		}
-		
+
 		var propertyRoot = document.createElement('div');
 		propertyRoot.className = 'row form-group';
-		
+
 		var labelContainer = document.createElement('div');
 		labelContainer.className = 'col-md-6';
 		propertyRoot.appendChild(labelContainer);
-		
+
 		var inputContainer = document.createElement('div');
 		inputContainer.className = 'col-md-6';
 		propertyRoot.appendChild(inputContainer);
-		
+
 		var label = document.createElement('label');
 		label.innerHTML = property.label || property.id;
 		label.title = property.description;
 		label.className = 'col-md-6';
 		labelContainer.appendChild(label);
-		
+
 		var input = property.type.createHTMLInput(form.element.getProperty(property.id));
 		inputContainer.appendChild(input);
-		
+
 		root.appendChild(propertyRoot);
-		
+
 		// Let's store the input so we can parse it later
 		form.inputMap[property.id] = input;
-		
+
 		form.validMap[property.id] = true;
 	});
-	
+
+	this.element.type.functions.forEach(function(func){
+		var btn = document.createElement('a');
+		btn.className = 'btn btn-default';
+		btn.innerHTML = func.label || func.id;
+		btn.addEventListener('click', function(){
+			func.apply(form.element);
+		}, false);
+		root.appendChild(btn);
+	});
+
 	return root;
 };
 
@@ -2404,17 +2420,17 @@ dia.ElementForm.prototype.isValid = function(){
 	if(!this.htmlRoot){
 		throw new Error('Cannot check validation form a form that was never rendered');
 	}
-	
+
 	var valid = true,
 		form = this;
 	this.element.type.properties.forEach(function(property){
 		if(property.private){
 			return;
 		}
-		
+
 		var input = form.inputMap[property.id];
 		var newValue = property.type.getValueFromHTMLInput(input);
-		
+
 		if(!property.type.validateValue(newValue)){
 			valid = false;
 			form.validMap[property.id] = false;
@@ -2422,7 +2438,7 @@ dia.ElementForm.prototype.isValid = function(){
 			form.validMap[property.id] = true;
 		}
 	});
-	
+
 	return valid;
 };
 
@@ -2430,21 +2446,21 @@ dia.ElementForm.prototype.submit = function(){
 	if(!this.htmlRoot){
 		throw new Error('Cannot submit a form that was never rendered');
 	}
-	
+
 	if(!this.isValid()){
 		throw new Error('Form is invalid. Cannot submit');
 	}
-	
+
 	var form = this;
-	
+
 	this.element.type.properties.forEach(function(property){
 		if(property.private){
 			return;
 		}
-		
+
 		var input = form.inputMap[property.id];
 		var newValue = property.type.getValueFromHTMLInput(input);
-		
+
 		form.element.setProperty(property.id, newValue);
 	});
 };
@@ -3344,6 +3360,18 @@ dia.generic.RELATION.creatorTool = new dia.CreateTool({
 		this.from = null;
 	}
 });
+
+dia.generic.RELATION.addFunction(new dia.ElementTypeFunction({
+	id: 'invert',
+	label: 'Invert relation',
+	apply: function(element){
+		var fromProp = element.getProperty('from');
+		var toProp = element.getProperty('to');
+
+		element.setProperty('from', toProp);
+		element.setProperty('to', fromProp);
+	}
+}));
 
 dia.uml = dia.uml || {};
 

@@ -9,6 +9,7 @@ dia.ElementType = function(options){
 	this.creatorTool = null;
 	this.anchorable = 'anchorable' in options ? options.anchorable : true;
 	this.dependencyFunctions = [];
+	this.functions = [];
 	this.functionMap = {};
 
 	if(this.id){
@@ -114,7 +115,12 @@ dia.ElementType.prototype.getElementDependencies = function(element){
 };
 
 dia.ElementType.prototype.addFunction = function(func){
-	this.functionMap[func.id] = func;
+	if(!this.functionMap[func.id]){
+		this.functionMap[func.id] = func;
+		this.functions.push(func);
+	}else{
+		throw new Error('Tried to add two functions with ID ' + func.id);
+	}
 };
 
 dia.ElementType.prototype.getFunction = function(id){
