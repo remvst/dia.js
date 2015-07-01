@@ -1,6 +1,6 @@
 dia.ElementType = function(options){
 	options = options || {};
-	
+
 	this.id = options.id || null;
 	this.label = options.label || null;
 	this.properties = [];
@@ -9,7 +9,7 @@ dia.ElementType = function(options){
 	this.creatorTool = null;
 	this.anchorable = 'anchorable' in options ? options.anchorable : true;
 	this.dependencyFunctions = [];
-	
+
 	if(this.id){
 		dia.ElementType.register(this);
 	}
@@ -26,7 +26,7 @@ dia.ElementType.prototype.emptyElement = function(){
 
 dia.ElementType.prototype.create = function(properties){
 	var element = new dia.Element(this);
-	
+
 	this.properties.forEach(function(p){
 		if(p.id in properties){
 			element.setProperty(p.id, properties[p.id]);
@@ -34,7 +34,7 @@ dia.ElementType.prototype.create = function(properties){
 			element.setProperty(p.id, p.default);
 		}
 	});
-	
+
 	return element;
 };
 
@@ -61,33 +61,34 @@ dia.ElementType.prototype.extendRepresentationFactory = function(extension){
 
 dia.ElementType.prototype.createRepresentation = function(element){
 	var representation = new dia.GraphicalRepresentation(element);
-	
+
 	this.representationFactory.call(this, element, representation);
-	
+
 	return representation;
 };
 
 dia.ElementType.prototype.clone = function(options){
 	var type = new dia.ElementType({
 		id: options.id || this.id,
-		label: options.label || this.label
+		label: options.label || this.label,
+		anchorable: 'anchorable' in options ? options.anchorable : this.anchorable
 	});
 	type.representationFactory = this.representationFactory;
-	
+
 	if(this.creatorTool){
 		type.creatorTool = this.creatorTool.extend({
 			type: type
 		});
 	}
-	
+
 	for(var i = 0 ; i < this.properties.length ; i++){
 		type.addProperty(this.properties[i].clone());
 	}
-	
+
 	for(var i = 0 ; i < this.dependencyFunctions.length ; i++){
 		type.addElementDependencies(this.dependencyFunctions[i]);
 	}
-	
+
 	return type;
 };
 
