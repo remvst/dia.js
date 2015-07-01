@@ -20,3 +20,10 @@ dia.snap = function(x, gridSize){
 	gridSize = Math.abs(gridSize) || 1;
 	return Math.round(x / gridSize) * gridSize;
 };
+
+dia.measureFontWidth = function(font, text){
+	var canvas = document.createElement('canvas');
+	var ctx = canvas.getContext("2d");
+	ctx.font = font;
+	return ctx.measureText(text).width;
+};

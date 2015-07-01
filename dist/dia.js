@@ -44,6 +44,13 @@ dia.snap = function(x, gridSize){
 	return Math.round(x / gridSize) * gridSize;
 };
 
+dia.measureFontWidth = function(font, text){
+	var canvas = document.createElement('canvas');
+	var ctx = canvas.getContext("2d");
+	ctx.font = font;
+	return ctx.measureText(text).width;
+};
+
 dia.EventDispatcher = function(){
 	this.listeners = {};
 };
@@ -3430,15 +3437,17 @@ dia.uml.CLASS.setRepresentationFactory(function(element, representation){
 	var lineHeight = 20;
 	var padding = 10;
 
+	var font = '10pt Courier';
+
 	var getRequiredWidth = function(){
-		var maxLength = element.getProperty('title').length;
+		var maxWidth = dia.measureFontWidth(font, element.getProperty('title'));
 		element.getProperty('attributes').forEach(function(attr){
-			maxLength = Math.max(maxLength, attr.length);
+			maxWidth = Math.max(maxWidth, dia.measureFontWidth(font, attr));
 		});
 		element.getProperty('methods').forEach(function(attr){
-			maxLength = Math.max(maxLength, attr.length);
+			maxWidth = Math.max(maxWidth, dia.measureFontWidth(font, attr));
 		});
-		return maxLength * 10 + 2 * padding;
+		return ~~maxWidth + 2 * padding;
 	};
 
 	var getRequiredHeight = function(){
@@ -3466,7 +3475,7 @@ dia.uml.CLASS.setRepresentationFactory(function(element, representation){
 		c.fillRect(width - 1, 0, 1, height);
 
 		c.textBaseline = 'middle';
-		c.font = '10pt Arial';
+		c.font = font;
 
 		c.textAlign = 'center';
 		c.fillText(element.getProperty('title'), width / 2, lineHeight / 2);
