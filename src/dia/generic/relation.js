@@ -211,5 +211,6 @@ dia.generic.RELATION.addFunction(new dia.ElementTypeFunction({
 
 		element.setProperty('from', toProp);
 		element.setProperty('to', fromProp);
+		element.setProperty('points', element.getProperty('points').slice(0).reverse())
 	}
 }));
