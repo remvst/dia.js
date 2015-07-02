@@ -214,3 +214,11 @@ dia.generic.RELATION.addFunction(new dia.ElementTypeFunction({
 		element.setProperty('points', element.getProperty('points').slice(0).reverse())
 	}
 }));
+
+dia.generic.RELATION.addFunction(new dia.ElementTypeFunction({
+	id: 'removepoints',
+	label: 'Remove all points',
+	apply: function(element){
+		element.setProperty('points', [])
+	}
+}));

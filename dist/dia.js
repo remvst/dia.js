@@ -3396,6 +3396,14 @@ dia.generic.RELATION.addFunction(new dia.ElementTypeFunction({
 	}
 }));
 
+dia.generic.RELATION.addFunction(new dia.ElementTypeFunction({
+	id: 'removepoints',
+	label: 'Remove all points',
+	apply: function(element){
+		element.setProperty('points', [])
+	}
+}));
+
 dia.uml = dia.uml || {};
 
 dia.uml.CLASS = new dia.ElementType({
