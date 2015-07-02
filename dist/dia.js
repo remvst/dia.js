@@ -3400,7 +3400,44 @@ dia.generic.RELATION.addFunction(new dia.ElementTypeFunction({
 	id: 'removepoints',
 	label: 'Remove all points',
 	apply: function(element){
-		element.setProperty('points', [])
+		element.setProperty('points', []);
+	}
+}));
+
+dia.generic.RELATION.addFunction(new dia.ElementTypeFunction({
+	id: 'reanchor',
+	label: 'Readapt anchors',
+	apply: function(element){
+		var anchorFrom = element.getProperty('from');
+		var anchorTo = element.getProperty('to');
+
+		var fromElementId = element.getProperty('from').element;
+		var toElementId = element.getProperty('to').element;
+
+		var fromElement = element.sheet.getElement(fromElementId);
+		var toElement = element.sheet.getElement(toElementId);
+
+		var fromElementRepr = fromElement.getRepresentation();
+		var toElementRepr = toElement.getRepresentation();
+
+		var newAnchorFrom = {
+			element: anchorFrom.element,
+			x: anchorFrom.x,
+			y: anchorFrom.y,
+			angle: anchorFrom.angle
+		};
+		var newAnchorTo = {
+			element: anchorTo.element,
+			x: anchorTo.x,
+			y: anchorTo.y,
+			angle: anchorTo.angle
+		};
+
+		fromElementRepr.area.bindAnchorToBounds(newAnchorFrom);
+		toElementRepr.area.bindAnchorToBounds(newAnchorTo);
+
+		element.setProperty('from', newAnchorFrom);
+		element.setProperty('to', newAnchorTo);
 	}
 }));
 
