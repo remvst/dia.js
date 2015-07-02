@@ -416,6 +416,7 @@ dia.ElementType = function(options){
 	this.functions = [];
 	this.functionMap = {};
 	this.layer = 'layer' in options ? options.layer : 2;
+	this.setupFunctions = [];
 
 	if(this.id){
 		dia.ElementType.register(this);
@@ -434,6 +435,7 @@ dia.ElementType.prototype.emptyElement = function(){
 dia.ElementType.prototype.create = function(properties){
 	var element = new dia.Element(this);
 
+	// Setting up properties
 	this.properties.forEach(function(p){
 		if(p.id in properties){
 			element.setProperty(p.id, properties[p.id]);
@@ -441,6 +443,11 @@ dia.ElementType.prototype.create = function(properties){
 			element.setProperty(p.id, p.default);
 		}
 	});
+
+	// Executing setup functions
+	for(var i = 0 ; i < this.setupFunctions.length ; i++){
+		this.setupFunctions[i].call(this, element);
+	}
 
 	return element;
 };
@@ -497,6 +504,10 @@ dia.ElementType.prototype.clone = function(options){
 		type.addElementDependencies(this.dependencyFunctions[i]);
 	}
 
+	for(var i = 0 ; i < this.setupFunctions.length ; i++){
+		type.addSetupFunction(this.setupFunctions[i]);
+	}
+
 	for(var key in this.functionMap){
 		type.addFunction(this.functionMap[key]);
 	}
@@ -531,6 +542,10 @@ dia.ElementType.prototype.addFunction = function(func){
 
 dia.ElementType.prototype.getFunction = function(id){
 	return this.functionMap[id] || null;
+};
+
+dia.ElementType.prototype.addSetupFunction = function(f){
+	this.setupFunctions.push(f);
 };
 
 dia.ElementType.register = function(type){

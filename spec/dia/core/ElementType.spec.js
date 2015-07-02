@@ -159,6 +159,7 @@ describe('an element type', function(){
 			id: 'someid',
 			apply: new Function()
 		}));
+		type.addSetupFunction(new Function());
 
 		var clone = type.clone({
 			id: 'otherid'
@@ -178,6 +179,8 @@ describe('an element type', function(){
 		expect(clone.dependencyFunctions).toEqual(type.dependencyFunctions);
 		expect(clone.functionMap).not.toBe(type.functionMap);
 		expect(clone.getFunction('someid')).toBeTruthy();
+		expect(clone.setupFunctions).not.toBe(type.setupFunctions);
+		expect(clone.setupFunctions).toEqual(type.setupFunctions);
 	});
 
 	it('can specify element dependencies', function(){
@@ -208,5 +211,17 @@ describe('an element type', function(){
 
 		type.addFunction(fn);
 		expect(type.getFunction('someid')).toBe(fn);
+	});
+
+	it('can have element-specific setup', function(){
+		var type = new dia.ElementType();
+
+		var param;
+		type.addSetupFunction(function(p){
+			param = p;
+		});
+
+		var element = type.emptyElement();
+		expect(param).toBe(element);
 	});
 });
