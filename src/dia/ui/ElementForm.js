@@ -25,6 +25,8 @@ dia.ElementForm.prototype.createHTMLRoot = function(){
 			return;
 		}
 
+		console.log(property);
+
 		var propertyRoot = document.createElement('div');
 		propertyRoot.className = 'row form-group';
 

@@ -31,7 +31,7 @@ dia.uml.CLASS.addProperty(new dia.Property({
 }));
 dia.uml.CLASS.addProperty(new dia.Property({
 	id: 'methods',
-	type: dia.DataType.STRING_ARRAY,
+	type: dia.uml.TYPED_METHOD_ARRAY,
 	default: [],
 	label: 'Instance methods'
 }));
@@ -47,8 +47,9 @@ dia.uml.CLASS.setRepresentationFactory(function(element, representation){
 			var s = dia.uml.TYPED_ATTRIBUTE.toString(attr);
 			maxWidth = Math.max(maxWidth, dia.measureFontWidth(font, s));
 		});
-		element.getProperty('methods').forEach(function(attr){
-			maxWidth = Math.max(maxWidth, dia.measureFontWidth(font, attr));
+		element.getProperty('methods').forEach(function(method){
+			var s = dia.uml.TYPED_METHOD.toString(method);
+			maxWidth = Math.max(maxWidth, dia.measureFontWidth(font, s));
 		});
 		return ~~maxWidth + 2 * padding;
 	};
@@ -97,8 +98,12 @@ dia.uml.CLASS.setRepresentationFactory(function(element, representation){
 
 			y += lineHeight;
 		}
+		if(attrs.length === 0){
+			y += lineHeight;
+		}
 		for(var i = 0 ; i < methods.length ; i++){
-			c.fillText(methods[i], padding, y);
+			s = dia.uml.TYPED_METHOD.toString(methods[i]);
+			c.fillText(s, padding, y);
 
 			y += lineHeight;
 		}

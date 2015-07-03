@@ -2443,6 +2443,8 @@ dia.ElementForm.prototype.createHTMLRoot = function(){
 			return;
 		}
 
+		console.log(property);
+
 		var propertyRoot = document.createElement('div');
 		propertyRoot.className = 'row form-group';
 
@@ -3595,7 +3597,87 @@ dia.uml.TYPED_ATTRIBUTE = new dia.DataType({
 	}
 });
 
+dia.uml.TYPED_METHOD = new dia.DataType({
+	label: 'method',
+	validate: function(value){
+		return typeof value.name === 'string'
+			&& (value.type === null || typeof value.type === 'string')
+			&& 'length' in value.parameters;
+
+		// TODO validate parameters
+	},
+	toHTML: function(value){
+		var input = dia.DataType.STRING.createHTMLInput(this.toString(value));
+		return input;
+	},
+	fromHTML: function(html){
+		var strValue = dia.DataType.STRING.getValueFromHTMLInput(html);
+
+		var name = strValue.replace(/^([ a-z0-9_]+)\(.*\).*$/, "$1");
+		var type = strValue.replace(/^.*:?([^:]*)$/, "$1");
+
+		var lastSplitIndex = strValue.lastIndexOf(':');
+		if(lastSplitIndex === -1){
+			lastSplitIndex = strValue.length;
+		}
+
+		var before = strValue.substring(0, lastSplitIndex).trim();
+		var type = strValue.substring(lastSplitIndex + 1).trim();
+
+		// Catching the name
+		var name = before.replace(/^(.*)\(.*$/, "$1");
+
+		var paramsStr = before.replace(/^.*\((.*)\).*$/, "$1");
+
+		var paramsSplit = paramsStr.split(','),
+			params = [];
+		for(var i = 0 ; i < paramsSplit.length ; i++){
+			split = paramsSplit[i].split(':');
+
+			before = split[0].trim();
+			after = split[1] ? split[1].trim() : null;
+
+			params.push({
+				name: before,
+				type: after
+			})
+		}
+
+		return {
+			name: name.trim(),
+			type: type,
+			parameters: params
+		};
+	},
+	toString: function(value){
+		if(!value){
+			return '';
+		}
+
+		var attrs = [],
+			attr;
+		for(var i = 0 ; i < value.parameters.length ; i++){
+			if(value.parameters[i]){
+				attr = value.parameters[i].name;
+				if(value.parameters[i].type){
+					attr += ' : ' + value.parameters[i].type;
+				}
+				attrs.push(attr);
+			}
+		}
+
+		var s = value.name + '(' + attrs.join(', ') + ')';
+		if(value.type){
+			s += ' : ' + value.type;
+		}
+
+		console.log(value, s);
+		return s;
+	}
+});
+
 dia.uml.TYPED_ATTRIBUTE_ARRAY = new dia.ArrayDataType(dia.uml.TYPED_ATTRIBUTE);
+dia.uml.TYPED_METHOD_ARRAY = new dia.ArrayDataType(dia.uml.TYPED_METHOD);
 
 dia.uml = dia.uml || {};
 
@@ -3630,7 +3712,7 @@ dia.uml.CLASS.addProperty(new dia.Property({
 }));
 dia.uml.CLASS.addProperty(new dia.Property({
 	id: 'methods',
-	type: dia.DataType.STRING_ARRAY,
+	type: dia.uml.TYPED_METHOD_ARRAY,
 	default: [],
 	label: 'Instance methods'
 }));
@@ -3646,8 +3728,9 @@ dia.uml.CLASS.setRepresentationFactory(function(element, representation){
 			var s = dia.uml.TYPED_ATTRIBUTE.toString(attr);
 			maxWidth = Math.max(maxWidth, dia.measureFontWidth(font, s));
 		});
-		element.getProperty('methods').forEach(function(attr){
-			maxWidth = Math.max(maxWidth, dia.measureFontWidth(font, attr));
+		element.getProperty('methods').forEach(function(method){
+			var s = dia.uml.TYPED_METHOD.toString(method);
+			maxWidth = Math.max(maxWidth, dia.measureFontWidth(font, s));
 		});
 		return ~~maxWidth + 2 * padding;
 	};
@@ -3696,8 +3779,12 @@ dia.uml.CLASS.setRepresentationFactory(function(element, representation){
 
 			y += lineHeight;
 		}
+		if(attrs.length === 0){
+			y += lineHeight;
+		}
 		for(var i = 0 ; i < methods.length ; i++){
-			c.fillText(methods[i], padding, y);
+			s = dia.uml.TYPED_METHOD.toString(methods[i]);
+			c.fillText(s, padding, y);
 
 			y += lineHeight;
 		}
