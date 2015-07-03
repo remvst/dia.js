@@ -53,7 +53,11 @@ module.exports = function(grunt) {
 					'src/dia/guide/VerticalGuide.js',
 
 					'src/dia/generic/**.js',
-					'src/dia/uml/**.js'
+
+					'src/dia/uml/datatypes.js',
+					'src/dia/uml/class.js',
+					'src/dia/uml/interface.js',
+					'src/dia/uml/relation.js'
 				],
 			dest: 'dist/<%= pkg.name %>.js'
 			}

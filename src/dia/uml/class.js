@@ -25,7 +25,7 @@ dia.uml.CLASS.addProperty(new dia.Property({
 }));
 dia.uml.CLASS.addProperty(new dia.Property({
 	id: 'attributes',
-	type: dia.DataType.STRING_ARRAY,
+	type: dia.uml.TYPED_ATTRIBUTE_ARRAY,
 	default: [],
 	label: 'Instance attributes'
 }));
