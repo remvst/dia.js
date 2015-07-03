@@ -107,7 +107,7 @@ dia.uml.TYPED_METHOD = new dia.DataType({
 		if(value.type){
 			s += ' : ' + value.type;
 		}
-		
+
 		return s;
 	}
 });

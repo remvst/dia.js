@@ -41,22 +41,31 @@ dia.uml.CLASS.setRepresentationFactory(function(element, representation){
 
 	var font = '10pt Courier';
 
+	representation.cachedRequiredWidth = null;
+	representation.cachedRequiredHeight = null;
+
 	var getRequiredWidth = function(){
-		var maxWidth = dia.measureFontWidth(font, element.getProperty('title'));
-		element.getProperty('attributes').forEach(function(attr){
-			var s = dia.uml.TYPED_ATTRIBUTE.toString(attr);
-			maxWidth = Math.max(maxWidth, dia.measureFontWidth(font, s));
-		});
-		element.getProperty('methods').forEach(function(method){
-			var s = dia.uml.TYPED_METHOD.toString(method);
-			maxWidth = Math.max(maxWidth, dia.measureFontWidth(font, s));
-		});
-		return ~~maxWidth + 2 * padding;
+		if(representation.cachedRequiredWidth === null){
+			representation.cachedRequiredWidth = dia.measureFontWidth(font, element.getProperty('title'));
+			element.getProperty('attributes').forEach(function(attr){
+				var s = dia.uml.TYPED_ATTRIBUTE.toString(attr);
+				representation.cachedRequiredWidth = Math.max(representation.cachedRequiredWidth, dia.measureFontWidth(font, s));
+			});
+			element.getProperty('methods').forEach(function(method){
+				var s = dia.uml.TYPED_METHOD.toString(method);
+				representation.cachedRequiredWidth = Math.max(representation.cachedRequiredWidth, dia.measureFontWidth(font, s));
+			});
+			representation.cachedRequiredWidth = ~~(representation.cachedRequiredWidth + 2 * padding);
+		}
+		return representation.cachedRequiredWidth;
 	};
 
 	var getRequiredHeight = function(){
-		return lineHeight * (1 + Math.max(1, element.getProperty('methods').length)
-							 + Math.max(1, element.getProperty('attributes').length));
+		if(representation.cachedRequiredHeight === null){
+			representation.cachedRequiredHeight = lineHeight * (1 + Math.max(1, element.getProperty('methods').length)
+							 					+ Math.max(1, element.getProperty('attributes').length));
+		}
+		return representation.cachedRequiredHeight;
 	};
 
 	representation.addRenderable(new dia.Renderable(function(c){
@@ -132,4 +141,14 @@ dia.uml.CLASS.creatorTool = new dia.CreateTool({
 
 		this.dispatch('elementcreated');
 	}
+});
+
+dia.uml.CLASS.addSetupFunction(function(element){
+	element.listen('propertychange', function(e){
+		if(e.property.id === 'attributes' || e.property.id === 'methods' || e.property.id === 'title'){
+			var repr = element.getRepresentation();
+			repr.cachedRequiredWidth = null;
+			repr.cachedRequiredHeight = null;
+		}
+	});
 });
