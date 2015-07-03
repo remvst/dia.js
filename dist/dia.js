@@ -113,6 +113,7 @@ dia.Sheet.prototype.addElement = function(element){
 	element.installDependencies();
 
 	this.dispatch('elementadded', { element: element });
+	element.dispatch('addedtosheet', { sheet: this });
 };
 
 dia.Sheet.prototype.removeElement = function(element){
@@ -133,6 +134,7 @@ dia.Sheet.prototype.removeElement = function(element){
 		}
 
 		this.dispatch('elementremoved', { element: element });
+		element.dispatch('removedfromsheet', { sheet: this });
 
 		// Removing elements that depend on the one being removed
 		var dependents = this.dependents[element.id].slice(0);
@@ -435,6 +437,11 @@ dia.ElementType.prototype.emptyElement = function(){
 dia.ElementType.prototype.create = function(properties){
 	var element = new dia.Element(this);
 
+	// Executing setup functions
+	for(var i = 0 ; i < this.setupFunctions.length ; i++){
+		this.setupFunctions[i].call(this, element);
+	}
+
 	// Setting up properties
 	this.properties.forEach(function(p){
 		if(p.id in properties){
@@ -443,11 +450,6 @@ dia.ElementType.prototype.create = function(properties){
 			element.setProperty(p.id, p.default);
 		}
 	});
-
-	// Executing setup functions
-	for(var i = 0 ; i < this.setupFunctions.length ; i++){
-		this.setupFunctions[i].call(this, element);
-	}
 
 	return element;
 };
@@ -3233,8 +3235,8 @@ dia.generic.RELATION.addProperty(new dia.Property({
 	id: 'from',
 	type: dia.DataType.ANCHOR,
 	private: true,
-	onChange: function(element, fromValue, toValue){
-		if(fromValue && fromValue.element !== toValue.element){
+	onChange: function(element, from, to){
+		if(from && from.element !== to.element){
 			element.installDependencies();
 		}
 	}
@@ -3243,8 +3245,8 @@ dia.generic.RELATION.addProperty(new dia.Property({
 	id: 'to',
 	type: dia.DataType.ANCHOR,
 	private: true,
-	onChange: function(element, fromValue, toValue){
-		if(fromValue && fromValue.element !== toValue.element){
+	onChange: function(element, from, to){
+		if(from && from.element !== to.element){
 			element.installDependencies();
 		}
 	}
@@ -3483,6 +3485,78 @@ dia.generic.RELATION.addFunction(new dia.ElementTypeFunction({
 		element.setProperty('to', newAnchorTo);
 	}
 }));
+
+dia.generic.RELATION.addSetupFunction(function(element){
+	var onAnchoredElementChange = function(){
+		element.execute('reanchor');
+	}.bind(element);
+
+	var listenedElement = null;
+
+	var listenToNewElement = function(){
+		ignoreListenedElement();
+
+		var anchor = element.getProperty('from');
+		if(anchor && anchor.element && element.sheet){
+			listenedElement = element.sheet.getElement(anchor.element);
+			if(listenedElement){
+				listenedElement.listen('propertychange', onAnchoredElementChange);
+			}
+		}
+	};
+
+	var ignoreListenedElement = function(){
+		if(listenedElement){
+			listenedElement.ignore('propertychange', onAnchoredElementChange);
+			listenedElement = null;
+		}
+	};
+
+	element.listen('propertychange', function(e){
+		if(e.property.id === 'from'){
+			listenToNewElement();
+		}
+	});
+
+	element.listen('addedtosheet', listenToNewElement);
+	element.listen('removedfromsheet', ignoreListenedElement);
+});
+
+dia.generic.RELATION.addSetupFunction(function(element){
+	var onAnchoredElementChange = function(){
+		element.execute('reanchor');
+	}.bind(element);
+
+	var listenedElement = null;
+
+	var listenToNewElement = function(){
+		ignoreListenedElement();
+
+		var anchor = element.getProperty('to');
+		if(anchor && anchor.element && element.sheet){
+			listenedElement = element.sheet.getElement(anchor.element);
+			if(listenedElement){
+				listenedElement.listen('propertychange', onAnchoredElementChange);
+			}
+		}
+	};
+
+	var ignoreListenedElement = function(){
+		if(listenedElement){
+			listenedElement.ignore('propertychange', onAnchoredElementChange);
+			listenedElement = null;
+		}
+	};
+
+	element.listen('propertychange', function(e){
+		if(e.property.id === 'to'){
+			listenToNewElement();
+		}
+	});
+
+	element.listen('addedtosheet', listenToNewElement);
+	element.listen('removedfromsheet', ignoreListenedElement);
+});
 
 dia.uml = dia.uml || {};
 

@@ -9,8 +9,8 @@ dia.generic.RELATION.addProperty(new dia.Property({
 	id: 'from',
 	type: dia.DataType.ANCHOR,
 	private: true,
-	onChange: function(element, fromValue, toValue){
-		if(fromValue && fromValue.element !== toValue.element){
+	onChange: function(element, from, to){
+		if(from && from.element !== to.element){
 			element.installDependencies();
 		}
 	}
@@ -19,8 +19,8 @@ dia.generic.RELATION.addProperty(new dia.Property({
 	id: 'to',
 	type: dia.DataType.ANCHOR,
 	private: true,
-	onChange: function(element, fromValue, toValue){
-		if(fromValue && fromValue.element !== toValue.element){
+	onChange: function(element, from, to){
+		if(from && from.element !== to.element){
 			element.installDependencies();
 		}
 	}
@@ -259,3 +259,75 @@ dia.generic.RELATION.addFunction(new dia.ElementTypeFunction({
 		element.setProperty('to', newAnchorTo);
 	}
 }));
+
+dia.generic.RELATION.addSetupFunction(function(element){
+	var onAnchoredElementChange = function(){
+		element.execute('reanchor');
+	}.bind(element);
+
+	var listenedElement = null;
+
+	var listenToNewElement = function(){
+		ignoreListenedElement();
+
+		var anchor = element.getProperty('from');
+		if(anchor && anchor.element && element.sheet){
+			listenedElement = element.sheet.getElement(anchor.element);
+			if(listenedElement){
+				listenedElement.listen('propertychange', onAnchoredElementChange);
+			}
+		}
+	};
+
+	var ignoreListenedElement = function(){
+		if(listenedElement){
+			listenedElement.ignore('propertychange', onAnchoredElementChange);
+			listenedElement = null;
+		}
+	};
+
+	element.listen('propertychange', function(e){
+		if(e.property.id === 'from'){
+			listenToNewElement();
+		}
+	});
+
+	element.listen('addedtosheet', listenToNewElement);
+	element.listen('removedfromsheet', ignoreListenedElement);
+});
+
+dia.generic.RELATION.addSetupFunction(function(element){
+	var onAnchoredElementChange = function(){
+		element.execute('reanchor');
+	}.bind(element);
+
+	var listenedElement = null;
+
+	var listenToNewElement = function(){
+		ignoreListenedElement();
+
+		var anchor = element.getProperty('to');
+		if(anchor && anchor.element && element.sheet){
+			listenedElement = element.sheet.getElement(anchor.element);
+			if(listenedElement){
+				listenedElement.listen('propertychange', onAnchoredElementChange);
+			}
+		}
+	};
+
+	var ignoreListenedElement = function(){
+		if(listenedElement){
+			listenedElement.ignore('propertychange', onAnchoredElementChange);
+			listenedElement = null;
+		}
+	};
+
+	element.listen('propertychange', function(e){
+		if(e.property.id === 'to'){
+			listenToNewElement();
+		}
+	});
+
+	element.listen('addedtosheet', listenToNewElement);
+	element.listen('removedfromsheet', ignoreListenedElement);
+});

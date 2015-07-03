@@ -31,9 +31,13 @@ describe('a sheet', function(){
 		var element = new dia.Element(new dia.ElementType());
 		var sheet = new dia.Sheet();
 
-		var event;
+		var event,
+			event2;
 		sheet.listen('elementadded', function(e){
 			event = e;
+		});
+		element.listen('addedtosheet', function(e){
+			event2 = e;
 		});
 
 		sheet.addElement(element);
@@ -42,15 +46,21 @@ describe('a sheet', function(){
 		expect(sheet.elements).toEqual([element]);
 		expect(element.sheet).toBe(sheet);
 		expect(event.element).toBe(element);
+
+		expect(event2.sheet).toBe(sheet);
 	});
 
 	it('can remove an element', function(){
 		var element = new dia.Element(new dia.ElementType());
 		var sheet = new dia.Sheet();
 
-		var event;
+		var event,
+			event2;
 		sheet.listen('elementremoved', function(e){
 			event = e;
+		});
+		element.listen('removedfromsheet', function(e){
+			event2 = e;
 		});
 
 		sheet.addElement(element);
@@ -59,6 +69,8 @@ describe('a sheet', function(){
 		expect(sheet.elements).toEqual([]);
 		expect(element.sheet).toBe(null);
 		expect(event.element).toBe(element);
+
+		expect(event2.sheet).toBe(sheet);
 	});
 
 	it('does not remove anything if the element is not in the sheet', function(){

@@ -31,6 +31,11 @@ dia.ElementType.prototype.emptyElement = function(){
 dia.ElementType.prototype.create = function(properties){
 	var element = new dia.Element(this);
 
+	// Executing setup functions
+	for(var i = 0 ; i < this.setupFunctions.length ; i++){
+		this.setupFunctions[i].call(this, element);
+	}
+
 	// Setting up properties
 	this.properties.forEach(function(p){
 		if(p.id in properties){
@@ -39,11 +44,6 @@ dia.ElementType.prototype.create = function(properties){
 			element.setProperty(p.id, p.default);
 		}
 	});
-
-	// Executing setup functions
-	for(var i = 0 ; i < this.setupFunctions.length ; i++){
-		this.setupFunctions[i].call(this, element);
-	}
 
 	return element;
 };

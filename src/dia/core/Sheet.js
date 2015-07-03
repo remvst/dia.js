@@ -32,6 +32,7 @@ dia.Sheet.prototype.addElement = function(element){
 	element.installDependencies();
 
 	this.dispatch('elementadded', { element: element });
+	element.dispatch('addedtosheet', { sheet: this });
 };
 
 dia.Sheet.prototype.removeElement = function(element){
@@ -52,6 +53,7 @@ dia.Sheet.prototype.removeElement = function(element){
 		}
 
 		this.dispatch('elementremoved', { element: element });
+		element.dispatch('removedfromsheet', { sheet: this });
 
 		// Removing elements that depend on the one being removed
 		var dependents = this.dependents[element.id].slice(0);
