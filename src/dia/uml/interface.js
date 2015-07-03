@@ -2,7 +2,8 @@ dia.uml = dia.uml || {};
 
 dia.uml.INTERFACE = new dia.ElementType({
 	id: 'uml.interface',
-	label: 'Interface'
+	label: 'Interface',
+	layer: 2
 });
 dia.uml.INTERFACE.addProperty(new dia.Property({
 	id: 'x',
@@ -24,7 +25,7 @@ dia.uml.INTERFACE.addProperty(new dia.Property({
 }));
 dia.uml.INTERFACE.addProperty(new dia.Property({
 	id: 'methods',
-	type: dia.DataType.STRING_ARRAY,
+	type: dia.uml.TYPED_METHOD_ARRAY,
 	default: [],
 	label: 'Instance methods'
 }));
@@ -32,16 +33,29 @@ dia.uml.INTERFACE.setRepresentationFactory(function(element, representation){
 	var lineHeight = 20;
 	var padding = 10;
 
+	var font = '10pt Courier';
+
+	representation.cachedRequiredWidth = null;
+	representation.cachedRequiredHeight = null;
+
 	var getRequiredWidth = function(){
-		var maxLength = element.getProperty('title').length;
-		element.getProperty('methods').forEach(function(attr){
-			maxLength = Math.max(maxLength, attr.length);
-		});
-		return maxLength * 10 + 2 * padding;
+		if(representation.cachedRequiredWidth === null){
+			representation.cachedRequiredWidth = dia.measureFontWidth(font, element.getProperty('title'));
+			element.getProperty('methods').forEach(function(method){
+				var s = dia.uml.TYPED_METHOD.toString(method);
+				representation.cachedRequiredWidth = Math.max(representation.cachedRequiredWidth, dia.measureFontWidth(font, s));
+			});
+			representation.cachedRequiredWidth = ~~(representation.cachedRequiredWidth + 2 * padding);
+		}
+		return representation.cachedRequiredWidth;
 	};
 
 	var getRequiredHeight = function(){
-		return lineHeight * (1 + Math.max(1, element.getProperty('methods').length));
+		if(representation.cachedRequiredHeight === null){
+			representation.cachedRequiredHeight = lineHeight
+												* (1 + Math.max(1, element.getProperty('methods').length));
+		}
+		return representation.cachedRequiredHeight;
 	};
 
 	representation.addRenderable(new dia.Renderable(function(c){
@@ -63,17 +77,20 @@ dia.uml.INTERFACE.setRepresentationFactory(function(element, representation){
 		c.fillRect(width - 1, 0, 1, height);
 
 		c.textBaseline = 'middle';
-		c.font = '10pt Arial';
+		c.font = font;
 
 		c.textAlign = 'center';
 		c.fillText(element.getProperty('title'), width / 2, lineHeight / 2);
 
 		c.textAlign = 'left';
 
-		var y = 1.5 * lineHeight;
-		var lines = element.getProperty('methods');
-		for(var i = 0 ; i < lines.length ; i++){
-			c.fillText(lines[i], padding, y);
+		var y = 1.5 * lineHeight,
+			methods = element.getProperty('methods'),
+			s;
+		for(var i = 0 ; i < methods.length ; i++){
+			s = dia.uml.TYPED_METHOD.toString(methods[i]);
+			c.fillText(s, padding, y);
+
 			y += lineHeight;
 		}
 	}));
@@ -101,4 +118,14 @@ dia.uml.INTERFACE.creatorTool = new dia.CreateTool({
 
 		this.dispatch('elementcreated');
 	}
+});
+
+dia.uml.INTERFACE.addSetupFunction(function(element){
+	element.listen('propertychange', function(e){
+		if(e.property.id === 'methods' || e.property.id === 'title'){
+			var repr = element.getRepresentation();
+			repr.cachedRequiredWidth = null;
+			repr.cachedRequiredHeight = null;
+		}
+	});
 });

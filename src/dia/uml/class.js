@@ -95,10 +95,8 @@ dia.uml.CLASS.setRepresentationFactory(function(element, representation){
 
 		c.textAlign = 'left';
 
-		var y = 1.5 * lineHeight;
-		var lines = element.getProperty('attributes').concat(element.getProperty('methods'));
-
-		var attrs = element.getProperty('attributes'),
+		var y = 1.5 * lineHeight,
+			attrs = element.getProperty('attributes'),
 			methods = element.getProperty('methods'),
 			s;
 		for(var i = 0 ; i < attrs.length ; i++){
