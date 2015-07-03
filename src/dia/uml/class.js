@@ -44,7 +44,8 @@ dia.uml.CLASS.setRepresentationFactory(function(element, representation){
 	var getRequiredWidth = function(){
 		var maxWidth = dia.measureFontWidth(font, element.getProperty('title'));
 		element.getProperty('attributes').forEach(function(attr){
-			maxWidth = Math.max(maxWidth, dia.measureFontWidth(font, attr));
+			var s = dia.uml.TYPED_ATTRIBUTE.toString(attr);
+			maxWidth = Math.max(maxWidth, dia.measureFontWidth(font, s));
 		});
 		element.getProperty('methods').forEach(function(attr){
 			maxWidth = Math.max(maxWidth, dia.measureFontWidth(font, attr));
@@ -86,8 +87,19 @@ dia.uml.CLASS.setRepresentationFactory(function(element, representation){
 
 		var y = 1.5 * lineHeight;
 		var lines = element.getProperty('attributes').concat(element.getProperty('methods'));
-		for(var i = 0 ; i < lines.length ; i++){
-			c.fillText(lines[i], padding, y);
+
+		var attrs = element.getProperty('attributes'),
+			methods = element.getProperty('methods'),
+			s;
+		for(var i = 0 ; i < attrs.length ; i++){
+			s = dia.uml.TYPED_ATTRIBUTE.toString(attrs[i]);
+			c.fillText(s, padding, y);
+
+			y += lineHeight;
+		}
+		for(var i = 0 ; i < methods.length ; i++){
+			c.fillText(methods[i], padding, y);
+
 			y += lineHeight;
 		}
 	}));

@@ -4,16 +4,10 @@ dia.uml.TYPED_ATTRIBUTE = new dia.DataType({
 	label: 'attribute',
 	validate: function(value){
 		return typeof value.name === 'string'
-			&& typeof value.type === 'object';
+			&& (value.type === null || typeof value.type === 'string');
 	},
 	toHTML: function(value){
-		var input = dia.DataType.STRING.createHTMLInput('');
-		if(value){
-			input.value = value.name;
-			if(value.type){
-				input.value += ' : ' + value.type;
-			}
-		}
+		var input = dia.DataType.STRING.createHTMLInput(this.toString(value));
 		return input;
 	},
 	fromHTML: function(html){
@@ -27,6 +21,16 @@ dia.uml.TYPED_ATTRIBUTE = new dia.DataType({
 			name: before,
 			type: after
 		};
+	},
+	toString: function(value){
+		var s = '';
+		if(value){
+			s = value.name;
+			if(value.type){
+				s += ' : ' + value.type;
+			}
+		}
+		return s;
 	}
 });
 

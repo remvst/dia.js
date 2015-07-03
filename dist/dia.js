@@ -606,7 +606,7 @@ dia.Property.prototype.elementChangedValue = function(element, fromValue, toValu
 
 dia.DataType = function(options){
 	options = options || {};
-	
+
 	this.label = options.label || null;
 	this.validate = options.validate || function(){ return true; };
 	this.import = options.fromJSON || function(v){ return v; };
@@ -621,6 +621,7 @@ dia.DataType = function(options){
 	this.fromHTML = options.fromHTML || function(html){
 		return html.value;
 	};
+	this.toString = options.toString || function(v) { return v.toString(); };
 };
 
 dia.DataType.prototype.validateValue = function(value){
@@ -687,7 +688,7 @@ dia.DataType.ANCHOR = new dia.DataType({
 			&& typeof value.y === 'number'
 			&& typeof value.element === 'string'
 			&& typeof value.angle === 'number');
-		
+
 	}
 });
 
@@ -697,7 +698,7 @@ dia.DataType.POINT = new dia.DataType({
 		return !!(value
 			&& typeof value.x === 'number'
 			&& typeof value.y === 'number');
-		
+
 	}
 });
 
@@ -3563,19 +3564,11 @@ dia.uml = dia.uml || {};
 dia.uml.TYPED_ATTRIBUTE = new dia.DataType({
 	label: 'attribute',
 	validate: function(value){
-		console.log(value);
-		return true;
 		return typeof value.name === 'string'
-			&& typeof value.type === 'object';
+			&& (value.type === null || typeof value.type === 'string');
 	},
 	toHTML: function(value){
-		var input = dia.DataType.STRING.createHTMLInput('');
-		if(value){
-			input.value = value.name;
-			if(value.type){
-				input.value += ' : ' + value.type;
-			}
-		}
+		var input = dia.DataType.STRING.createHTMLInput(this.toString(value));
 		return input;
 	},
 	fromHTML: function(html){
@@ -3589,6 +3582,16 @@ dia.uml.TYPED_ATTRIBUTE = new dia.DataType({
 			name: before,
 			type: after
 		};
+	},
+	toString: function(value){
+		var s = '';
+		if(value){
+			s = value.name;
+			if(value.type){
+				s += ' : ' + value.type;
+			}
+		}
+		return s;
 	}
 });
 
@@ -3640,7 +3643,8 @@ dia.uml.CLASS.setRepresentationFactory(function(element, representation){
 	var getRequiredWidth = function(){
 		var maxWidth = dia.measureFontWidth(font, element.getProperty('title'));
 		element.getProperty('attributes').forEach(function(attr){
-			maxWidth = Math.max(maxWidth, dia.measureFontWidth(font, attr));
+			var s = dia.uml.TYPED_ATTRIBUTE.toString(attr);
+			maxWidth = Math.max(maxWidth, dia.measureFontWidth(font, s));
 		});
 		element.getProperty('methods').forEach(function(attr){
 			maxWidth = Math.max(maxWidth, dia.measureFontWidth(font, attr));
@@ -3682,8 +3686,19 @@ dia.uml.CLASS.setRepresentationFactory(function(element, representation){
 
 		var y = 1.5 * lineHeight;
 		var lines = element.getProperty('attributes').concat(element.getProperty('methods'));
-		for(var i = 0 ; i < lines.length ; i++){
-			c.fillText(lines[i], padding, y);
+
+		var attrs = element.getProperty('attributes'),
+			methods = element.getProperty('methods'),
+			s;
+		for(var i = 0 ; i < attrs.length ; i++){
+			s = dia.uml.TYPED_ATTRIBUTE.toString(attrs[i]);
+			c.fillText(s, padding, y);
+
+			y += lineHeight;
+		}
+		for(var i = 0 ; i < methods.length ; i++){
+			c.fillText(methods[i], padding, y);
+
 			y += lineHeight;
 		}
 	}));

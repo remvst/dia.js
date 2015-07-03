@@ -1,6 +1,6 @@
 dia.DataType = function(options){
 	options = options || {};
-	
+
 	this.label = options.label || null;
 	this.validate = options.validate || function(){ return true; };
 	this.import = options.fromJSON || function(v){ return v; };
@@ -15,6 +15,7 @@ dia.DataType = function(options){
 	this.fromHTML = options.fromHTML || function(html){
 		return html.value;
 	};
+	this.toString = options.toString || function(v) { return v.toString(); };
 };
 
 dia.DataType.prototype.validateValue = function(value){
@@ -81,7 +82,7 @@ dia.DataType.ANCHOR = new dia.DataType({
 			&& typeof value.y === 'number'
 			&& typeof value.element === 'string'
 			&& typeof value.angle === 'number');
-		
+
 	}
 });
 
@@ -91,6 +92,6 @@ dia.DataType.POINT = new dia.DataType({
 		return !!(value
 			&& typeof value.x === 'number'
 			&& typeof value.y === 'number');
-		
+
 	}
 });
