@@ -215,13 +215,17 @@ describe('an element type', function(){
 
 	it('can have element-specific setup', function(){
 		var type = new dia.ElementType();
+		type.addProperty(new dia.Property({
+			id: 'myprop',
+			default: 1234
+		}));
 
-		var param;
-		type.addSetupFunction(function(p){
-			param = p;
+		var prop;
+		type.addSetupFunction(function(e){
+			prop = e.getProperty('myprop');
 		});
 
 		var element = type.emptyElement();
-		expect(param).toBe(element);
+		expect(prop).toBe(undefined);
 	});
 });
