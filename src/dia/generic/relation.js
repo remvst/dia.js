@@ -244,81 +244,13 @@ dia.generic.RELATION.addFunction(new dia.ElementTypeFunction({
 }));
 
 dia.generic.RELATION.addSetupFunction(function(element){
-	var onAnchoredElementChange = function(){
-		element.execute('reanchor');
-	}.bind(element);
-
-	var listenedElement = null;
-
-	var listenToNewElement = function(){
-		ignoreListenedElement();
-
-		var anchor = element.getProperty('from');
-		if(anchor && anchor.element && element.sheet){
-			listenedElement = element.sheet.getElement(anchor.element);
-			if(listenedElement){
-				listenedElement.listen('propertychange', onAnchoredElementChange);
-			}
-		}
-	};
-
-	var ignoreListenedElement = function(){
-		if(listenedElement){
-			listenedElement.ignore('propertychange', onAnchoredElementChange);
-			listenedElement = null;
-		}
-	};
-
-	element.listen('propertychange', function(e){
-		if(e.property.id === 'from'){
-			listenToNewElement();
-		}
-	});
-
-	element.listen('addedtosheet', listenToNewElement);
-	element.listen('removedfromsheet', ignoreListenedElement);
-});
-
-dia.generic.RELATION.addSetupFunction(function(element){
-	var onAnchoredElementChange = function(){
-		element.execute('reanchor');
-	}.bind(element);
-
-	var listenedElement = null;
-
-	var listenToNewElement = function(){
-		ignoreListenedElement();
-
-		var anchor = element.getProperty('to');
-		if(anchor && anchor.element && element.sheet){
-			listenedElement = element.sheet.getElement(anchor.element);
-			if(listenedElement){
-				listenedElement.listen('propertychange', onAnchoredElementChange);
-			}
-		}
-	};
-
-	var ignoreListenedElement = function(){
-		if(listenedElement){
-			listenedElement.ignore('propertychange', onAnchoredElementChange);
-			listenedElement = null;
-		}
-	};
-
-	element.listen('propertychange', function(e){
-		if(e.property.id === 'to'){
-			listenToNewElement();
-		}
-	});
-
-	element.listen('addedtosheet', listenToNewElement);
-	element.listen('removedfromsheet', ignoreListenedElement);
-});
-
-dia.generic.RELATION.addSetupFunction(function(element){
 	var onDependencyRemoved = function(e){
 		element.remove();
 		ignore();
+	}.bind(element);
+
+	var onAnchoredElementChange = function(){
+		element.execute('reanchor');
 	}.bind(element);
 
 	var currentFrom = null,
@@ -331,8 +263,14 @@ dia.generic.RELATION.addSetupFunction(function(element){
 		if(newFrom !== currentFrom || newTo !== currentTo){
 			ignore();
 
-			if(newFrom) newFrom.listen('removedfromsheet', onDependencyRemoved);
-			if(newTo) newTo.listen('removedfromsheet', onDependencyRemoved);
+			if(newFrom){
+				newFrom.listen('removedfromsheet', onDependencyRemoved);
+				newFrom.listen('propertychange', onAnchoredElementChange);
+			}
+			if(newTo){
+				newTo.listen('removedfromsheet', onDependencyRemoved);
+				newTo.listen('propertychange', onAnchoredElementChange);
+			}
 
 			currentFrom = newFrom;
 			currentTo = newTo;
@@ -347,8 +285,14 @@ dia.generic.RELATION.addSetupFunction(function(element){
 	};
 
 	var ignore = function(){
-		if(currentFrom) currentFrom.ignore('removedfromsheet', onDependencyRemoved);
-		if(currentTo) currentTo.ignore('removedfromsheet', onDependencyRemoved);
+		if(currentFrom){
+			currentFrom.ignore('removedfromsheet', onDependencyRemoved);
+			currentFrom.ignore('propertychange', onAnchoredElementChange);
+		}
+		if(currentTo){
+			currentTo.ignore('removedfromsheet', onDependencyRemoved);
+			currentTo.ignore('propertychange', onAnchoredElementChange);
+		}
 
 		currentFrom = null;
 		currentTo = null;
