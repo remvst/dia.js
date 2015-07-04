@@ -20,7 +20,7 @@ dia.EventDispatcher.prototype.ignore = function(event, callback){
 
 dia.EventDispatcher.prototype.dispatch = function(event, data){
 	if(this.listeners[event]){
-		for(var i = 0 ; i < this.listeners[event].length ; i++){
+		for(var i = this.listeners[event].length - 1 ; i >= 0 ; i--){
 			this.listeners[event][i].call(this, data);
 		}
 	}

@@ -3,7 +3,7 @@ var dia = {};
 // https://gist.github.com/kaizhu256/2853704
 dia.uuid4 = function() {
 	return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(cc){
-		var rr = Math.random() * 16 | 0; 
+		var rr = Math.random() * 16 | 0;
 		return (cc === 'x' ? rr : (rr & 0x3 | 0x8)).toString(16);
 	});
 };
@@ -73,7 +73,7 @@ dia.EventDispatcher.prototype.ignore = function(event, callback){
 
 dia.EventDispatcher.prototype.dispatch = function(event, data){
 	if(this.listeners[event]){
-		for(var i = 0 ; i < this.listeners[event].length ; i++){
+		for(var i = this.listeners[event].length - 1 ; i >= 0 ; i--){
 			this.listeners[event][i].call(this, data);
 		}
 	}
@@ -112,8 +112,8 @@ dia.Sheet.prototype.addElement = function(element){
 	this.dependencies[element.id] = [];
 	element.installDependencies();
 
-	this.dispatch('elementadded', { element: element });
-	element.dispatch('addedtosheet', { sheet: this });
+	this.dispatch('elementadded', { sheet: this, element: element });
+	element.dispatch('addedtosheet', { sheet: this, element: element });
 };
 
 dia.Sheet.prototype.removeElement = function(element){
@@ -133,8 +133,8 @@ dia.Sheet.prototype.removeElement = function(element){
 			this.layers[element.type.layer].splice(layerIndex, 1);
 		}
 
-		this.dispatch('elementremoved', { element: element });
-		element.dispatch('removedfromsheet', { sheet: this });
+		this.dispatch('elementremoved', { sheet: this, element: element });
+		element.dispatch('removedfromsheet', { sheet: this, element: element });
 
 		// Removing elements that depend on the one being removed
 		var dependents = this.dependents[element.id].slice(0);
@@ -3235,22 +3235,12 @@ dia.generic.RELATION = new dia.ElementType({
 dia.generic.RELATION.addProperty(new dia.Property({
 	id: 'from',
 	type: dia.DataType.ANCHOR,
-	private: true,
-	onChange: function(element, from, to){
-		if(from && from.element !== to.element){
-			element.installDependencies();
-		}
-	}
+	private: true
 }));
 dia.generic.RELATION.addProperty(new dia.Property({
 	id: 'to',
 	type: dia.DataType.ANCHOR,
-	private: true,
-	onChange: function(element, from, to){
-		if(from && from.element !== to.element){
-			element.installDependencies();
-		}
-	}
+	private: true
 }));
 dia.generic.RELATION.addProperty(new dia.Property({
 	id: 'points',
@@ -3258,13 +3248,6 @@ dia.generic.RELATION.addProperty(new dia.Property({
 	private: true,
 	default: []
 }));
-
-dia.generic.RELATION.addElementDependencies(function(element){
-	return [
-		element.getProperty('from').element,
-	   	element.getProperty('to').element
-	];
-});
 
 dia.generic.RELATION.setRepresentationFactory(function(element, repr){
 	repr.fromPosition = function(){
@@ -3557,6 +3540,55 @@ dia.generic.RELATION.addSetupFunction(function(element){
 
 	element.listen('addedtosheet', listenToNewElement);
 	element.listen('removedfromsheet', ignoreListenedElement);
+});
+
+dia.generic.RELATION.addSetupFunction(function(element){
+	var onDependencyRemoved = function(e){
+		element.remove();
+		ignore();
+	}.bind(element);
+
+	var currentFrom = null,
+		currentTo = null;
+
+	var listen = function(){
+		var newFrom = findElement('from');
+		var newTo = findElement('to');
+
+		if(newFrom !== currentFrom || newTo !== currentTo){
+			ignore();
+
+			if(newFrom) newFrom.listen('removedfromsheet', onDependencyRemoved);
+			if(newTo) newTo.listen('removedfromsheet', onDependencyRemoved);
+
+			currentFrom = newFrom;
+			currentTo = newTo;
+		}
+	};
+
+	var findElement = function(property){
+		var anchor = element.getProperty(property);
+		if(anchor && anchor.element && element.sheet){
+			return element.sheet.getElement(anchor.element);
+		}
+	};
+
+	var ignore = function(){
+		if(currentFrom) currentFrom.ignore('removedfromsheet', onDependencyRemoved);
+		if(currentTo) currentTo.ignore('removedfromsheet', onDependencyRemoved);
+
+		currentFrom = null;
+		currentTo = null;
+	};
+
+	element.listen('propertychange', function(e){
+		if(e.property.id === 'to' || e.property.id === 'from'){
+			listen();
+		}
+	});
+
+	element.listen('addedtosheet', listen);
+	element.listen('removedfromsheet', ignore);
 });
 
 dia.uml = dia.uml || {};

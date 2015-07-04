@@ -8,22 +8,12 @@ dia.generic.RELATION = new dia.ElementType({
 dia.generic.RELATION.addProperty(new dia.Property({
 	id: 'from',
 	type: dia.DataType.ANCHOR,
-	private: true,
-	onChange: function(element, from, to){
-		if(from && from.element !== to.element){
-			element.installDependencies();
-		}
-	}
+	private: true
 }));
 dia.generic.RELATION.addProperty(new dia.Property({
 	id: 'to',
 	type: dia.DataType.ANCHOR,
-	private: true,
-	onChange: function(element, from, to){
-		if(from && from.element !== to.element){
-			element.installDependencies();
-		}
-	}
+	private: true
 }));
 dia.generic.RELATION.addProperty(new dia.Property({
 	id: 'points',
@@ -31,13 +21,6 @@ dia.generic.RELATION.addProperty(new dia.Property({
 	private: true,
 	default: []
 }));
-
-dia.generic.RELATION.addElementDependencies(function(element){
-	return [
-		element.getProperty('from').element,
-	   	element.getProperty('to').element
-	];
-});
 
 dia.generic.RELATION.setRepresentationFactory(function(element, repr){
 	repr.fromPosition = function(){
@@ -330,4 +313,53 @@ dia.generic.RELATION.addSetupFunction(function(element){
 
 	element.listen('addedtosheet', listenToNewElement);
 	element.listen('removedfromsheet', ignoreListenedElement);
+});
+
+dia.generic.RELATION.addSetupFunction(function(element){
+	var onDependencyRemoved = function(e){
+		element.remove();
+		ignore();
+	}.bind(element);
+
+	var currentFrom = null,
+		currentTo = null;
+
+	var listen = function(){
+		var newFrom = findElement('from');
+		var newTo = findElement('to');
+
+		if(newFrom !== currentFrom || newTo !== currentTo){
+			ignore();
+
+			if(newFrom) newFrom.listen('removedfromsheet', onDependencyRemoved);
+			if(newTo) newTo.listen('removedfromsheet', onDependencyRemoved);
+
+			currentFrom = newFrom;
+			currentTo = newTo;
+		}
+	};
+
+	var findElement = function(property){
+		var anchor = element.getProperty(property);
+		if(anchor && anchor.element && element.sheet){
+			return element.sheet.getElement(anchor.element);
+		}
+	};
+
+	var ignore = function(){
+		if(currentFrom) currentFrom.ignore('removedfromsheet', onDependencyRemoved);
+		if(currentTo) currentTo.ignore('removedfromsheet', onDependencyRemoved);
+
+		currentFrom = null;
+		currentTo = null;
+	};
+
+	element.listen('propertychange', function(e){
+		if(e.property.id === 'to' || e.property.id === 'from'){
+			listen();
+		}
+	});
+
+	element.listen('addedtosheet', listen);
+	element.listen('removedfromsheet', ignore);
 });

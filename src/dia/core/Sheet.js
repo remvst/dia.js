@@ -31,8 +31,8 @@ dia.Sheet.prototype.addElement = function(element){
 	this.dependencies[element.id] = [];
 	element.installDependencies();
 
-	this.dispatch('elementadded', { element: element });
-	element.dispatch('addedtosheet', { sheet: this });
+	this.dispatch('elementadded', { sheet: this, element: element });
+	element.dispatch('addedtosheet', { sheet: this, element: element });
 };
 
 dia.Sheet.prototype.removeElement = function(element){
@@ -52,8 +52,8 @@ dia.Sheet.prototype.removeElement = function(element){
 			this.layers[element.type.layer].splice(layerIndex, 1);
 		}
 
-		this.dispatch('elementremoved', { element: element });
-		element.dispatch('removedfromsheet', { sheet: this });
+		this.dispatch('elementremoved', { sheet: this, element: element });
+		element.dispatch('removedfromsheet', { sheet: this, element: element });
 
 		// Removing elements that depend on the one being removed
 		var dependents = this.dependents[element.id].slice(0);
