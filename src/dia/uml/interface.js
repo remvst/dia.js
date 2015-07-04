@@ -34,6 +34,7 @@ dia.uml.INTERFACE.setRepresentationFactory(function(element, representation){
 	var padding = 10;
 
 	var font = '10pt Courier';
+	var label = '<<interface>>';
 
 	representation.cachedRequiredWidth = null;
 	representation.cachedRequiredHeight = null;
@@ -45,6 +46,7 @@ dia.uml.INTERFACE.setRepresentationFactory(function(element, representation){
 				var s = dia.uml.TYPED_METHOD.toString(method);
 				representation.cachedRequiredWidth = Math.max(representation.cachedRequiredWidth, dia.measureFontWidth(font, s));
 			});
+			representation.cachedRequiredWidth = Math.max(representation.cachedRequiredWidth, dia.measureFontWidth(font, label));
 			representation.cachedRequiredWidth = ~~(representation.cachedRequiredWidth + 2 * padding);
 		}
 		return representation.cachedRequiredWidth;
@@ -53,7 +55,7 @@ dia.uml.INTERFACE.setRepresentationFactory(function(element, representation){
 	var getRequiredHeight = function(){
 		if(representation.cachedRequiredHeight === null){
 			representation.cachedRequiredHeight = lineHeight
-												* (1 + Math.max(1, element.getProperty('methods').length));
+												* (2 + Math.max(1, element.getProperty('methods').length));
 		}
 		return representation.cachedRequiredHeight;
 	};
@@ -71,7 +73,7 @@ dia.uml.INTERFACE.setRepresentationFactory(function(element, representation){
 
 		c.fillRect(0, 0, width, 1);
 		c.fillRect(0, height - 1, width, 1);
-		c.fillRect(0, lineHeight, width, 1);
+		c.fillRect(0, lineHeight * 2, width, 1);
 
 		c.fillRect(0, 0, 1, height);
 		c.fillRect(width - 1, 0, 1, height);
@@ -80,11 +82,12 @@ dia.uml.INTERFACE.setRepresentationFactory(function(element, representation){
 		c.font = font;
 
 		c.textAlign = 'center';
-		c.fillText(element.getProperty('title'), width / 2, lineHeight / 2);
+		c.fillText(label, width / 2, lineHeight * 0.5);
+		c.fillText(element.getProperty('title'), width / 2, lineHeight * 1.5);
 
 		c.textAlign = 'left';
 
-		var y = 1.5 * lineHeight,
+		var y = 2.5 * lineHeight,
 			methods = element.getProperty('methods'),
 			s;
 		for(var i = 0 ; i < methods.length ; i++){
