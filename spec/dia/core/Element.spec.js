@@ -205,36 +205,6 @@ describe('an element', function(){
 		expect(repr.rendered).toBe(true);
 	});
 
-	it('can have dependents', function(){
-		var type = new dia.ElementType();
-
-		var element = type.emptyElement();
-		element.id = 'element';
-
-		var dep1 = type.emptyElement();
-		dep1.id = 'dep1';
-
-		var dep2 = type.emptyElement();
-		dep2.id = 'dep2';
-
-		type.addElementDependencies(function(e){
-			if(e !== element){
-				return [element.id];
-			}else{
-				return [];
-			}
-		});
-
-		var sheet = new dia.Sheet();
-		sheet.addElement(element);
-		sheet.addElement(dep1);
-		sheet.addElement(dep2);
-
-		element.remove();
-
-		expect(sheet.elements.length).toBe(0);
-	});
-
 	it('can execute type functions', function(){
 		var type = new dia.ElementType();
 		type.addProperty(new dia.Property({

@@ -91,17 +91,6 @@ dia.Element.prototype.isContainedIn = function(rectangleArea){
 	}
 };
 
-dia.Element.prototype.installDependencies = function(){
-	if(this.sheet){
-		this.sheet.clearDependencies(this.id);
-
-		var dependencies = this.type.getElementDependencies(this);
-		for(var i = 0 ; i < dependencies.length ; i++){
-			this.sheet.addDependency(this.id, dependencies[i]);
-		}
-	}
-};
-
 dia.Element.prototype.execute = function(functionId){
 	var fn = this.type.getFunction(functionId);
 	if(!fn){

@@ -26,11 +26,6 @@ dia.Sheet.prototype.addElement = function(element){
 	this.elementsMap[element.id] = element;
 	this.layers[element.type.layer].push(element);
 
-	// Dependencies
-	this.dependents[element.id] = [];
-	this.dependencies[element.id] = [];
-	element.installDependencies();
-
 	this.dispatch('elementadded', { sheet: this, element: element });
 	element.dispatch('addedtosheet', { sheet: this, element: element });
 };
@@ -54,18 +49,6 @@ dia.Sheet.prototype.removeElement = function(element){
 
 		this.dispatch('elementremoved', { sheet: this, element: element });
 		element.dispatch('removedfromsheet', { sheet: this, element: element });
-
-		// Removing elements that depend on the one being removed
-		var dependents = this.dependents[element.id].slice(0);
-		for(var i = 0 ; i < dependents.length ; i++){
-			this.removeElement(this.getElement(dependents[i]));
-		}
-
-		// Clearing the current element's dependencies
-		this.clearDependencies(element.id);
-
-		delete this.dependents[element.id];
-		delete this.dependencies[element.id];
 	}
 };
 
@@ -143,43 +126,9 @@ dia.Sheet.prototype.findHandleContaining = function(x, y){
 	return handle;
 };
 
-dia.Sheet.prototype.addDependency = function(dependentId, dependencyId){
-	if(!this.dependencies[dependentId]){
-		this.dependencies[dependentId] = [];
-	}
-	this.dependencies[dependentId].push(dependencyId);
-
-	if(!this.dependents[dependencyId]){
-		this.dependents[dependencyId] = [];
-	}
-	this.dependents[dependencyId].push(dependentId);
-};
-
-dia.Sheet.prototype.clearDependencies = function(dependentId){
-	if(!this.dependencies[dependentId]){
-		return;
-	}
-
-	var dependents,
-		index;
-	for(var i = 0 ; i < this.dependencies[dependentId].length ; i++){
-		dependents = this.dependents[this.dependencies[dependentId][i]];
-		if(dependents){
-			index = dependents.indexOf(dependentId);
-			if(index >= 0){
-				dependents.splice(index, 1);
-			}
-		}
-	}
-
-	this.dependencies[dependentId] = [];
-};
-
 dia.Sheet.prototype.reset = function(){
 	this.elements = [];
 	this.elementsMap = {};
-	this.dependencies = {};
-	this.dependents = {};
 	this.id = dia.uuid4();
 	this.title = null;
 };

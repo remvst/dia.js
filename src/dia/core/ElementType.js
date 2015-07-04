@@ -8,7 +8,6 @@ dia.ElementType = function(options){
 	this.representationFactory = function(){};
 	this.creatorTool = null;
 	this.anchorable = 'anchorable' in options ? options.anchorable : true;
-	this.dependencyFunctions = [];
 	this.functions = [];
 	this.functionMap = {};
 	this.layer = 'layer' in options ? options.layer : 2;
@@ -96,10 +95,6 @@ dia.ElementType.prototype.clone = function(options){
 		type.addProperty(this.properties[i].clone());
 	}
 
-	for(var i = 0 ; i < this.dependencyFunctions.length ; i++){
-		type.addElementDependencies(this.dependencyFunctions[i]);
-	}
-
 	for(var i = 0 ; i < this.setupFunctions.length ; i++){
 		type.addSetupFunction(this.setupFunctions[i]);
 	}
@@ -113,18 +108,6 @@ dia.ElementType.prototype.clone = function(options){
 
 dia.ElementType.prototype.isAnchorable = function(){
 	return this.anchorable;
-};
-
-dia.ElementType.prototype.addElementDependencies = function(func){
-	this.dependencyFunctions.push(func);
-};
-
-dia.ElementType.prototype.getElementDependencies = function(element){
-	var res = [];
-	for(var i = 0 ; i < this.dependencyFunctions.length ; i++){
-		res = res.concat(this.dependencyFunctions[i].call(this, element));
-	}
-	return res;
 };
 
 dia.ElementType.prototype.addFunction = function(func){
