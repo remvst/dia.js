@@ -105,8 +105,8 @@ dia.uml.INTERFACE.setRepresentationFactory(function(element, representation){
 		height: getRequiredHeight
 	});
 
-	var moveHandle = new dia.MoveElementDragHandle(element, area);
-	representation.addHandle(moveHandle);
+	representation.moveHandle = new dia.MoveElementDragHandle(element, area);
+	representation.addHandle(representation.moveHandle);
 
 	representation.area = area;
 });
