@@ -36,10 +36,10 @@ dia.uml.CLASS.addProperty(new dia.Property({
 	label: 'Instance methods'
 }));
 dia.uml.CLASS.setRepresentationFactory(function(element, representation){
-	var lineHeight = 20;
-	var padding = 10;
+	var lineHeight = 16;
+	var padding = 5;
 
-	var font = '10pt Courier';
+	var font = '8pt Courier';
 
 	representation.cachedRequiredWidth = null;
 	representation.cachedRequiredHeight = null;
