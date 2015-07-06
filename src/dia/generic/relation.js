@@ -130,7 +130,7 @@ dia.generic.RELATION.creatorTool = new dia.CreateTool({
 	type: dia.generic.RELATION,
 	mouseDown: function(sheet, x, y){
 		this.from = sheet.findElementContaining(x, y, function(element){
-			return element.type.anchorable;
+			return element.type.isAnchorable();
 		});
 
 		if(this.from){
@@ -162,7 +162,7 @@ dia.generic.RELATION.creatorTool = new dia.CreateTool({
 		if(!this.from) return;
 
 		this.to = sheet.findElementContaining(x, y, function(element){
-			return element.type.anchorable;
+			return element.type.isAnchorable();
 		});
 
 		if(this.to){
