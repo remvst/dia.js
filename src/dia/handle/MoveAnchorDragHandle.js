@@ -37,3 +37,20 @@ dia.MoveAnchorDragHandle.prototype.dragMove = function(dx, dy, x, y){
 	// Update the object
 	this.element.setProperty(this.property, newAnchor);
 };
+
+dia.MoveAnchorDragHandle.prototype.dragDrop = function(x, y){
+	var anchor = this.element.getProperty(this.property);
+	var anchoredElement = this.element.sheet.getElement(anchor.element);
+	var anchoredArea = anchoredElement.getRepresentation().area;
+
+	var newAnchor = {
+		element: anchor.element,
+		x: anchor.x,
+		y: anchor.y,
+		angle: anchor.angle
+	};
+	anchoredArea.bindAnchorToBounds(newAnchor);
+
+	// Update the object
+	this.element.setProperty(this.property, newAnchor);
+};
