@@ -129,7 +129,7 @@ dia.uml.CLASS.setRepresentationFactory(function(element, representation){
 	representation.area = area;
 });
 
-dia.uml.CLASS.creatorTool = new dia.CreateTool({
+dia.uml.CLASS.addTool(new dia.CreateTool({
 	type: dia.uml.CLASS,
 	mouseDown: function(sheet, x, y){
 		var element = this.type.emptyElement();
@@ -139,7 +139,7 @@ dia.uml.CLASS.creatorTool = new dia.CreateTool({
 
 		this.dispatch('elementcreated');
 	}
-});
+}));
 
 dia.uml.CLASS.addSetupFunction(function(element){
 	element.listen('propertychange', function(e){

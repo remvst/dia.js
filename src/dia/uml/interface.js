@@ -111,7 +111,7 @@ dia.uml.INTERFACE.setRepresentationFactory(function(element, representation){
 	representation.area = area;
 });
 
-dia.uml.INTERFACE.creatorTool = new dia.CreateTool({
+dia.uml.INTERFACE.addTool(new dia.CreateTool({
 	type: dia.uml.INTERFACE,
 	mouseDown: function(sheet, x, y){
 		var element = this.type.emptyElement();
@@ -121,7 +121,7 @@ dia.uml.INTERFACE.creatorTool = new dia.CreateTool({
 
 		this.dispatch('elementcreated');
 	}
-});
+}));
 
 dia.uml.INTERFACE.addSetupFunction(function(element){
 	element.listen('propertychange', function(e){

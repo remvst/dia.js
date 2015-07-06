@@ -73,7 +73,7 @@ dia.generic.CIRCLE.setRepresentationFactory(function(element, repr){
 		c.fillStyle = element.getProperty('backgroundColor');
 		c.strokeStyle = element.getProperty('borderColor');
 		c.lineWidth = element.getProperty('borderThickness');
-		
+
 		c.beginPath();
 		c.arc(
 			element.getProperty('x'),
@@ -85,7 +85,7 @@ dia.generic.CIRCLE.setRepresentationFactory(function(element, repr){
 		);
 		c.fill();
 		c.stroke();
-		
+
 		c.textAlign = 'center';
 		c.textBaseline = 'middle';
 		c.font = element.getProperty('fontSize') + 'pt ' + element.getProperty('fontFamily');
@@ -102,14 +102,14 @@ dia.generic.CIRCLE.setRepresentationFactory(function(element, repr){
 		y: function(){ return element.getProperty('y'); },
 		radius: function(){ return element.getProperty('radius'); }
 	});
-	
+
 	repr.guides = repr.area.getGuides(element);
 
 	repr.moveHandle = new dia.MoveElementDragHandle(element, repr.area, 'points');
 	repr.addHandle(repr.moveHandle);
 });
 
-dia.generic.CIRCLE.creatorTool = new dia.CreateTool({
+dia.generic.CIRCLE.addTool(new dia.CreateTool({
 	type: dia.generic.CIRCLE,
 	mouseDown: function(sheet, x, y){
 		var element = this.type.create({
@@ -119,4 +119,4 @@ dia.generic.CIRCLE.creatorTool = new dia.CreateTool({
 		sheet.addElement(element);
 		this.dispatch('elementcreated');
 	}
-});
+}));

@@ -126,7 +126,7 @@ dia.generic.RELATION.setRepresentationFactory(function(element, repr){
 	};
 });
 
-dia.generic.RELATION.creatorTool = new dia.CreateTool({
+dia.generic.RELATION.addTool(new dia.CreateTool({
 	type: dia.generic.RELATION,
 	mouseDown: function(sheet, x, y){
 		this.from = sheet.findElementContaining(x, y, function(element){
@@ -200,7 +200,7 @@ dia.generic.RELATION.creatorTool = new dia.CreateTool({
 		this.to = null;
 		this.dispatch('elementcreated');
 	}
-});
+}));
 
 dia.generic.RELATION.addFunction(new dia.ElementTypeFunction({
 	id: 'invert',

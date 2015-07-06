@@ -2926,7 +2926,7 @@ dia.generic.CIRCLE.setRepresentationFactory(function(element, repr){
 		c.fillStyle = element.getProperty('backgroundColor');
 		c.strokeStyle = element.getProperty('borderColor');
 		c.lineWidth = element.getProperty('borderThickness');
-		
+
 		c.beginPath();
 		c.arc(
 			element.getProperty('x'),
@@ -2938,7 +2938,7 @@ dia.generic.CIRCLE.setRepresentationFactory(function(element, repr){
 		);
 		c.fill();
 		c.stroke();
-		
+
 		c.textAlign = 'center';
 		c.textBaseline = 'middle';
 		c.font = element.getProperty('fontSize') + 'pt ' + element.getProperty('fontFamily');
@@ -2955,14 +2955,14 @@ dia.generic.CIRCLE.setRepresentationFactory(function(element, repr){
 		y: function(){ return element.getProperty('y'); },
 		radius: function(){ return element.getProperty('radius'); }
 	});
-	
+
 	repr.guides = repr.area.getGuides(element);
 
 	repr.moveHandle = new dia.MoveElementDragHandle(element, repr.area, 'points');
 	repr.addHandle(repr.moveHandle);
 });
 
-dia.generic.CIRCLE.creatorTool = new dia.CreateTool({
+dia.generic.CIRCLE.addTool(new dia.CreateTool({
 	type: dia.generic.CIRCLE,
 	mouseDown: function(sheet, x, y){
 		var element = this.type.create({
@@ -2972,7 +2972,7 @@ dia.generic.CIRCLE.creatorTool = new dia.CreateTool({
 		sheet.addElement(element);
 		this.dispatch('elementcreated');
 	}
-});
+}));
 
 dia.generic = dia.generic || {};
 
@@ -3060,7 +3060,7 @@ dia.generic.RECTANGLE.setRepresentationFactory(function(element, repr){
 			element.getProperty('width'),
 			element.getProperty('height')
 		);
-		
+
 		c.strokeStyle = element.getProperty('borderColor');
 		c.lineWidth = element.getProperty('borderThickness');
 		c.strokeRect(
@@ -3069,7 +3069,7 @@ dia.generic.RECTANGLE.setRepresentationFactory(function(element, repr){
 			element.getProperty('width'),
 			element.getProperty('height')
 		);
-		
+
 		c.textAlign = 'center';
 		c.textBaseline = 'middle';
 		c.font = element.getProperty('fontSize') + 'pt ' + element.getProperty('fontFamily');
@@ -3087,12 +3087,12 @@ dia.generic.RECTANGLE.setRepresentationFactory(function(element, repr){
 		width: function(){ return element.getProperty('width'); },
 		height: function(){ return element.getProperty('height'); },
 	});
-	
+
 	repr.guides = repr.area.getGuides(element);
 
 	repr.moveHandle = new dia.MoveElementDragHandle(element, repr.area, 'points');
 	repr.addHandle(repr.moveHandle);
-	
+
 	var resizeBottomRightArea = new dia.RectangleArea({
 		x: function(){ return element.getProperty('x') + element.getProperty('width') - 5; },
 		y: function(){ return element.getProperty('y') + element.getProperty('height') - 5; },
@@ -3107,7 +3107,7 @@ dia.generic.RECTANGLE.setRepresentationFactory(function(element, repr){
 	};
 });
 
-dia.generic.RECTANGLE.creatorTool = new dia.CreateTool({
+dia.generic.RECTANGLE.addTool(new dia.CreateTool({
 	type: dia.generic.RECTANGLE,
 	mouseDown: function(sheet, x, y){
 		var element = this.type.create({
@@ -3119,7 +3119,7 @@ dia.generic.RECTANGLE.creatorTool = new dia.CreateTool({
 		sheet.addElement(element);
 		this.dispatch('elementcreated');
 	}
-});
+}));
 
 dia.generic = dia.generic || {};
 
@@ -3249,7 +3249,7 @@ dia.generic.RELATION.setRepresentationFactory(function(element, repr){
 	};
 });
 
-dia.generic.RELATION.creatorTool = new dia.CreateTool({
+dia.generic.RELATION.addTool(new dia.CreateTool({
 	type: dia.generic.RELATION,
 	mouseDown: function(sheet, x, y){
 		this.from = sheet.findElementContaining(x, y, function(element){
@@ -3323,7 +3323,7 @@ dia.generic.RELATION.creatorTool = new dia.CreateTool({
 		this.to = null;
 		this.dispatch('elementcreated');
 	}
-});
+}));
 
 dia.generic.RELATION.addFunction(new dia.ElementTypeFunction({
 	id: 'invert',
@@ -3696,7 +3696,7 @@ dia.uml.CLASS.setRepresentationFactory(function(element, representation){
 	representation.area = area;
 });
 
-dia.uml.CLASS.creatorTool = new dia.CreateTool({
+dia.uml.CLASS.addTool(new dia.CreateTool({
 	type: dia.uml.CLASS,
 	mouseDown: function(sheet, x, y){
 		var element = this.type.emptyElement();
@@ -3706,7 +3706,7 @@ dia.uml.CLASS.creatorTool = new dia.CreateTool({
 
 		this.dispatch('elementcreated');
 	}
-});
+}));
 
 dia.uml.CLASS.addSetupFunction(function(element){
 	element.listen('propertychange', function(e){
@@ -3831,7 +3831,7 @@ dia.uml.INTERFACE.setRepresentationFactory(function(element, representation){
 	representation.area = area;
 });
 
-dia.uml.INTERFACE.creatorTool = new dia.CreateTool({
+dia.uml.INTERFACE.addTool(new dia.CreateTool({
 	type: dia.uml.INTERFACE,
 	mouseDown: function(sheet, x, y){
 		var element = this.type.emptyElement();
@@ -3841,7 +3841,7 @@ dia.uml.INTERFACE.creatorTool = new dia.CreateTool({
 
 		this.dispatch('elementcreated');
 	}
-});
+}));
 
 dia.uml.INTERFACE.addSetupFunction(function(element){
 	element.listen('propertychange', function(e){

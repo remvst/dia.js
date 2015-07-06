@@ -84,7 +84,7 @@ dia.generic.RECTANGLE.setRepresentationFactory(function(element, repr){
 			element.getProperty('width'),
 			element.getProperty('height')
 		);
-		
+
 		c.strokeStyle = element.getProperty('borderColor');
 		c.lineWidth = element.getProperty('borderThickness');
 		c.strokeRect(
@@ -93,7 +93,7 @@ dia.generic.RECTANGLE.setRepresentationFactory(function(element, repr){
 			element.getProperty('width'),
 			element.getProperty('height')
 		);
-		
+
 		c.textAlign = 'center';
 		c.textBaseline = 'middle';
 		c.font = element.getProperty('fontSize') + 'pt ' + element.getProperty('fontFamily');
@@ -111,12 +111,12 @@ dia.generic.RECTANGLE.setRepresentationFactory(function(element, repr){
 		width: function(){ return element.getProperty('width'); },
 		height: function(){ return element.getProperty('height'); },
 	});
-	
+
 	repr.guides = repr.area.getGuides(element);
 
 	repr.moveHandle = new dia.MoveElementDragHandle(element, repr.area, 'points');
 	repr.addHandle(repr.moveHandle);
-	
+
 	var resizeBottomRightArea = new dia.RectangleArea({
 		x: function(){ return element.getProperty('x') + element.getProperty('width') - 5; },
 		y: function(){ return element.getProperty('y') + element.getProperty('height') - 5; },
@@ -131,7 +131,7 @@ dia.generic.RECTANGLE.setRepresentationFactory(function(element, repr){
 	};
 });
 
-dia.generic.RECTANGLE.creatorTool = new dia.CreateTool({
+dia.generic.RECTANGLE.addTool(new dia.CreateTool({
 	type: dia.generic.RECTANGLE,
 	mouseDown: function(sheet, x, y){
 		var element = this.type.create({
@@ -143,4 +143,4 @@ dia.generic.RECTANGLE.creatorTool = new dia.CreateTool({
 		sheet.addElement(element);
 		this.dispatch('elementcreated');
 	}
-});
+}));
