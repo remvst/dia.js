@@ -128,6 +128,7 @@ dia.generic.RELATION.setRepresentationFactory(function(element, repr){
 
 dia.generic.RELATION.addTool(new dia.CreateTool({
 	type: dia.generic.RELATION,
+	id: 'generic.relation.create',
 	mouseDown: function(sheet, x, y){
 		this.from = sheet.findElementContaining(x, y, function(element){
 			return element.type.isAnchorable();
@@ -191,7 +192,7 @@ dia.generic.RELATION.addTool(new dia.CreateTool({
 		this.element.setProperty('to', this.toAnchor);
 	},
 	mouseUp: function(sheet, x, y){
-		if(this.element && this.from === this.to){
+		if(this.element && (this.from === this.to || !this.to)){
 			this.element.remove();
 		}
 

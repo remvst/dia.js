@@ -3266,6 +3266,7 @@ dia.generic.RELATION.setRepresentationFactory(function(element, repr){
 
 dia.generic.RELATION.addTool(new dia.CreateTool({
 	type: dia.generic.RELATION,
+	id: 'generic.relation.create',
 	mouseDown: function(sheet, x, y){
 		this.from = sheet.findElementContaining(x, y, function(element){
 			return element.type.isAnchorable();
@@ -3329,7 +3330,7 @@ dia.generic.RELATION.addTool(new dia.CreateTool({
 		this.element.setProperty('to', this.toAnchor);
 	},
 	mouseUp: function(sheet, x, y){
-		if(this.element && this.from === this.to){
+		if(this.element && (this.from === this.to || !this.to)){
 			this.element.remove();
 		}
 
@@ -4013,4 +4014,52 @@ dia.uml.RELATION.extendRepresentationFactory(function(element, repr){
 	};
 });
 
-//dia.uml.RELATION.addTool(dia.generic.RELATION.getTool(''));
+dia.uml.RELATION.addTool(dia.generic.RELATION.getTool('generic.relation.create').extend({
+	id: 'uml.relation.create-relation',
+	type: dia.uml.RELATION,
+	label: 'UML relation'
+}));
+
+dia.uml.RELATION.addTool(dia.generic.RELATION.getTool('generic.relation.create').extend({
+	id: 'uml.relation.create-extend',
+	type: dia.uml.RELATION,
+	label: 'Inheritance',
+	mouseDown: function(){
+		if(this.element){
+			this.element.setProperty('type', 'inheritance');
+		}
+	}
+}));
+
+dia.uml.RELATION.addTool(dia.generic.RELATION.getTool('generic.relation.create').extend({
+	id: 'uml.relation.create-composition',
+	type: dia.uml.RELATION,
+	label: 'Composition',
+	mouseDown: function(){
+		if(this.element){
+			this.element.setProperty('type', 'composition');
+		}
+	}
+}));
+
+dia.uml.RELATION.addTool(dia.generic.RELATION.getTool('generic.relation.create').extend({
+	id: 'uml.relation.create-aggregation',
+	type: dia.uml.RELATION,
+	label: 'Aggregation',
+	mouseDown: function(){
+		if(this.element){
+			this.element.setProperty('type', 'aggregation');
+		}
+	}
+}));
+
+dia.uml.RELATION.addTool(dia.generic.RELATION.getTool('generic.relation.create').extend({
+	id: 'uml.relation.create-implementation',
+	type: dia.uml.RELATION,
+	label: 'Implementation',
+	mouseDown: function(){
+		if(this.element){
+			this.element.setProperty('type', 'implementation');
+		}
+	}
+}));
