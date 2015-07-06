@@ -3527,6 +3527,8 @@ dia.uml.TYPED_METHOD = new dia.DataType({
 	fromHTML: function(html){
 		var strValue = dia.DataType.STRING.getValueFromHTMLInput(html);
 
+ 		strValue = strValue.replace(/^(.*\)) *:?(.*)$/, "$1:$2");
+
 		var name = strValue.replace(/^([ a-z0-9_]+)\(.*\).*$/, "$1");
 		var type = strValue.replace(/^.*:?([^:]*)$/, "$1");
 
