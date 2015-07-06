@@ -6,7 +6,7 @@ dia.ElementType = function(options){
 	this.properties = [];
 	this.propertyMap = {};
 	this.representationFactory = function(){};
-	this.creatorTool = null;
+	this.tools = [];
 	this.anchorable = 'anchorable' in options ? options.anchorable : true;
 	this.functions = [];
 	this.functionMap = {};
@@ -125,6 +125,10 @@ dia.ElementType.prototype.getFunction = function(id){
 
 dia.ElementType.prototype.addSetupFunction = function(f){
 	this.setupFunctions.push(f);
+};
+
+dia.ElementType.prototype.addTool = function(tool){
+	this.tools.push(tool);
 };
 
 dia.ElementType.register = function(type){

@@ -6,7 +6,7 @@ describe('an element type', function(){
 		expect(type.label).toBe(null);
 		expect(type.properties).toEqual([]);
 		expect(type.propertyMap).toEqual({});
-		expect(type.creatorTool).toBe(null);
+		expect(type.tools).toEqual([]);
 		expect(type.layer).toBe(2);
 	});
 
@@ -188,6 +188,15 @@ describe('an element type', function(){
 
 		type.addFunction(fn);
 		expect(type.getFunction('someid')).toBe(fn);
+	});
+
+	it('can have tools', function(){
+		var type = new dia.ElementType();
+		var tool = new dia.Tool();
+
+		type.addTool(tool);
+
+		expect(type.tools).toEqual([tool]);
 	});
 
 	it('can have element-specific setup', function(){
