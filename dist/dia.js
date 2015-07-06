@@ -991,7 +991,7 @@ dia.MoveAnchorDragHandle.prototype.dragMove = function(dx, dy, x, y){
 		}) || anchoredElement;
 	}
 
-	var anchoredArea = anchoredElement.getRepresentation().area;
+	anchoredArea = anchoredElement.getRepresentation().area;
 	var relativePosition = anchoredArea.getRelativePositionFromAbsolute(x, y);
 
 	// Copying the object is necessary to trigger property change event.
