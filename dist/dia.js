@@ -1999,40 +1999,40 @@ dia.GUI = function(app){
 	if(!app){
 		throw new Error('Cannot instantiate GUI without an app');
 	}
-	
+
 	this.app = app;
 	this.sheet = null;
-	
+
 	this.sheetCanvases = {};
-	
+
 	this.canvas = document.getElementById('canvas');
 	this.context = this.canvas.getContext('2d');
-	
+
 	this.setupInteractionManager();
-	
+
 	var selectionTool = this.app.toolbox.getTool('select');
 	if(selectionTool){
 		selectionTool.listen('selectionmove', this.renderSheet.bind(this));
 		selectionTool.listen('selectionchange', this.renderSheet.bind(this));
 		selectionTool.listen('click', this.selectionClick.bind(this));
 	}
-	
-	// 
+
+	//
 	this.app.listen('newsheet', this.newAppSheet.bind(this));
-	
+
 	// Canvas auto-resize
 	window.addEventListener('resize', this.resizeCanvas.bind(this), false);
 	this.resizeCanvas();
-	
+
 	// UI buttons
 	var saveButton = document.getElementById('button-save-sheet');
 	var newButton = document.getElementById('button-new-sheet');
 	var loadButton = document.getElementById('button-load-sheet');
-	
+
 	if(saveButton) saveButton.addEventListener('click', this.saveSheet.bind(this), false);
 	if(newButton) newButton.addEventListener('click', this.newSheet.bind(this), false);
 	if(loadButton) loadButton.addEventListener('click', this.loadSheet.bind(this), false);
-	
+
 	this.renderToolbox();
 };
 
@@ -2041,32 +2041,37 @@ dia.GUI.prototype.newAppSheet = function(e){
 	this.app.sheet.listen('elementremoved', this.elementRemoved.bind(this));
 	this.app.sheet.listen('renderableadded', this.renderSheet.bind(this));
 	this.app.sheet.listen('renderableremoved', this.renderSheet.bind(this));
-	
+
 	// In case the sheet already contains elements, let's watch them
 	for(var i = 0 ; i < this.app.sheet.elements.length ; i++){
 		this.app.sheet.elements[i].listen('propertychange', this.elementModified.bind(this));
 	}
-	
+
 	// Rendering the selection tool
 	var selectionTool = this.app.toolbox.getTool('select');
 	if(selectionTool){
 		this.app.sheet.addRenderable(selectionTool.getRenderable());
 	}
-	
+
 	this.interactionManager.setSheet(this.app.sheet);
-	
+
 	this.renderSheet();
 };
 
 dia.GUI.prototype.resizeCanvas = function(){
 	var content = $('#canvas-container');
-	
+
 	var width = content.outerWidth();
 	var height = content.outerHeight();
 
 	this.canvas.width = width;
 	this.canvas.height = height;
-	
+
+	if(this.app.sheet){
+		var sheetCanvas = this.getSheetCanvas(this.app.sheet);
+		sheetCanvas.setDimensions(width, height);
+	}
+
 	this.renderSheet();
 };
 
@@ -2074,72 +2079,72 @@ dia.GUI.prototype.setupInteractionManager = function(){
 	if(this.interactionManager){
 		return;
 	}
-	
+
 	this.interactionManager = new dia.InteractionManager(this);
-	
+
 	var selectionTool = this.app.toolbox.getTool('select');
 	if(selectionTool){
 		this.interactionManager.setTool(selectionTool);
 	}
-	
+
 	var gui = this;
-	
+
 	this.canvas.addEventListener('mousedown', function(e){
 		if(dia.Dialog.openCount === 0){
 			gui.bufferSheetRender();
-		
+
 			e.preventDefault();
 
 			var position = gui.getPositionOnSheet(e);
 			gui.interactionManager.mouseDown(position.x, position.y);
-			
+
 			gui.flushSheetRender();
 		}
 	}, false);
 	this.canvas.addEventListener('mousemove', function(e){
 		if(dia.Dialog.openCount === 0){
 			gui.bufferSheetRender();
-		
+
 			e.preventDefault();
 
 			var position = gui.getPositionOnSheet(e);
 			gui.interactionManager.mouseMove(position.x, position.y, position.absoluteX, position.absoluteY);
-			
+
 			var handle = gui.app.sheet.findHandleContaining(position.x, position.y);
 			gui.canvas.style.cursor = handle ? handle.cursor : 'default';
-			
+
 			gui.flushSheetRender();
 		}
 	}, false);
 	this.canvas.addEventListener('mouseup', function(e){
 		if(dia.Dialog.openCount === 0){
 			gui.bufferSheetRender();
-			
+
 			e.preventDefault();
 
 			var position = gui.getPositionOnSheet(e);
 			gui.interactionManager.mouseUp(position.x, position.y);
-			
+
 			gui.flushSheetRender();
 		}
 	}, false);
 	document.addEventListener('keydown', function(e){
 		if(dia.Dialog.openCount === 0){
 			gui.bufferSheetRender();
-			
+
 			e.preventDefault();
 			gui.interactionManager.keyDown(e.keyCode);
-			
+
 			gui.flushSheetRender();
 		}
 	}, false);
 	document.addEventListener('keyup', function(e){
 		if(dia.Dialog.openCount === 0){
 			gui.bufferSheetRender();
-			
+
 			e.preventDefault();
 			gui.interactionManager.keyUp(e.keyCode);
-			
+
 			gui.flushSheetRender();
 		}
 	}, false);
@@ -2147,9 +2152,9 @@ dia.GUI.prototype.setupInteractionManager = function(){
 
 dia.GUI.prototype.getPositionOnSheet = function(event){
 	var offset = this.canvas.getBoundingClientRect();
-	
+
 	var canvas = this.getSheetCanvas(this.app.sheet);
-	
+
 	return {
 		x: event.pageX - offset.left + canvas.scrollX,
 		y: event.pageY - offset.top + canvas.scrollY,
@@ -2161,7 +2166,7 @@ dia.GUI.prototype.getPositionOnSheet = function(event){
 dia.GUI.prototype.renderToolbox = function(){
 	var container = $('#toolbox'),
 		gui = this;
-	
+
 	var tool,
 		button;
 	for(var i = 0 ; i < this.app.toolbox.toolList.length ; i++){
@@ -2175,7 +2180,7 @@ dia.GUI.prototype.renderToolbox = function(){
 							gui.selectTool(t);
 						}
 					})(tool));
-		
+
 		tool.listen('elementcreated', this.doneCreating.bind(this));
 	}
 };
@@ -2210,7 +2215,7 @@ dia.GUI.prototype.selectionClick = function(e){
 			content: root
 		});
 		dialog.show();
-		
+
 		dialog.listen('clickok', function(){
 			form.submit();
 			this.hide();
@@ -2250,7 +2255,7 @@ dia.GUI.prototype.bufferSheetRender = function(){
 
 dia.GUI.prototype.flushSheetRender = function(){
 	this.bufferRender = false;
-	
+
 	if(this.bufferedRenders > 0){
 		this.renderSheet();
 	}
@@ -2261,7 +2266,7 @@ dia.GUI.prototype.loadSheet = function(){
 	var input = document.createElement('textarea');
 	input.className = 'form-control';
 	input.rows = 10;
-	
+
 	var modal = new dia.Dialog({
 		title: 'Load an existing sheet',
 		content: input,
@@ -2269,7 +2274,7 @@ dia.GUI.prototype.loadSheet = function(){
 		hideOnCancel: true
 	});
 	modal.show();
-	
+
 	var gui = this;
 	modal.listen('clickok', function(){
 		var json,
@@ -2290,7 +2295,7 @@ dia.GUI.prototype.saveSheet = function(){
 	input.className = 'form-control';
 	input.rows = 10;
 	input.value = JSON.stringify(this.app.sheet.toJSON());
-	
+
 	var modal = new dia.Dialog({
 		title: 'Save the current sheet',
 		content: input,
@@ -2305,7 +2310,7 @@ dia.GUI.prototype.newSheet = function(){
 		content: 'Create a new sheet without saving the current one?'
 	});
 	modal.show();
-	
+
 	var gui = this;
 	modal.listen('clickok', function(){
 		gui.app.newSheet();
