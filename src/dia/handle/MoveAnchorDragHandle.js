@@ -7,6 +7,9 @@ dia.MoveAnchorDragHandle = function(element, area, property){
 extend(dia.MoveAnchorDragHandle, dia.DragHandle);
 
 dia.MoveAnchorDragHandle.prototype.dragMove = function(dx, dy, x, y){
+	x = dia.snap(x, this.element.sheet.gridSize);
+	y = dia.snap(y, this.element.sheet.gridSize);
+
 	var anchor = this.element.getProperty(this.property);
 
 	var anchoredElement = this.element.sheet.getElement(anchor.element);
