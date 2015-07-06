@@ -167,6 +167,8 @@ dia.GUI.prototype.getPositionOnSheet = function(event){
 };
 
 dia.GUI.prototype.renderToolbox = function(){
+	this.toolButtons = {};
+
 	var container = $('#toolbox'),
 		gui = this;
 
@@ -184,6 +186,8 @@ dia.GUI.prototype.renderToolbox = function(){
 						}
 					})(tool));
 
+		this.toolButtons[tool.id] = button;
+
 		tool.listen('elementcreated', this.doneCreating.bind(this));
 	}
 };
@@ -195,6 +199,14 @@ dia.GUI.prototype.doneCreating = function(){
 
 dia.GUI.prototype.selectTool = function(tool){
 	this.interactionManager.setTool(tool);
+
+	for(var id in this.toolButtons){
+		if(tool.id === id){
+			$(this.toolButtons[id]).addClass('active');
+		}else{
+			$(this.toolButtons[id]).removeClass('active');
+		}
+	}
 };
 
 dia.GUI.prototype.renderSheet = function(){

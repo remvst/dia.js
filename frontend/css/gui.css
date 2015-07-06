@@ -20,6 +20,10 @@ html, body{
 	z-index: 3;
 }
 
+#toolbox .btn:focus {
+	outline: none;
+}
+
 #canvas-container{
 	height: 100%;
 	position: absolute;
