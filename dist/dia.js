@@ -1966,17 +1966,18 @@ dia.Canvas.prototype.render = function(ctx){
 
 dia.App = function(){
 	dia.EventDispatcher.call(this);
-	
+
 	this.toolbox = new dia.Toolbox();
-	
+
 	this.toolbox.addTool(new dia.SelectionTool());
-	
-	for(var i in dia.ElementType.types){
-		if(dia.ElementType.types[i].creatorTool){
-			this.toolbox.addTool(dia.ElementType.types[i].creatorTool);
+
+	var types = dia.ElementType.types;
+	for(var id in types){
+		for(var k = 0 ; k < types[id].tools.length ; k++){
+			this.toolbox.addTool(types[id].tools[k]);
 		}
 	}
-	
+
 	this.sheet = null;
 };
 
@@ -1988,7 +1989,7 @@ dia.App.prototype.newSheet = function(){
 
 dia.App.prototype.openSheet = function(sheet){
 	this.sheet = sheet;
-	
+
 	this.dispatch('newsheet', {
 		sheet: this.sheet
 	});
