@@ -176,6 +176,8 @@ describe('an element type', function(){
 		expect(clone.getFunction('someid')).toBeTruthy();
 		expect(clone.setupFunctions).not.toBe(type.setupFunctions);
 		expect(clone.setupFunctions).toEqual(type.setupFunctions);
+		expect(clone.tools).not.toBe(type.tools);
+		expect(clone.tools).toEqual(type.tools);
 	});
 
 	it('can have functions', function(){
@@ -193,10 +195,12 @@ describe('an element type', function(){
 	it('can have tools', function(){
 		var type = new dia.ElementType();
 		var tool = new dia.Tool();
+		tool.id = 'fooooo';
 
 		type.addTool(tool);
 
 		expect(type.tools).toEqual([tool]);
+		expect(type.getTool(tool.id)).toBe(tool);
 	});
 
 	it('can have element-specific setup', function(){
