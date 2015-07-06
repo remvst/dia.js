@@ -24,13 +24,6 @@ dia.MoveAnchorDragHandle.prototype.dragMove = function(dx, dy, x, y){
 	var anchoredElement = this.element.sheet.getElement(anchor.element);
 	var anchoredArea = anchoredElement.getRepresentation().area;
 
-	var newAnchor = {
-		element: anchoredElement.id,
-		x: dia.snap(this.initialAnchorPositions.x + this.accumDX, this.element.sheet.gridSize),
-		y: dia.snap(this.initialAnchorPositions.y + this.accumDY, this.element.sheet.gridSize),
-		angle: anchor.angle
-	};
-
 	if(!anchoredArea.contains(x, y)){
 		anchoredElement = this.element.sheet.findElementContaining(x, y, function(element){
 			return element.type.isAnchorable();
