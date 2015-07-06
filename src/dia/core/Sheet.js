@@ -86,7 +86,6 @@ dia.Sheet.prototype.toJSON = function(){
 	var json = {
 		title: this.title,
 		elements: [],
-		id: this.id,
 		gridSize: this.gridSize
 	};
 	for(var i = 0 ; i < this.elements.length ; i++){
@@ -129,14 +128,13 @@ dia.Sheet.prototype.findHandleContaining = function(x, y){
 dia.Sheet.prototype.reset = function(){
 	this.elements = [];
 	this.elementsMap = {};
-	this.id = dia.uuid4();
+	this.id = dia.uuid4(); // ID to be used only at run time. It shouldn't be persisted
 	this.title = null;
 };
 
 dia.Sheet.fromJSON = function(json){
 	var sheet = new dia.Sheet();
 	sheet.title = json.title || sheet.title;
-	sheet.id = json.id || sheet.id;
 	sheet.gridSize = json.gridSize || sheet.gridSize;
 
 	var element;
