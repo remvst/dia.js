@@ -183,6 +183,7 @@ dia.GUI.prototype.renderToolbox = function(){
 					.click((function(t){
 						return function(){
 							gui.selectTool(t);
+							$(this).blur();
 						}
 					})(tool));
 
@@ -194,7 +195,7 @@ dia.GUI.prototype.renderToolbox = function(){
 
 dia.GUI.prototype.doneCreating = function(){
 	var select = this.app.toolbox.getTool('select');
-	this.interactionManager.setTool(select);
+	this.selectTool(select);
 };
 
 dia.GUI.prototype.selectTool = function(tool){
