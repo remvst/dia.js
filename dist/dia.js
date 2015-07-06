@@ -3279,57 +3279,76 @@ dia.generic.RELATION.setRepresentationFactory(function(element, repr){
 dia.generic.RELATION.creatorTool = new dia.CreateTool({
 	type: dia.generic.RELATION,
 	mouseDown: function(sheet, x, y){
-		this.from = sheet.findElementContaining(x, y);
-		this.fromPosition = { x: x, y: y };
-	},
-	mouseMove: function(sheet, x, y){
+		this.from = sheet.findElementContaining(x, y, function(element){
+			return element.type.anchorable;
+		});
+
 		if(this.from){
-			this.to = sheet.findElementContaining(x, y);
-			this.toPosition = { x: x, y: y };
-		}
-	},
-	mouseUp: function(sheet, x, y){
-		if(this.to && this.from && this.to !== this.from){
 			var fromArea = this.from.getRepresentation().area;
-			var toArea = this.to.getRepresentation().area;
+			var fromRelativePosition = fromArea.getRelativePositionFromAbsolute(x, y);
 
-			var fromRelativePosition = fromArea.getRelativePositionFromAbsolute(
-				this.fromPosition.x,
-				this.fromPosition.y
-			);
-			var toRelativePosition = toArea.getRelativePositionFromAbsolute(
-				this.toPosition.x,
-				this.toPosition.y
-			);
-
-			var fromAnchor = {
+			this.fromAnchor = {
 				element: this.from.id,
 				x: fromRelativePosition.x,
-				y: fromRelativePosition.y,
-				angle: 0
+				y: fromRelativePosition.y
 			};
-			var toAnchor = {
+			this.toAnchor = {
+				element: this.from.id,
+				x: fromRelativePosition.x,
+				y: fromRelativePosition.y
+			};
+
+			fromArea.bindAnchorToBounds(this.fromAnchor);
+			fromArea.bindAnchorToBounds(this.toAnchor);
+
+			this.element = this.type.create({
+				from: this.fromAnchor,
+				to: this.toAnchor
+			});
+			sheet.addElement(this.element);
+		}
+	},
+	mouseMove: function(sheet, x, y){
+		if(!this.from) return;
+
+		this.to = sheet.findElementContaining(x, y, function(element){
+			return element.type.anchorable;
+		});
+
+		if(this.to){
+			var toArea = this.to.getRepresentation().area;
+			var toRelativePosition = toArea.getRelativePositionFromAbsolute(x, y);
+
+			this.toAnchor = {
 				element: this.to.id,
 				x: toRelativePosition.x,
 				y: toRelativePosition.y,
 				angle: 0
 			};
+			toArea.bindAnchorToBounds(this.toAnchor);
+		}else{
+			var fromArea = this.from.getRepresentation().area;
+			var fromRelativePosition = fromArea.getRelativePositionFromAbsolute(x, y);
 
-			// Let's bind those anchors
-			fromArea.bindAnchorToBounds(fromAnchor);
-			toArea.bindAnchorToBounds(toAnchor);
-
-			var element = this.type.create({
-				from: fromAnchor,
-				to: toAnchor
-			});
-
-			sheet.addElement(element);
-
-			this.dispatch('elementcreated');
+			this.toAnchor = {
+				element: this.from.id,
+				x: fromRelativePosition.x,
+				y: fromRelativePosition.y,
+				angle: this.toAnchor.angle
+			};
 		}
 
+		this.element.setProperty('to', this.toAnchor);
+	},
+	mouseUp: function(sheet, x, y){
+		if(this.element && this.from === this.to){
+			this.element.remove();
+		}
+
+		this.element = null;
 		this.from = null;
+		this.to = null;
+		this.dispatch('elementcreated');
 	}
 });
 
