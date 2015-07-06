@@ -27,22 +27,20 @@ dia.generic.RELATION.setRepresentationFactory(function(element, repr){
 		var from = element.getProperty('from');
 		var fromRepr = element.sheet.getElement(from.element).getRepresentation();
 
-		return {
-			x: fromRepr.area.getX() + from.x,
-			y: fromRepr.area.getY() + from.y,
-			angle: from.angle
-		};
+		var position = fromRepr.area.getAbsolutePositionFromRelative(from.x, from.y);
+		position.angle = from.angle;
+
+		return position;
 	};
 
 	repr.toPosition = function(){
 		var to = element.getProperty('to');
 		var toRepr = element.sheet.getElement(to.element).getRepresentation();
 
-		return {
-			x: toRepr.area.getX() + to.x,
-			y: toRepr.area.getY() + to.y,
-			angle: to.angle
-		};
+		var position = toRepr.area.getAbsolutePositionFromRelative(to.x, to.y);
+		position.angle = to.angle;
+
+		return position;
 	};
 
 	repr.areaFrom = new dia.RectangleArea({
