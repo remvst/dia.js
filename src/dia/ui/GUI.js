@@ -13,11 +13,15 @@ dia.GUI = function(app){
 
 	this.setupInteractionManager();
 
+	this.renderToolbox();
+
 	var selectionTool = this.app.toolbox.getTool('select');
 	if(selectionTool){
 		selectionTool.listen('selectionmove', this.renderSheet.bind(this));
 		selectionTool.listen('selectionchange', this.renderSheet.bind(this));
 		selectionTool.listen('click', this.selectionClick.bind(this));
+
+		this.selectTool(selectionTool);
 	}
 
 	//
@@ -35,8 +39,6 @@ dia.GUI = function(app){
 	if(saveButton) saveButton.addEventListener('click', this.saveSheet.bind(this), false);
 	if(newButton) newButton.addEventListener('click', this.newSheet.bind(this), false);
 	if(loadButton) loadButton.addEventListener('click', this.loadSheet.bind(this), false);
-
-	this.renderToolbox();
 };
 
 dia.GUI.prototype.newAppSheet = function(e){
