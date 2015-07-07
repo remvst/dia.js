@@ -3746,6 +3746,85 @@ dia.uml.CLASS.setRepresentationFactory(function(element, representation){
 	representation.addHandle(representation.moveHandle);
 
 	representation.area = area;
+
+	var leftX = function(){ return element.getProperty('x') - 5; };
+	var rightX = function(){ return element.getProperty('x') + getWidth() - 5; };
+	var topY = function(){ return element.getProperty('y') - 5; };
+	var bottomY = function(){ return element.getProperty('y') + getHeight() - 5; };
+	var size = function(){ return 10; };
+
+	var handleWidthRight = function(dx, dy, x, y){
+		element.setProperty('width', Math.max(getRequiredWidth(), element.getProperty('width') + dx));
+	};
+	var handleHeightBottom = function(dx, dy, x, y){
+		element.setProperty('height', Math.max(getRequiredHeight(), element.getProperty('height') + dy));
+	};
+	var handleWidthLeft = function(dx, dy, x, y){
+		var newWidth = getWidth() - dx;
+		newWidth = Math.max(getRequiredWidth(), newWidth);
+
+		dx = element.getProperty('width') - newWidth;
+
+		element.setProperty('width', newWidth);
+		element.setProperty('x', element.getProperty('x') + dx);
+	};
+	var handleHeightTop = function(dx, dy, x, y){
+		var newHeight = getHeight() - dy;
+		newHeight = Math.max(getRequiredHeight(), newHeight);
+
+		dy = element.getProperty('height') - newHeight;
+
+		element.setProperty('height', newHeight);
+		element.setProperty('y', element.getProperty('y') + dy);
+	};
+
+	var resizeBottomRightHandle = new dia.DragHandle(element, new dia.RectangleArea({
+		x: rightX,
+		y: bottomY,
+		width: size,
+		height: size
+	}));
+	representation.addHandle(resizeBottomRightHandle);
+	resizeBottomRightHandle.dragMove = function(dx, dy, x, y){
+		handleWidthRight(dx, dy, x, y);
+		handleHeightBottom(dx, dy, x, y);
+	};
+
+	var resizeTopRightHandle = new dia.DragHandle(element, new dia.RectangleArea({
+		x: rightX,
+		y: topY,
+		width: size,
+		height: size
+	}));
+	representation.addHandle(resizeTopRightHandle);
+	resizeTopRightHandle.dragMove = function(dx, dy, x, y){
+		handleWidthRight(dx, dy, x, y);
+		handleHeightTop(dx, dy, x, y);
+	};
+
+	var resizeBottomLeftHandle = new dia.DragHandle(element, new dia.RectangleArea({
+		x: leftX,
+		y: bottomY,
+		width: size,
+		height: size
+	}));
+	representation.addHandle(resizeBottomLeftHandle);
+	resizeBottomLeftHandle.dragMove = function(dx, dy, x, y){
+		handleWidthLeft(dx, dy, x, y);
+		handleHeightBottom(dx, dy, x, y);
+	};
+
+	var resizeTopLeftHandle = new dia.DragHandle(element, new dia.RectangleArea({
+		x: leftX,
+		y: topY,
+		width: size,
+		height: size
+	}));
+	representation.addHandle(resizeTopLeftHandle);
+	resizeTopLeftHandle.dragMove = function(dx, dy, x, y){
+		handleWidthLeft(dx, dy, x, y);
+		handleHeightTop(dx, dy, x, y);
+	};
 });
 
 dia.uml.CLASS.addTool(new dia.CreateTool({
