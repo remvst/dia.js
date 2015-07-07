@@ -18,6 +18,18 @@ dia.uml.CLASS.addProperty(new dia.Property({
 	private: true
 }));
 dia.uml.CLASS.addProperty(new dia.Property({
+	id: 'width',
+	type: dia.DataType.INTEGER,
+	default: 100,
+	private: true
+}));
+dia.uml.CLASS.addProperty(new dia.Property({
+	id: 'height',
+	type: dia.DataType.INTEGER,
+	default: 100,
+	private: true
+}));
+dia.uml.CLASS.addProperty(new dia.Property({
 	id: 'title',
 	type: dia.DataType.STRING,
 	default: 'class',
@@ -43,6 +55,13 @@ dia.uml.CLASS.setRepresentationFactory(function(element, representation){
 
 	representation.cachedRequiredWidth = null;
 	representation.cachedRequiredHeight = null;
+
+	var getWidth = function(){
+		return Math.max(element.getProperty('width'), getRequiredWidth());
+	};
+	var getHeight = function(){
+		return Math.max(element.getProperty('height'), getRequiredHeight());
+	};
 
 	var getRequiredWidth = function(){
 		if(representation.cachedRequiredWidth === null){
@@ -71,8 +90,8 @@ dia.uml.CLASS.setRepresentationFactory(function(element, representation){
 	representation.addRenderable(new dia.Renderable(function(c){
 		c.translate(element.getProperty('x'), element.getProperty('y'));
 
-		var width = getRequiredWidth();
-		var height = getRequiredHeight();
+		var width = getWidth();
+		var height = getHeight();
 
 		c.fillStyle = '#ffffff';
 		c.fillRect(0, 0, width, height);
