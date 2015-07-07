@@ -10,6 +10,9 @@ dia.ResizeHandle = function(element, area, options){
 	this.setHeight = options.setHeight || null;
 	this.minWidth = options.minWidth || null;
 	this.minHeight = options.minHeight || null;
+
+	this.accumDX = 0;
+	this.accumDY = 0;
 };
 
 extend(dia.ResizeHandle, dia.DragHandle);
@@ -22,7 +25,20 @@ dia.ResizeHandle.prototype.currentHeight = function(){
 	return Math.max(this.minHeight(), this.coveredArea.getHeight());
 };
 
+dia.ResizeHandle.prototype.dragStart = function(){
+	this.accumDX = 0;
+	this.accumDY = 0;
+
+	this.initialX = this.coveredArea.getX();
+	this.initialY = this.coveredArea.getY();
+	this.initialWidth = this.coveredArea.getWidth();
+	this.initialHeight = this.coveredArea.getHeight();
+};
+
 dia.ResizeHandle.prototype.dragMove = function(dx, dy, x, y){
+	this.accumDX += dx;
+	this.accumDY += dy;
+
 	if(this.type & dia.ResizeHandle.RIGHT){
 		this.handleWidthRight(dx, dy, x, y);
 	}
@@ -38,16 +54,22 @@ dia.ResizeHandle.prototype.dragMove = function(dx, dy, x, y){
 };
 
 dia.ResizeHandle.prototype.handleWidthRight = function(dx, dy, x, y){
-	this.setWidth(Math.max(this.minWidth(), this.currentWidth() + dx));
+	var gs = this.element.sheet.gridSize;
+	var newWidth = Math.max(this.minWidth(), this.initialWidth + this.accumDX);
+	this.setWidth(dia.snap(newWidth, gs));
 };
 
 dia.ResizeHandle.prototype.handleHeightBottom = function(dx, dy, x, y){
-	this.setHeight(Math.max(this.minHeight(), this.currentHeight() + dy));
+	var gs = this.element.sheet.gridSize;
+	var newHeight = Math.max(this.minHeight(), this.initialHeight + this.accumDY);
+	this.setHeight(dia.snap(newHeight, gs));
 };
 
 dia.ResizeHandle.prototype.handleWidthLeft = function(dx, dy, x, y){
-	var newWidth = this.currentWidth() - dx;
+	var gs = this.element.sheet.gridSize;
+	var newWidth = this.initialWidth - this.accumDX;
 	newWidth = Math.max(this.minWidth(), newWidth);
+	newWidth = dia.snap(newWidth, gs);
 
 	dx = this.currentWidth() - newWidth;
 
@@ -55,8 +77,10 @@ dia.ResizeHandle.prototype.handleWidthLeft = function(dx, dy, x, y){
 	this.setX(this.coveredArea.getX() + dx);
 };
 dia.ResizeHandle.prototype.handleHeightTop = function(dx, dy, x, y){
-	var newHeight = this.currentHeight() - dy;
+	var gs = this.element.sheet.gridSize;
+	var newHeight = this.initialHeight - this.accumDY;
 	newHeight = Math.max(this.minHeight(), newHeight);
+	newHeight = dia.snap(newHeight, gs);
 
 	dy = this.currentHeight() - newHeight;
 
