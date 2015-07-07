@@ -149,6 +149,17 @@ dia.uml.CLASS.setRepresentationFactory(function(element, representation){
 
 	representation.area = area;
 
+	dia.ResizeHandle.setupElement(element, representation, {
+		x: function(){ return element.getProperty('x'); },
+		y: function(){ return element.getProperty('y'); },
+		width: function(){ return getWidth(); },
+		height: function(){ return getHeight(); },
+		minWidth: getRequiredWidth,
+		minHeight: getRequiredHeight
+	});
+
+	return;
+
 	var leftX = function(){ return element.getProperty('x') - 5; };
 	var rightX = function(){ return element.getProperty('x') + getWidth() - 5; };
 	var topY = function(){ return element.getProperty('y') - 5; };

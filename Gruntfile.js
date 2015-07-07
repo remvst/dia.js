@@ -29,6 +29,7 @@ module.exports = function(grunt) {
 					'src/dia/handle/MoveRelationDragHandle.js',
 					'src/dia/handle/MoveAnchorDragHandle.js',
 					'src/dia/handle/BrokenLineDragHandle.js',
+					'src/dia/handle/ResizeHandle.js',
 
 					'src/dia/area/Area.js',
 					'src/dia/area/RectangleArea.js',
