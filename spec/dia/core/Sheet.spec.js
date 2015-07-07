@@ -128,6 +128,8 @@ describe('a sheet', function(){
 		expect(json.elements.length).toBe(3);
 
 		var loaded = dia.Sheet.fromJSON(json);
+		delete loaded.id;
+		delete sheet.id;
 		expect(loaded).toEqual(sheet);
 	});
 
