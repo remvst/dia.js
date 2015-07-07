@@ -1206,7 +1206,7 @@ dia.ResizeHandle.setupElement = function(element, repr, options){
 	var bottomY = function(){ return options.y() + options.height() - options.size / 2; };
 	var size = function(){ return options.size; };
 
-	var leftHandle = new dia.ResizeHandle(element, new dia.RectangleArea({
+	repr.addHandle(new dia.ResizeHandle(element, new dia.RectangleArea({
 		x: leftX,
 		y: middleY,
 		width: size,
@@ -1215,10 +1215,9 @@ dia.ResizeHandle.setupElement = function(element, repr, options){
 		type: dia.ResizeHandle.LEFT,
 		minWidth: options.minWidth,
 		minHeight: options.minHeight
-	});
-	repr.addHandle(leftHandle);
+	}));
 
-	var rightHandle = new dia.ResizeHandle(element, new dia.RectangleArea({
+	repr.addHandle(new dia.ResizeHandle(element, new dia.RectangleArea({
 		x: rightX,
 		y: middleY,
 		width: size,
@@ -1227,10 +1226,9 @@ dia.ResizeHandle.setupElement = function(element, repr, options){
 		type: dia.ResizeHandle.RIGHT,
 		minWidth: options.minWidth,
 		minHeight: options.minHeight
-	});
-	repr.addHandle(rightHandle);
+	}));
 
-	var topHandle = new dia.ResizeHandle(element, new dia.RectangleArea({
+	repr.addHandle(new dia.ResizeHandle(element, new dia.RectangleArea({
 		x: middleX,
 		y: topY,
 		width: size,
@@ -1239,10 +1237,9 @@ dia.ResizeHandle.setupElement = function(element, repr, options){
 		type: dia.ResizeHandle.TOP,
 		minWidth: options.minWidth,
 		minHeight: options.minHeight
-	});
-	repr.addHandle(topHandle);
+	}));
 
-	var bottomHandle = new dia.ResizeHandle(element, new dia.RectangleArea({
+	repr.addHandle(new dia.ResizeHandle(element, new dia.RectangleArea({
 		x: middleX,
 		y: bottomY,
 		width: size,
@@ -1251,10 +1248,9 @@ dia.ResizeHandle.setupElement = function(element, repr, options){
 		type: dia.ResizeHandle.BOTTOM,
 		minWidth: options.minWidth,
 		minHeight: options.minHeight
-	});
-	repr.addHandle(bottomHandle);
+	}));
 
-	var bottomRightHandle = new dia.ResizeHandle(element, new dia.RectangleArea({
+	repr.addHandle(new dia.ResizeHandle(element, new dia.RectangleArea({
 		x: rightX,
 		y: bottomY,
 		width: size,
@@ -1263,10 +1259,9 @@ dia.ResizeHandle.setupElement = function(element, repr, options){
 		type: dia.ResizeHandle.BOTTOM_RIGHT,
 		minWidth: options.minWidth,
 		minHeight: options.minHeight
-	});
-	repr.addHandle(bottomRightHandle);
+	}));
 
-	var topRightHandle = new dia.ResizeHandle(element, new dia.RectangleArea({
+	repr.addHandle(new dia.ResizeHandle(element, new dia.RectangleArea({
 		x: rightX,
 		y: topY,
 		width: size,
@@ -1275,10 +1270,9 @@ dia.ResizeHandle.setupElement = function(element, repr, options){
 		type: dia.ResizeHandle.TOP_RIGHT,
 		minWidth: options.minWidth,
 		minHeight: options.minHeight
-	});
-	repr.addHandle(topRightHandle);
+	}));
 
-	var bottomLeftHandle = new dia.ResizeHandle(element, new dia.RectangleArea({
+	repr.addHandle(new dia.ResizeHandle(element, new dia.RectangleArea({
 		x: leftX,
 		y: bottomY,
 		width: size,
@@ -1287,10 +1281,9 @@ dia.ResizeHandle.setupElement = function(element, repr, options){
 		type: dia.ResizeHandle.BOTTOM_LEFT,
 		minWidth: options.minWidth,
 		minHeight: options.minHeight
-	});
-	repr.addHandle(bottomLeftHandle);
+	}));
 
-	var topLeftHandle = new dia.ResizeHandle(element, new dia.RectangleArea({
+	repr.addHandle(new dia.ResizeHandle(element, new dia.RectangleArea({
 		x: leftX,
 		y: topY,
 		width: size,
@@ -1299,8 +1292,7 @@ dia.ResizeHandle.setupElement = function(element, repr, options){
 		type: dia.ResizeHandle.TOP_LEFT,
 		minWidth: options.minWidth,
 		minHeight: options.minHeight
-	});
-	repr.addHandle(topLeftHandle);
+	}));
 
 };
 
