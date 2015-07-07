@@ -3938,11 +3938,12 @@ dia.uml.CLASS.setRepresentationFactory(function(element, representation){
 
 		var bottomAttributesY = lineHeight * (Math.max(1, element.getProperty('attributes').length) + 1);
 		var topMethodsY = height - lineHeight * Math.max(1, element.getProperty('methods').length);
+		var splitY =  (bottomAttributesY + topMethodsY) / 2;
 
 		c.fillRect(0, 0, width, 1);
 		c.fillRect(0, height - 1, width, 1);
 		c.fillRect(0, lineHeight, width, 1);
-		c.fillRect(0, (bottomAttributesY + topMethodsY) / 2, width, 1);
+		c.fillRect(0, splitY, width, 1);
 
 		c.fillRect(0, 0, 1, height);
 		c.fillRect(width - 1, 0, 1, height);
@@ -3966,7 +3967,7 @@ dia.uml.CLASS.setRepresentationFactory(function(element, representation){
 			y += lineHeight;
 		}
 
-		y = topMethodsY;
+		y = splitY + lineHeight * .5;
 		for(var i = 0 ; i < methods.length ; i++){
 			s = dia.uml.TYPED_METHOD.toString(methods[i]);
 			c.fillText(s, padding, y);
