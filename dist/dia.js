@@ -3696,10 +3696,13 @@ dia.uml.CLASS.setRepresentationFactory(function(element, representation){
 
 		c.fillStyle = '#000';
 
+		var bottomAttributesY = lineHeight * (Math.max(1, element.getProperty('attributes').length) + 1);
+		var topMethodsY = height - lineHeight * Math.max(1, element.getProperty('methods').length);
+
 		c.fillRect(0, 0, width, 1);
 		c.fillRect(0, height - 1, width, 1);
 		c.fillRect(0, lineHeight, width, 1);
-		c.fillRect(0, lineHeight * (Math.max(1, element.getProperty('attributes').length) + 1), width, 1);
+		c.fillRect(0, (bottomAttributesY + topMethodsY) / 2, width, 1);
 
 		c.fillRect(0, 0, 1, height);
 		c.fillRect(width - 1, 0, 1, height);
@@ -3722,9 +3725,8 @@ dia.uml.CLASS.setRepresentationFactory(function(element, representation){
 
 			y += lineHeight;
 		}
-		if(attrs.length === 0){
-			y += lineHeight;
-		}
+
+		y = topMethodsY;
 		for(var i = 0 ; i < methods.length ; i++){
 			s = dia.uml.TYPED_METHOD.toString(methods[i]);
 			c.fillText(s, padding, y);
@@ -3736,8 +3738,8 @@ dia.uml.CLASS.setRepresentationFactory(function(element, representation){
 	var area = new dia.RectangleArea({
 		x: function(){ return element.getProperty('x'); },
 		y: function(){ return element.getProperty('y'); },
-		width: getRequiredWidth,
-		height: getRequiredHeight
+		width: getWidth,
+		height: getHeight
 	});
 
 	representation.moveHandle = new dia.MoveElementDragHandle(element, area);
