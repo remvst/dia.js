@@ -149,11 +149,11 @@ dia.uml.CLASS.setRepresentationFactory(function(element, representation){
 
 	representation.area = area;
 
-	dia.ResizeHandle.setupElement(element, representation, {
-		x: function(){ return element.getProperty('x'); },
-		y: function(){ return element.getProperty('y'); },
-		width: function(){ return getWidth(); },
-		height: function(){ return getHeight(); },
+	dia.ResizeHandle.setupElement(element, representation, area, {
+		setX: function(x){ element.setProperty('x', x); },
+		setY: function(y){ element.setProperty('y', y); },
+		setWidth: function(w){ element.setProperty('width', w); },
+		setHeight: function(h){ element.setProperty('height', h); },
 		minWidth: getRequiredWidth,
 		minHeight: getRequiredHeight
 	});

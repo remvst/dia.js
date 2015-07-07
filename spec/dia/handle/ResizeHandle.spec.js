@@ -3,15 +3,18 @@ describe('a resize handle', function(){
 		var type = new dia.ElementType();
 		var element = type.emptyElement();
 		var area = new dia.Area();
+		var coveredArea = new dia.Area();
 
 		var handle = new dia.ResizeHandle(element, area, {
 			type: 1234,
+			area: coveredArea,
 			minWidth: function(){ return 10; },
 			minHeight: function(){ return 15; }
 		});
 
 		expect(handle.element).toBe(element);
 		expect(handle.area).toBe(area);
+		expect(handle.coveredArea).toBe(coveredArea);
 	});
 
 	it('can automatically be setup for elements', function(){
@@ -41,7 +44,7 @@ describe('a resize handle', function(){
 		});
 		var repr = element.getRepresentation();
 
-		dia.ResizeHandle.setupElement(element, repr, {
+		dia.ResizeHandle.setupElement(element, repr, new dia.Area(), {
 			x: function(){ return element.getProperty('x'); },
 			y: function(){ return element.getProperty('y'); },
 			width: function(){ return element.getProperty('width'); },
