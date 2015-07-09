@@ -20,13 +20,13 @@ dia.uml.CLASS.addProperty(new dia.Property({
 dia.uml.CLASS.addProperty(new dia.Property({
 	id: 'width',
 	type: dia.DataType.INTEGER,
-	default: 100,
+	default: 10,
 	private: true
 }));
 dia.uml.CLASS.addProperty(new dia.Property({
 	id: 'height',
 	type: dia.DataType.INTEGER,
-	default: 100,
+	default: 10,
 	private: true
 }));
 dia.uml.CLASS.addProperty(new dia.Property({

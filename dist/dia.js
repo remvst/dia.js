@@ -2408,7 +2408,6 @@ dia.GUI.prototype.setupInteractionManager = function(){
 		var selectionTool = gui.app.toolbox.getTool('select');
 		if(selectionTool){
 			selectionTool.multipleKeyDown = false;
-			console.log('k')
 		}
 	}, false);
 };
@@ -3875,13 +3874,13 @@ dia.uml.CLASS.addProperty(new dia.Property({
 dia.uml.CLASS.addProperty(new dia.Property({
 	id: 'width',
 	type: dia.DataType.INTEGER,
-	default: 100,
+	default: 10,
 	private: true
 }));
 dia.uml.CLASS.addProperty(new dia.Property({
 	id: 'height',
 	type: dia.DataType.INTEGER,
-	default: 100,
+	default: 10,
 	private: true
 }));
 dia.uml.CLASS.addProperty(new dia.Property({
