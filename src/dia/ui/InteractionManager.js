@@ -1,6 +1,6 @@
 dia.InteractionManager = function(gui){
 	this.gui = gui;
-	
+
 	this.sheet = null;
 	this.tool = null;
 	this.currentPosition = {x: 0, y: 0, absoluteX: 0, absoluteY: 0 };
@@ -52,4 +52,11 @@ dia.InteractionManager.prototype.keyUp = function(keyCode){
 		this.tool.keyUp(this.sheet, keyCode);
 	}
 	this.downKeys[keyCode] = false;
+};
+
+dia.InteractionManager.prototype.clearDownKeys = function(){
+	for(var keyCode in this.downKeys){
+		this.tool.keyUp(this.sheet, keyCode);
+	}
+	this.downKeys = {};
 };

@@ -153,6 +153,14 @@ dia.GUI.prototype.setupInteractionManager = function(){
 			gui.flushSheetRender();
 		}
 	}, false);
+	window.addEventListener('blur', function(e){
+		gui.interactionManager.clearDownKeys();
+
+		var selectionTool = gui.app.toolbox.getTool('select');
+		if(selectionTool){
+			selectionTool.multipleKeyDown = false;
+		}
+	}, false);
 };
 
 dia.GUI.prototype.getPositionOnSheet = function(event){
