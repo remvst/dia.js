@@ -76,6 +76,7 @@ dia.ResizeHandle.prototype.handleWidthLeft = function(dx, dy, x, y){
 	this.setWidth(newWidth);
 	this.setX(this.coveredArea.getX() + dx);
 };
+
 dia.ResizeHandle.prototype.handleHeightTop = function(dx, dy, x, y){
 	var gs = this.element.sheet.gridSize;
 	var newHeight = this.initialHeight - this.accumDY;
