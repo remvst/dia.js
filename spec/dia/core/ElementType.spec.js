@@ -8,13 +8,15 @@ describe('an element type', function(){
 		expect(type.propertyMap).toEqual({});
 		expect(type.tools).toEqual([]);
 		expect(type.layer).toBe(2);
+		expect(type.group).toBe(null);
 	});
 
 	it('is initialized correctly with options', function(){
 		var type = new dia.ElementType({
 			id: 'mytype',
 			label: 'mylabel',
-			layer: 3
+			layer: 3,
+			group: 'gr'
 		});
 
 		expect(type.id).toEqual('mytype');
@@ -22,6 +24,7 @@ describe('an element type', function(){
 		expect(type.properties).toEqual([]);
 		expect(type.propertyMap).toEqual({});
 		expect(type.layer).toBe(3);
+		expect(type.group).toBe('gr');
 	});
 
 	it('can have properties', function(){
@@ -96,10 +99,12 @@ describe('an element type', function(){
 
 	it('is automatically registered upon instanciation', function(){
 		var type = new dia.ElementType({
-			id: 'mytypeid'
+			id: 'mytypeid',
+			group: 'foo'
 		});
 
 		expect(dia.ElementType.lookupType('mytypeid')).toBe(type);
+		expect(dia.ElementType.getGroup('foo')).toEqual([type]);
 	});
 
 	it('is not registered if no ID is specified', function(){

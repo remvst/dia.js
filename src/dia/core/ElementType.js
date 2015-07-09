@@ -13,6 +13,7 @@ dia.ElementType = function(options){
 	this.functionMap = {};
 	this.layer = 'layer' in options ? options.layer : 2;
 	this.setupFunctions = [];
+	this.group = options.group || null;
 
 	if(this.id){
 		dia.ElementType.register(this);
@@ -82,7 +83,8 @@ dia.ElementType.prototype.clone = function(options){
 		id: options.id || this.id,
 		label: options.label || this.label,
 		anchorable: 'anchorable' in options ? options.anchorable : this.anchorable,
-		layer: 'layer' in options ? options.layer : this.layer
+		layer: 'layer' in options ? options.layer : this.layer,
+		package: this.package
 	});
 	type.representationFactory = this.representationFactory;
 
@@ -146,8 +148,18 @@ dia.ElementType.register = function(type){
 	if(!dia.ElementType.types[type.id]){
 		dia.ElementType.types[type.id] = type;
 	}
+
+	if(type.group){
+		dia.ElementType.groups = dia.ElementType.groups || {};
+		dia.ElementType.groups[type.group] = dia.ElementType.groups[type.group] || [];
+		dia.ElementType.groups[type.group].push(type);
+	}
 };
 
 dia.ElementType.lookupType = function(id){
 	return dia.ElementType.types[id] || null;
+};
+
+dia.ElementType.getGroup = function(group){
+	return dia.ElementType.groups[group] || null;
 };
