@@ -138,19 +138,19 @@ dia.uml.CLASS.setRepresentationFactory(function(element, representation){
 		}
 	}));
 
-	var area = new dia.RectangleArea({
+	representation.area = new dia.RectangleArea({
 		x: function(){ return element.getProperty('x'); },
 		y: function(){ return element.getProperty('y'); },
 		width: getWidth,
 		height: getHeight
 	});
 
-	representation.moveHandle = new dia.MoveElementDragHandle(element, area);
+	representation.guides = representation.area.getGuides(element);
+
+	representation.moveHandle = new dia.MoveElementDragHandle(element, representation.area);
 	representation.addHandle(representation.moveHandle);
 
-	representation.area = area;
-
-	dia.ResizeHandle.setupElement(element, representation, area, {
+	dia.ResizeHandle.setupElement(element, representation, representation.area, {
 		setX: function(x){ element.setProperty('x', x); },
 		setY: function(y){ element.setProperty('y', y); },
 		setWidth: function(w){ element.setProperty('width', w); },
