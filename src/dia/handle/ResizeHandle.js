@@ -74,7 +74,7 @@ dia.ResizeHandle.prototype.handleWidthLeft = function(dx, dy, x, y){
 	dx = this.currentWidth() - newWidth;
 
 	this.setWidth(newWidth);
-	this.setX(this.coveredArea.getX() + dx);
+	this.setX(dia.snap(this.coveredArea.getX() + dx, gs));
 };
 
 dia.ResizeHandle.prototype.handleHeightTop = function(dx, dy, x, y){
@@ -86,7 +86,7 @@ dia.ResizeHandle.prototype.handleHeightTop = function(dx, dy, x, y){
 	dy = this.currentHeight() - newHeight;
 
 	this.setHeight(newHeight);
-	this.setY(this.coveredArea.getY() + dy);
+	this.setY(dia.snap(this.coveredArea.getY() + dy, gs));
 };
 
 dia.ResizeHandle.TOP = 1;
