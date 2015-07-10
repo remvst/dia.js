@@ -645,7 +645,7 @@ dia.DataType.POINT = new dia.DataType({
 
 dia.ArrayDataType = function(containedType){
 	dia.DataType.call(this);
-	
+
 	this.containedType = containedType;
 };
 
@@ -685,10 +685,20 @@ dia.ArrayDataType.prototype.createHTMLInput = function(currentValue){
 		inputContainer.className = 'input-group form-group';
 		inputsContainer.appendChild(inputContainer);
 
+		if(window.$ && window.$.fn.sortable){
+			var handle = document.createElement('div');
+			handle.className = 'input-group-addon';
+			inputContainer.appendChild(handle);
+
+			var glyph = document.createElement('div');
+			glyph.className = 'glyphicon glyphicon-menu-hamburger';
+			handle.appendChild(glyph);
+		}
+
 		var input = this.containedType.createHTMLInput(value);
 		input.className += ' contained-type-input';
 		inputContainer.appendChild(input);
-		
+
 		var removerWrapper = document.createElement('span');
 		removerWrapper.className = 'input-group-btn';
 		inputContainer.appendChild(removerWrapper);
@@ -720,6 +730,12 @@ dia.ArrayDataType.prototype.createHTMLInput = function(currentValue){
 		add('');
 	}, false);
 	container.appendChild(adder);
+
+
+			if(window.$ && window.$.fn.sortable){
+				$(inputsContainer).sortable();
+			}
+
 
 	return container;
 };
