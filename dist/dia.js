@@ -1400,7 +1400,7 @@ dia.Area = function(){
 };
 
 dia.Area.prototype.contains = function(x, y){
-	return false;	
+	return false;
 };
 
 dia.Area.prototype.intersectsWith = function(otherArea){
@@ -1408,7 +1408,7 @@ dia.Area.prototype.intersectsWith = function(otherArea){
 };
 
 dia.Area.prototype.render = function(c){
-	
+
 };
 
 dia.Area.prototype.surface = function(){
@@ -1416,7 +1416,11 @@ dia.Area.prototype.surface = function(){
 };
 
 dia.Area.prototype.bindAnchorToBounds = function(anchor){
-	
+
+};
+
+dia.Area.prototype.boundsContain = function(x, y){
+	return false;
 };
 
 dia.Area.prototype.getRelativeCenter = function(){
@@ -1448,7 +1452,7 @@ dia.Area.intersectionMap = {};
 
 dia.Area.defineIntersection = function(type1, type2, func){
 	dia.Area.intersectionMap[type1 + '-' + type2] = func;
-	
+
 	if(type1 !== type2){
 		// Let's add it for both ways
 		dia.Area.intersectionMap[type2 + '-' + type1] = function(a, b){
