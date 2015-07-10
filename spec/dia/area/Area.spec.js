@@ -27,6 +27,13 @@ describe('an area', function(){
 		expect(area.optimizePath(fromPoint, toPoint)).toEqual(fromPoint);
 	});
 
+	it('returns a default snapshot', function(){
+		var area = new dia.Area();
+		var snapshot = area.snapshot();
+
+		expect(area.snapshot).not.toBe(area);
+	});
+
 	it('has no surface', function(){
 		var area = new dia.Area();
 

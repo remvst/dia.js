@@ -263,4 +263,35 @@ describe('a rectangle area', function(){
 		// Destination at the bottom
 		expect(area.optimizePath(fromPoint, { x: 140, y: 70 })).toEqual({ x: 110, y: 100 });
 	});
+
+	it('can provide snapshots', function(){
+		var x = 100,
+			y = 110,
+			width = 120,
+			height = 130;
+
+		var area = new dia.RectangleArea({
+			x: function(){ return x; },
+			y: function(){ return y; },
+			width: function(){ return width; },
+			height: function(){ return height; }
+		});
+
+		var snapshot = area.snapshot();
+
+		x /= 2;
+		y /= 2;
+		width /= 2;
+		height /= 2;
+
+		expect(area.getX()).toBe(50);
+		expect(area.getY()).toBe(55);
+		expect(area.getWidth()).toBe(60);
+		expect(area.getHeight()).toBe(65);
+
+		expect(snapshot.getX()).toBe(100);
+		expect(snapshot.getY()).toBe(110);
+		expect(snapshot.getWidth()).toBe(120);
+		expect(snapshot.getHeight()).toBe(130);
+	});
 });

@@ -208,6 +208,20 @@ dia.RectangleArea.prototype.optimizePath = function(fromPoint, toPoint){
 	return closestPoint || fromPoint;
 };
 
+dia.RectangleArea.prototype.snapshot = function(){
+	var x = this.getX(),
+		y = this.getY(),
+		width = this.getWidth(),
+		height = this.getHeight();
+
+	return new dia.RectangleArea({
+		x: function(){ return x; },
+		y: function(){ return y; },
+		width: function(){ return width; },
+		height: function(){ return height; }
+	});
+};
+
 dia.Area.defineIntersection('rectangle', 'rectangle', function(a, b){
 	// Let's assume it's another rectangle area
 	var boundsA = a.getBounds();

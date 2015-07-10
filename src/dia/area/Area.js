@@ -56,6 +56,10 @@ dia.Area.prototype.getGuides = function(element){
 	return [];
 };
 
+dia.Area.prototype.snapshot = function(){
+	return new dia.Area();
+};
+
 dia.Area.intersectionMap = {};
 
 dia.Area.defineIntersection = function(type1, type2, func){

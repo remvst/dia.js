@@ -1452,6 +1452,10 @@ dia.Area.prototype.getGuides = function(element){
 	return [];
 };
 
+dia.Area.prototype.snapshot = function(){
+	return new dia.Area();
+};
+
 dia.Area.intersectionMap = {};
 
 dia.Area.defineIntersection = function(type1, type2, func){
@@ -1682,6 +1686,20 @@ dia.RectangleArea.prototype.optimizePath = function(fromPoint, toPoint){
 	}
 
 	return closestPoint || fromPoint;
+};
+
+dia.RectangleArea.prototype.snapshot = function(){
+	var x = this.getX(),
+		y = this.getY(),
+		width = this.getWidth(),
+		height = this.getHeight();
+
+	return new dia.RectangleArea({
+		x: function(){ return x; },
+		y: function(){ return y; },
+		width: function(){ return width; },
+		height: function(){ return height; }
+	});
 };
 
 dia.Area.defineIntersection('rectangle', 'rectangle', function(a, b){
