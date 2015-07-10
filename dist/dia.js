@@ -1423,6 +1423,10 @@ dia.Area.prototype.boundsContain = function(x, y){
 	return false;
 };
 
+dia.Area.prototype.optimizePath = function(fromPoint, toPoint){
+	return fromPoint;
+};
+
 dia.Area.prototype.getRelativeCenter = function(){
 	return {
 		x: 0,
@@ -1617,6 +1621,67 @@ dia.RectangleArea.prototype.boundsContain = function(x, y){
 	var bounds = this.getBounds();
 	return ((x === bounds.x1 || x === bounds.x2) && dia.between(bounds.y1, y, bounds.y2))
 		|| ((y === bounds.y1 || y === bounds.y2) && dia.between(bounds.x1, x, bounds.x2));
+};
+
+dia.RectangleArea.prototype.optimizePath = function(fromPoint, toPoint){
+	if(this.contains(toPoint.x, toPoint.y)){
+		// Do nothing
+		return fromPoint;
+	}
+
+	// Let's find the equation y = a * x + b
+	var a = (toPoint.y - fromPoint.y) / (toPoint.x - fromPoint.x);
+	var b = fromPoint.y - a * fromPoint.x;
+
+	var possiblePoints = [];
+
+	var pointFromX = function(x){
+		if(fromPoint.x === toPoint.x){
+			// Vertical line
+			return null;
+		}else{
+			return {
+				x: x,
+				y: a * x + b
+			};
+		}
+	};
+	var pointFromY = function(y){
+		if(a === 0){
+			// Horizontal line
+			return null;
+		}else{
+			return {
+				x: (y - b) / a,
+				y: y
+			}
+		}
+	};
+
+	possiblePoints.push(pointFromX(this.getX()));
+	possiblePoints.push(pointFromX(this.getX() + this.getWidth()));
+	possiblePoints.push(pointFromY(this.getY()));
+	possiblePoints.push(pointFromY(this.getY() + this.getHeight()));
+
+	// Now from all these possible points, let's find the one that is the
+	// closest to toPoint
+	var distance,
+		minDistance = Number.MAX_VALUE,
+		closestPoint;
+	for(var i = 0 ; i < possiblePoints.length ; i++){
+		if(possiblePoints[i] && this.contains(possiblePoints[i].x, possiblePoints[i].y)){
+			distance = dia.distance(
+				toPoint.x, toPoint.y,
+				possiblePoints[i].x, possiblePoints[i].y
+			);
+			if(distance < minDistance){
+				closestPoint = possiblePoints[i];
+				minDistance = distance;
+			}
+		}
+	}
+
+	return closestPoint || fromPoint;
 };
 
 dia.Area.defineIntersection('rectangle', 'rectangle', function(a, b){

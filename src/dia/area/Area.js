@@ -27,6 +27,10 @@ dia.Area.prototype.boundsContain = function(x, y){
 	return false;
 };
 
+dia.Area.prototype.optimizePath = function(fromPoint, toPoint){
+	return fromPoint;
+};
+
 dia.Area.prototype.getRelativeCenter = function(){
 	return {
 		x: 0,

@@ -237,4 +237,30 @@ describe('a rectangle area', function(){
 		expect(area.boundsContain(110, 130)).toBe(true);
 		expect(area.boundsContain(140, 130)).toBe(false);
 	});
+
+	it('can optimize a path', function(){
+		var area = new dia.RectangleArea({
+			x: function(){ return 100; },
+			y: function(){ return 100; },
+			width: function(){ return 20; },
+			height: function(){ return 20; }
+		});
+
+		var fromPoint = { x: 100, y: 110 };
+
+		// Destination within the area, no optimization
+		expect(area.optimizePath(fromPoint, { x: 110, y: 110 })).toEqual(fromPoint);
+
+		// Destination on the right (horizontal line)
+		expect(area.optimizePath(fromPoint, { x: 140, y: 110 })).toEqual({ x: 120, y: 110 });
+
+		// Destination on the left
+		expect(area.optimizePath(fromPoint, { x: 0, y: 110 })).toEqual(fromPoint);
+
+		// Destination on the top
+		expect(area.optimizePath(fromPoint, { x: 140, y: 150 })).toEqual({ x: 110, y: 120 });
+
+		// Destination at the bottom
+		expect(area.optimizePath(fromPoint, { x: 140, y: 70 })).toEqual({ x: 110, y: 100 });
+	});
 });
