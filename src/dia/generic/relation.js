@@ -228,51 +228,68 @@ dia.generic.RELATION.addFunction(new dia.ElementTypeFunction({
 	id: 'reanchor',
 	label: 'Readapt anchors',
 	apply: function(element){
-		var anchorFrom = element.getProperty('from');
-		var anchorTo = element.getProperty('to');
+		var reanchor = function(prop){
+			var anchor = element.getProperty(prop);
+			var anchored = element.sheet.getElement(anchor.element);
+			var repr = anchored.getRepresentation();
+			var area = repr.area;
+			var previousArea = element.previousAnchoredAreas[prop];
 
-		var fromElementId = element.getProperty('from').element;
-		var toElementId = element.getProperty('to').element;
+			var oppositeProp = prop === 'from' ? 'to' : 'from';
+			var oppositeAnchor = element.getProperty(oppositeProp);
 
-		var fromElement = element.sheet.getElement(fromElementId);
-		var toElement = element.sheet.getElement(toElementId);
+			var abs = area.getAbsolutePositionFromRelative(anchor.x, anchor.y);
 
-		var fromElementRepr = fromElement.getRepresentation();
-		var toElementRepr = toElement.getRepresentation();
+			if(previousArea){
+				var absFromPrevious = previousArea.getAbsolutePositionFromRelative(anchor.x, anchor.y);
+				if(area.boundsContain(absFromPrevious.x, absFromPrevious.y)){
+					// If the area has moved, but if the anchor could still be contained,
+					// let's not move it.
+					abs = absFromPrevious;
+				}
+			}
 
-		var absoluteFrom = fromElementRepr.area.getAbsolutePositionFromRelative(anchorFrom.x, anchorFrom.y);
-		var absoluteTo = toElementRepr.area.getAbsolutePositionFromRelative(anchorTo.x, anchorTo.y);
+			var points = element.getProperty('points');
+			if(points.length > 0){
+				nextPoint = (prop === 'from' ? points[0] : points[points.length - 1]);
+			}else{
+				nextPoint = element.sheet.getElement(oppositeAnchor.element)
+							.getRepresentation().area.getAbsolutePositionFromRelative(
+								oppositeAnchor.x,
+								oppositeAnchor.y
+							);
+			}
 
-		var points = element.getProperty('points');
-		var secondPoint = points.length > 0 ? points[0] : absoluteFrom;
-		var beforeLastPoint = points.length > 0 ? points[points.length - 1] : absoluteTo;
+			var optimizedAbs = repr.area.optimizePath(abs, nextPoint);
+			var optimizedRel = area.getRelativePositionFromAbsolute(optimizedAbs.x, optimizedAbs.y);
 
-		var optimizedAbsoluteFrom = fromElementRepr.area.optimizePath(absoluteFrom, secondPoint);
-		var optimizedAbsoluteTo = toElementRepr.area.optimizePath(absoluteTo, beforeLastPoint);
+			var newAnchor = {
+				element: anchor.element,
+				x: optimizedRel.x,
+				y: optimizedRel.y,
+				angle: anchor.angle
+			};
 
-		var optimizedRelativeFrom = fromElementRepr.area.getRelativePositionFromAbsolute(optimizedAbsoluteFrom.x, optimizedAbsoluteFrom.y);
-		var optimizedRelativeTo = toElementRepr.area.getRelativePositionFromAbsolute(optimizedAbsoluteTo.x, optimizedAbsoluteTo.y);
-
-		var newAnchorFrom = {
-			element: anchorFrom.element,
-			x: optimizedRelativeFrom.x,
-			y: optimizedRelativeFrom.y,
-			angle: anchorFrom.angle
+			area.bindAnchorToBounds(newAnchor);
+			element.setProperty(prop, newAnchor);
 		};
-		var newAnchorTo = {
-			element: anchorTo.element,
-			x: optimizedRelativeTo.x,
-			y: optimizedRelativeTo.y,
-			angle: anchorTo.angle
-		};
 
-		fromElementRepr.area.bindAnchorToBounds(newAnchorFrom);
-		toElementRepr.area.bindAnchorToBounds(newAnchorTo);
-
-		element.setProperty('from', newAnchorFrom);
-		element.setProperty('to', newAnchorTo);
+		reanchor('from');
+		reanchor('to');
 	}
 }));
+
+dia.generic.RELATION.addSetupFunction(function(element){
+	element.listen('propertychange', function(e){
+		element.previousAnchoredAreas = element.previousAnchoredAreas || {};
+		if(element.sheet){
+			if(e.property.id === 'from' || e.property.id === 'to'){
+				var anchored = element.sheet.getElement(e.to.element);
+				element.previousAnchoredAreas[e.property.id] = anchored.getRepresentation().area.snapshot();
+			}
+		}
+	});
+});
 
 dia.generic.RELATION.addSetupFunction(function(element){
 	var onDependencyRemoved = function(e){
