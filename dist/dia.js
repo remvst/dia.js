@@ -3750,16 +3750,29 @@ dia.generic.RELATION.addFunction(new dia.ElementTypeFunction({
 		var fromElementRepr = fromElement.getRepresentation();
 		var toElementRepr = toElement.getRepresentation();
 
+		var absoluteFrom = fromElementRepr.area.getAbsolutePositionFromRelative(anchorFrom.x, anchorFrom.y);
+		var absoluteTo = toElementRepr.area.getAbsolutePositionFromRelative(anchorTo.x, anchorTo.y);
+
+		var points = element.getProperty('points');
+		var secondPoint = points.length > 0 ? points[0] : absoluteFrom;
+		var beforeLastPoint = points.length > 0 ? points[points.length - 1] : absoluteTo;
+
+		var optimizedAbsoluteFrom = fromElementRepr.area.optimizePath(absoluteFrom, secondPoint);
+		var optimizedAbsoluteTo = toElementRepr.area.optimizePath(absoluteTo, beforeLastPoint);
+
+		var optimizedRelativeFrom = fromElementRepr.area.getRelativePositionFromAbsolute(optimizedAbsoluteFrom.x, optimizedAbsoluteFrom.y);
+		var optimizedRelativeTo = toElementRepr.area.getRelativePositionFromAbsolute(optimizedAbsoluteTo.x, optimizedAbsoluteTo.y);
+
 		var newAnchorFrom = {
 			element: anchorFrom.element,
-			x: anchorFrom.x,
-			y: anchorFrom.y,
+			x: optimizedRelativeFrom.x,
+			y: optimizedRelativeFrom.y,
 			angle: anchorFrom.angle
 		};
 		var newAnchorTo = {
 			element: anchorTo.element,
-			x: anchorTo.x,
-			y: anchorTo.y,
+			x: optimizedRelativeTo.x,
+			y: optimizedRelativeTo.y,
 			angle: anchorTo.angle
 		};
 
