@@ -1,8 +1,8 @@
 dia.RectangleArea = function(options){
 	dia.Area.call(this);
-	
+
 	this.type = 'rectangle';
-	
+
 	this.getX = options.x;
 	this.getY = options.y;
 	this.getWidth = options.width;
@@ -13,7 +13,7 @@ extend(dia.RectangleArea, dia.Area);
 
 dia.RectangleArea.prototype.contains = function(x, y){
 	var bounds = this.getBounds();
-	
+
 	return x >= bounds.x1 && y >= bounds.y1 && x <= bounds.x2 && y <= bounds.y2;
 };
 
@@ -22,7 +22,7 @@ dia.RectangleArea.prototype.getBounds = function(){
 	var areaY = this.getY();
 	var areaWidth = this.getWidth();
 	var areaHeight = this.getHeight();
-	
+
 	if(areaWidth < 0){
 		areaX += areaWidth;
 		areaWidth *= -1;
@@ -31,7 +31,7 @@ dia.RectangleArea.prototype.getBounds = function(){
 		areaY += areaHeight;
 		areaHeight *= -1;
 	}
-	
+
 	return {
 		x1: areaX,
 		x2: areaX + areaWidth,
@@ -45,7 +45,7 @@ dia.RectangleArea.prototype.render = function(c){
 	var areaY = this.getY();
 	var areaWidth = this.getWidth();
 	var areaHeight = this.getHeight();
-	
+
 	c.strokeStyle = 'red';
 	c.lineWidth = 1;
 	c.strokeRect(areaX + .5, areaY + .5, areaWidth, areaHeight);
@@ -57,24 +57,24 @@ dia.RectangleArea.prototype.surface = function(){
 
 dia.RectangleArea.prototype.bindAnchorToBounds = function(anchor){
 	var bounds = this.getBounds();
-	
+
 	var width = this.getWidth(),
 		height = this.getHeight();
-	
+
 	// Let's put the anchor within our bounds
 	anchor.x = dia.limit(anchor.x, 0, width);
 	anchor.y = dia.limit(anchor.y, 0, height);
-	
+
 	// Now let's adjust it
 	var factorX = (anchor.x - width / 2) / width;
 	var factorY = (anchor.y - height / 2) / height;
-	
+
 	if(Math.abs(factorX) > Math.abs(factorY)){
 		anchor.x = factorX > 0 ? width : 0;
 	}else{
 		anchor.y = factorY > 0 ? height : 0;
 	}
-	
+
 	// Let's set the outgoing angle
 	if(anchor.x === 0){
 		anchor.angle = Math.PI;
@@ -85,7 +85,7 @@ dia.RectangleArea.prototype.bindAnchorToBounds = function(anchor){
 	}else{
 		anchor.angle = Math.PI / 2;
 	}
-	
+
 	return anchor;
 };
 
@@ -112,7 +112,7 @@ dia.RectangleArea.prototype.getRelativeCenter = function(){
 
 dia.RectangleArea.prototype.getGuides = function(element){
 	var area = this;
-	
+
 	return [
 		new dia.HorizontalGuide({
 			element: element,
@@ -141,11 +141,17 @@ dia.RectangleArea.prototype.getGuides = function(element){
 	];
 };
 
+dia.RectangleArea.prototype.boundsContain = function(x, y){
+	var bounds = this.getBounds();
+	return ((x === bounds.x1 || x === bounds.x2) && dia.between(bounds.y1, y, bounds.y2))
+		|| ((y === bounds.y1 || y === bounds.y2) && dia.between(bounds.x1, x, bounds.x2));
+};
+
 dia.Area.defineIntersection('rectangle', 'rectangle', function(a, b){
 	// Let's assume it's another rectangle area
 	var boundsA = a.getBounds();
 	var boundsB = b.getBounds();
-	
+
 	// Taken from http://stackoverflow.com/questions/306316/determine-if-two-rectangles-overlap-each-other
 	return boundsA.x1 < boundsB.x2 && boundsA.x2 > boundsB.x1 &&
     	   boundsA.y1 < boundsB.y2 && boundsA.y2 > boundsB.y1;
