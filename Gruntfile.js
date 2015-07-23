@@ -60,7 +60,8 @@ module.exports = function(grunt) {
 					'src/dia/uml/interface.js',
 					'src/dia/uml/relation.js',
 
-					'src/dia/wireframes/window.js'
+					'src/dia/wireframes/window.js',
+					'src/dia/wireframes/fieldset.js'
 				],
 			dest: 'dist/<%= pkg.name %>.js'
 			}
