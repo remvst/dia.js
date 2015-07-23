@@ -57,6 +57,9 @@ dia.wireframes.BUTTON.setRepresentationFactory(function(element, representation)
 		var width = getWidth();
 		var height = getHeight();
 
+		c.fillStyle = '#000';
+		c.fillRect(2, 2, element.getProperty('width'), element.getProperty('height'));
+
 		c.fillStyle = '#ffffff';
 		c.fillRect(0, 0, element.getProperty('width'), element.getProperty('height'));
 
