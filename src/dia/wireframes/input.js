@@ -1,41 +1,41 @@
 dia.wireframes = dia.wireframes || {};
 
-dia.wireframes.FIELDSET = new dia.ElementType({
-	id: 'wireframes.FIELDSET',
-	label: 'Fieldset',
+dia.wireframes.INPUT = new dia.ElementType({
+	id: 'wireframes.INPUT',
+	label: 'Input field',
 	layer: 2
 });
-dia.wireframes.FIELDSET.addProperty(new dia.Property({
+dia.wireframes.INPUT.addProperty(new dia.Property({
 	id: 'x',
 	type: dia.DataType.INTEGER,
 	default: 0,
 	private: true
 }));
-dia.wireframes.FIELDSET.addProperty(new dia.Property({
+dia.wireframes.INPUT.addProperty(new dia.Property({
 	id: 'y',
 	type: dia.DataType.INTEGER,
 	default: 0,
 	private: true
 }));
-dia.wireframes.FIELDSET.addProperty(new dia.Property({
+dia.wireframes.INPUT.addProperty(new dia.Property({
 	id: 'width',
 	type: dia.DataType.INTEGER,
 	default: 100,
 	private: true
 }));
-dia.wireframes.FIELDSET.addProperty(new dia.Property({
+dia.wireframes.INPUT.addProperty(new dia.Property({
 	id: 'height',
 	type: dia.DataType.INTEGER,
-	default: 100,
+	default: 20,
 	private: true
 }));
-dia.wireframes.FIELDSET.addProperty(new dia.Property({
-	id: 'title',
+dia.wireframes.INPUT.addProperty(new dia.Property({
+	id: 'value',
 	type: dia.DataType.STRING,
-	default: 'Fieldset',
-	label: 'Fieldset title'
+	default: '',
+	label: 'Field value'
 }));
-dia.wireframes.FIELDSET.setRepresentationFactory(function(element, representation){
+dia.wireframes.INPUT.setRepresentationFactory(function(element, representation){
 	var lineHeight = 16;
 	var padding = 5;
 
@@ -45,36 +45,32 @@ dia.wireframes.FIELDSET.setRepresentationFactory(function(element, representatio
 	representation.cachedRequiredHeight = null;
 
 	var getWidth = function(){
-		return Math.max(element.getProperty('width'), 50);
+		return Math.max(element.getProperty('width'), 20);
 	};
 	var getHeight = function(){
-		return Math.max(element.getProperty('height'), 50);
+		return Math.max(element.getProperty('height'), 20);
 	};
 
 	representation.addRenderable(new dia.Renderable(function(c){
 		c.translate(element.getProperty('x'), element.getProperty('y'));
 
-		var padding = 10;
-
 		var width = getWidth();
 		var height = getHeight();
 
-		c.fillStyle = '#000';
-
-		c.fillRect(padding, padding, width - 2 * padding, 1);
-		c.fillRect(padding, height - padding, width - 2 * padding, 1);
-		c.fillRect(padding, padding, 1, height - 2 * padding);
-		c.fillRect(width - padding, padding, 1, height - 2 * padding);
-
-		var titleWidth = dia.measureFontWidth(font, element.getProperty('title'));
 		c.fillStyle = '#ffffff';
-		c.fillRect(2 * padding, 0, titleWidth, 2 * padding);
+		c.fillRect(0, 0, element.getProperty('width'), element.getProperty('height'));
+
+		c.fillStyle = '#000';
+		c.fillRect(0, 0, width, 1);
+		c.fillRect(0, height, width, 1);
+		c.fillRect(0, 0, 1, height);
+		c.fillRect(width, 0, 1, height);
 
 		c.fillStyle = '#000';
 		c.textBaseline = 'middle';
 		c.font = font;
 		c.textAlign = 'left';
-		c.fillText(element.getProperty('title'), 2 * padding, padding);
+		c.fillText(element.getProperty('value'), 10, element.getProperty('height') / 2);
 	}));
 
 	representation.area = new dia.RectangleArea({
@@ -94,13 +90,13 @@ dia.wireframes.FIELDSET.setRepresentationFactory(function(element, representatio
 		setY: function(y){ element.setProperty('y', y); },
 		setWidth: function(w){ element.setProperty('width', w); },
 		setHeight: function(h){ element.setProperty('height', h); },
-		minWidth: function(){ return 50; },
-		minHeight: function(){ return 50; }
+		minWidth: function(){ return 20; },
+		minHeight: function(){ return 20; }
 	});
 });
 
-dia.wireframes.FIELDSET.addTool(new dia.CreateTool({
-	type: dia.wireframes.FIELDSET,
+dia.wireframes.INPUT.addTool(new dia.CreateTool({
+	type: dia.wireframes.INPUT,
 	mouseDown: function(sheet, x, y){
 		var element = this.type.emptyElement();
 		element.setProperty('x', ~~x);

@@ -116,13 +116,3 @@ dia.wireframes.WINDOW.addTool(new dia.CreateTool({
 		this.dispatch('elementcreated');
 	}
 }));
-
-dia.wireframes.WINDOW.addSetupFunction(function(element){
-	element.listen('propertychange', function(e){
-		if(e.property.id === 'attributes' || e.property.id === 'methods' || e.property.id === 'title'){
-			var repr = element.getRepresentation();
-			repr.cachedRequiredWidth = null;
-			repr.cachedRequiredHeight = null;
-		}
-	});
-});
