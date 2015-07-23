@@ -10,6 +10,7 @@ dia.ResizeHandle = function(element, area, options){
 	this.setHeight = options.setHeight || null;
 	this.minWidth = options.minWidth || null;
 	this.minHeight = options.minHeight || null;
+	this.cursor = options.cursor || this.cursor || null;
 
 	this.accumDX = 0;
 	this.accumDY = 0;
@@ -122,7 +123,8 @@ dia.ResizeHandle.setupElement = function(element, repr, area, options){
 		setWidth: options.setWidth,
 		setHeight: options.setHeight,
 		minWidth: options.minWidth,
-		minHeight: options.minHeight
+		minHeight: options.minHeight,
+		cursor: 'ew-resize'
 	}));
 
 	repr.addHandle(new dia.ResizeHandle(element, new dia.RectangleArea({
@@ -138,7 +140,8 @@ dia.ResizeHandle.setupElement = function(element, repr, area, options){
 		setWidth: options.setWidth,
 		setHeight: options.setHeight,
 		minWidth: options.minWidth,
-		minHeight: options.minHeight
+		minHeight: options.minHeight,
+		cursor: 'ew-resize'
 	}));
 
 	repr.addHandle(new dia.ResizeHandle(element, new dia.RectangleArea({
@@ -154,7 +157,8 @@ dia.ResizeHandle.setupElement = function(element, repr, area, options){
 		setWidth: options.setWidth,
 		setHeight: options.setHeight,
 		minWidth: options.minWidth,
-		minHeight: options.minHeight
+		minHeight: options.minHeight,
+		cursor: 'ns-resize'
 	}));
 
 	repr.addHandle(new dia.ResizeHandle(element, new dia.RectangleArea({
@@ -170,7 +174,8 @@ dia.ResizeHandle.setupElement = function(element, repr, area, options){
 		setWidth: options.setWidth,
 		setHeight: options.setHeight,
 		minWidth: options.minWidth,
-		minHeight: options.minHeight
+		minHeight: options.minHeight,
+		cursor: 'ns-resize'
 	}));
 
 	repr.addHandle(new dia.ResizeHandle(element, new dia.RectangleArea({
@@ -186,7 +191,8 @@ dia.ResizeHandle.setupElement = function(element, repr, area, options){
 		setWidth: options.setWidth,
 		setHeight: options.setHeight,
 		minWidth: options.minWidth,
-		minHeight: options.minHeight
+		minHeight: options.minHeight,
+		cursor: 'nwse-resize'
 	}));
 
 	repr.addHandle(new dia.ResizeHandle(element, new dia.RectangleArea({
@@ -202,7 +208,8 @@ dia.ResizeHandle.setupElement = function(element, repr, area, options){
 		setWidth: options.setWidth,
 		setHeight: options.setHeight,
 		minWidth: options.minWidth,
-		minHeight: options.minHeight
+		minHeight: options.minHeight,
+		cursor: 'nesw-resize'
 	}));
 
 	repr.addHandle(new dia.ResizeHandle(element, new dia.RectangleArea({
@@ -218,7 +225,8 @@ dia.ResizeHandle.setupElement = function(element, repr, area, options){
 		setWidth: options.setWidth,
 		setHeight: options.setHeight,
 		minWidth: options.minWidth,
-		minHeight: options.minHeight
+		minHeight: options.minHeight,
+		cursor: 'nesw-resize'
 	}));
 
 	repr.addHandle(new dia.ResizeHandle(element, new dia.RectangleArea({
@@ -234,7 +242,8 @@ dia.ResizeHandle.setupElement = function(element, repr, area, options){
 		setWidth: options.setWidth,
 		setHeight: options.setHeight,
 		minWidth: options.minWidth,
-		minHeight: options.minHeight
+		minHeight: options.minHeight,
+		cursor: 'nwse-resize'
 	}));
 
 };

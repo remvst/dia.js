@@ -868,13 +868,15 @@ dia.DragHandle.prototype.render = function(c){
 
 dia.MoveElementDragHandle = function(element, area){
 	dia.DragHandle.call(this, element, area);
-	
+
 	if(!this.element.type.hasPropertyId('x') || !this.element.type.hasPropertyId('y')){
 		throw new Error('Cannot bind a MoveElementDragHandle to an element that has no x or y');
 	}
-	
+
 	this.start = null;
-	
+
+	this.cursor = 'grab';
+
 	this.currentSnap = null;
 };
 
@@ -882,7 +884,7 @@ extend(dia.MoveElementDragHandle, dia.DragHandle);
 
 dia.MoveElementDragHandle.prototype.dragStart = function(x, y){
 	this.currentSnap = null;
-	
+
 	this.lastPosition = {
 		x: this.element.getProperty('x'),
 		y: this.element.getProperty('y')
@@ -895,15 +897,15 @@ dia.MoveElementDragHandle.prototype.dragMove = function(dx, dy){
 
 	this.element.setProperty('x', expectedX);
 	this.element.setProperty('y', expectedY);
-	
+
 	// Snap to guides
 	var repr = this.element.getRepresentation();
-	
+
 	this.currentSnap = null;
 	for(var i = 0 ; !this.currentSnap && repr && i < repr.guides.length ; i++){
 		this.trySnap(repr.guides[i]);
 	}
-	
+
 	// Snapping to grid
 	if(this.element.getProperty('x') === expectedX){
 		this.element.setProperty('x', dia.snap(expectedX, this.element.sheet.gridSize));
@@ -924,7 +926,7 @@ dia.MoveElementDragHandle.prototype.dragDrop = function(){
 
 dia.MoveElementDragHandle.prototype.render = function(c){
 	dia.DragHandle.prototype.render.call(this, c);
-	
+
 	if(this.currentSnap){
 		this.currentSnap.elementGuide.render(c, this.currentSnap.otherGuide);
 	}
@@ -932,16 +934,16 @@ dia.MoveElementDragHandle.prototype.render = function(c){
 
 dia.MoveElementDragHandle.prototype.trySnap = function(guide){
 	this.currentSnap = null;
-	
+
 	var handle = this;
 	this.element.sheet.elements.forEach(function(element){
 		if(handle.element === element || handle.currentSnap){
 			// No need to snap with self
 			return;
 		}
-		
+
 		var repr = element.getRepresentation();
-		
+
 		for(var i = 0 ; repr && i < repr.guides.length ; i++){
 			if(guide.shouldSnap(repr.guides[i], 10)){
 			  	guide.snap(repr.guides[i]);
@@ -949,7 +951,7 @@ dia.MoveElementDragHandle.prototype.trySnap = function(guide){
 					elementGuide: guide,
 					otherGuide: repr.guides[i]
 				};
-				
+
 				break; // Let's snap to only one guide
 			}
 		}
@@ -1165,6 +1167,7 @@ dia.ResizeHandle = function(element, area, options){
 	this.setHeight = options.setHeight || null;
 	this.minWidth = options.minWidth || null;
 	this.minHeight = options.minHeight || null;
+	this.cursor = options.cursor || this.cursor || null;
 
 	this.accumDX = 0;
 	this.accumDY = 0;
@@ -1277,7 +1280,8 @@ dia.ResizeHandle.setupElement = function(element, repr, area, options){
 		setWidth: options.setWidth,
 		setHeight: options.setHeight,
 		minWidth: options.minWidth,
-		minHeight: options.minHeight
+		minHeight: options.minHeight,
+		cursor: 'ew-resize'
 	}));
 
 	repr.addHandle(new dia.ResizeHandle(element, new dia.RectangleArea({
@@ -1293,7 +1297,8 @@ dia.ResizeHandle.setupElement = function(element, repr, area, options){
 		setWidth: options.setWidth,
 		setHeight: options.setHeight,
 		minWidth: options.minWidth,
-		minHeight: options.minHeight
+		minHeight: options.minHeight,
+		cursor: 'ew-resize'
 	}));
 
 	repr.addHandle(new dia.ResizeHandle(element, new dia.RectangleArea({
@@ -1309,7 +1314,8 @@ dia.ResizeHandle.setupElement = function(element, repr, area, options){
 		setWidth: options.setWidth,
 		setHeight: options.setHeight,
 		minWidth: options.minWidth,
-		minHeight: options.minHeight
+		minHeight: options.minHeight,
+		cursor: 'ns-resize'
 	}));
 
 	repr.addHandle(new dia.ResizeHandle(element, new dia.RectangleArea({
@@ -1325,7 +1331,8 @@ dia.ResizeHandle.setupElement = function(element, repr, area, options){
 		setWidth: options.setWidth,
 		setHeight: options.setHeight,
 		minWidth: options.minWidth,
-		minHeight: options.minHeight
+		minHeight: options.minHeight,
+		cursor: 'ns-resize'
 	}));
 
 	repr.addHandle(new dia.ResizeHandle(element, new dia.RectangleArea({
@@ -1341,7 +1348,8 @@ dia.ResizeHandle.setupElement = function(element, repr, area, options){
 		setWidth: options.setWidth,
 		setHeight: options.setHeight,
 		minWidth: options.minWidth,
-		minHeight: options.minHeight
+		minHeight: options.minHeight,
+		cursor: 'nwse-resize'
 	}));
 
 	repr.addHandle(new dia.ResizeHandle(element, new dia.RectangleArea({
@@ -1357,7 +1365,8 @@ dia.ResizeHandle.setupElement = function(element, repr, area, options){
 		setWidth: options.setWidth,
 		setHeight: options.setHeight,
 		minWidth: options.minWidth,
-		minHeight: options.minHeight
+		minHeight: options.minHeight,
+		cursor: 'nesw-resize'
 	}));
 
 	repr.addHandle(new dia.ResizeHandle(element, new dia.RectangleArea({
@@ -1373,7 +1382,8 @@ dia.ResizeHandle.setupElement = function(element, repr, area, options){
 		setWidth: options.setWidth,
 		setHeight: options.setHeight,
 		minWidth: options.minWidth,
-		minHeight: options.minHeight
+		minHeight: options.minHeight,
+		cursor: 'nesw-resize'
 	}));
 
 	repr.addHandle(new dia.ResizeHandle(element, new dia.RectangleArea({
@@ -1389,7 +1399,8 @@ dia.ResizeHandle.setupElement = function(element, repr, area, options){
 		setWidth: options.setWidth,
 		setHeight: options.setHeight,
 		minWidth: options.minWidth,
-		minHeight: options.minHeight
+		minHeight: options.minHeight,
+		cursor: 'nwse-resize'
 	}));
 
 };
