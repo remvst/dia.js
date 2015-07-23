@@ -164,8 +164,8 @@ dia.uml.CLASS.addTool(new dia.CreateTool({
 	type: dia.uml.CLASS,
 	mouseDown: function(sheet, x, y){
 		var element = this.type.emptyElement();
-		element.setProperty('x', x);
-		element.setProperty('y', y);
+		element.setProperty('x', ~~x);
+		element.setProperty('y', ~~y);
 		sheet.addElement(element);
 
 		this.dispatch('elementcreated');
