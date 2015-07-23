@@ -112,16 +112,22 @@ dia.Sheet.prototype.findElementContaining = function(x, y, additionalCriteria){
 dia.Sheet.prototype.findHandleContaining = function(x, y){
 	var repr,
 		handleArea,
-		handle = null;
+		handle = null,
+		handles;
 	for(var i = 0 ; i < this.elements.length ; i++){
 		repr = this.elements[i].getRepresentation();
-		for(var j = 0 ; j < repr.handles.length ; j++){
-			handleArea = repr.handles[j].area;
-			if(handleArea.contains(x, y) && (!handle || handleArea.surface() < handle.area.surface())){
-				handle = repr.handles[j];
+
+		handles = this.elements[i].highlighted ? repr.handles : [repr.moveHandle];
+		for(var j = 0 ; j < handles.length ; j++){
+			if(handles[j]){
+				handleArea = handles[j].area;
+				if(handleArea.contains(x, y) && (!handle || handleArea.surface() < handle.area.surface())){
+					handle = handles[j];
+				}
 			}
 		}
 	}
+
 	return handle;
 };
 

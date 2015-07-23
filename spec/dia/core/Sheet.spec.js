@@ -176,17 +176,34 @@ describe('a sheet', function(){
 			repr.addHandle(new dia.DragHandle(element, area));
 		});
 
+		var type3 = new dia.ElementType();
+		type3.setRepresentationFactory(function(element, repr){
+			var area = new dia.Area();
+			area.contains = function(x, y){ return x === 2 && y === 3; };
+
+			repr.addHandle(new dia.DragHandle(element, area));
+		});
+
 		var sheet = new dia.Sheet();
 
 		var element1 = type1.emptyElement();
+		element1.highlighted = true;
 		sheet.addElement(element1);
 
 		var element2 = type2.emptyElement();
+		element2.highlighted = true;
 		sheet.addElement(element2);
+
+		var element3 = type3.emptyElement();
+		sheet.addElement(element3);
 
 		expect(sheet.findHandleContaining(0, 0)).toBe(null);
 		expect(sheet.findHandleContaining(0, 1).element).toBe(element1);
 		expect(sheet.findHandleContaining(1, 2).element).toBe(element2);
+		expect(sheet.findHandleContaining(2, 3)).toBe(null);
+
+		element3.highlighted = true;
+		expect(sheet.findHandleContaining(2, 3).element).toBe(element3);
 	});
 
 	it('can claim ownership of an element', function(){

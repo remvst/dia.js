@@ -193,16 +193,22 @@ dia.Sheet.prototype.findElementContaining = function(x, y, additionalCriteria){
 dia.Sheet.prototype.findHandleContaining = function(x, y){
 	var repr,
 		handleArea,
-		handle = null;
+		handle = null,
+		handles;
 	for(var i = 0 ; i < this.elements.length ; i++){
 		repr = this.elements[i].getRepresentation();
-		for(var j = 0 ; j < repr.handles.length ; j++){
-			handleArea = repr.handles[j].area;
-			if(handleArea.contains(x, y) && (!handle || handleArea.surface() < handle.area.surface())){
-				handle = repr.handles[j];
+
+		handles = this.elements[i].highlighted ? repr.handles : [repr.moveHandle];
+		for(var j = 0 ; j < handles.length ; j++){
+			if(handles[j]){
+				handleArea = handles[j].area;
+				if(handleArea.contains(x, y) && (!handle || handleArea.surface() < handle.area.surface())){
+					handle = handles[j];
+				}
 			}
 		}
 	}
+
 	return handle;
 };
 
@@ -2954,7 +2960,7 @@ dia.CreateTool.prototype.extend = function(options){
 
 dia.SelectionTool = function(){
 	dia.Tool.call(this);
-	
+
 	this.selectionStart = null;
 	this.selectionEnd = null;
 	this.previousClick = null;
@@ -2964,7 +2970,7 @@ dia.SelectionTool = function(){
 	this.label = 'Selection';
 	this.down = false;
 	this.multipleKeyDown = false;
-	
+
 	this.currentHandle = null;
 	this.currentPosition = {x: 0, y: 0};
 };
@@ -2973,24 +2979,26 @@ extend(dia.SelectionTool, dia.Tool);
 
 dia.SelectionTool.prototype.mouseDown = function(sheet, x, y){
 	this.down = true;
-	
+
 	// Before selecting anything, let's try to find a handle to drag
 	this.currentHandle = null;
-	
+
 	var repr,
 		handleArea;
 	for(var i = 0 ; i < sheet.elements.length ; i++){
 		repr = sheet.elements[i].getRepresentation();
 		for(var j = 0 ; j < repr.handles.length ; j++){
 			handleArea = repr.handles[j].area;
-			if(handleArea.contains(x, y) && 
+			if(handleArea.contains(x, y) &&
 			   (!this.currentHandle || handleArea.surface() < this.currentHandle.area.surface())){
 				this.currentHandle = repr.handles[j];
 			}
 		}
 	}
-		
-	if(!this.multipleKeyDown && 
+
+	this.currentHandle = sheet.findHandleContaining(x, y);
+
+	if(!this.multipleKeyDown &&
 	   (!this.currentHandle || this.currentSelection.indexOf(this.currentHandle.element) === -1)){
 		// Clicked on an element outside of the selection or on no element, let's reset the selection
 		for(var i = 0 ; i < this.currentSelection.length ; i++){
@@ -3006,7 +3014,7 @@ dia.SelectionTool.prototype.mouseDown = function(sheet, x, y){
 			this.currentHandle.element.highlighted = true;
 			this.dispatch('selectionchange', { selection: this.currentSelection });
 		}
-		
+
 		var repr = this.currentHandle.element.getRepresentation();
 		if(this.currentHandle === repr.moveHandle){
 			this.currentSelection.forEach(function(element){
@@ -3024,7 +3032,7 @@ dia.SelectionTool.prototype.mouseDown = function(sheet, x, y){
 		this.selectionStart = { x: x, y: y };
 		this.selectionEnd = { x: x, y: y };
 	}
-	
+
 	this.currentPosition = {x: x, y: y};
 	this.mouseMoved = false;
 };
@@ -3057,9 +3065,9 @@ dia.SelectionTool.prototype.mouseMove = function(sheet, x, y){
 			});
 		}
 	}
-	
+
 	this.currentPosition = {x: x, y: y};
-	
+
 	// Cancel click
 	this.mouseMoved = true;
 	this.clickCount = 0;
@@ -3067,7 +3075,7 @@ dia.SelectionTool.prototype.mouseMove = function(sheet, x, y){
 
 dia.SelectionTool.prototype.mouseUp = function(sheet, x, y){
 	this.down = false;
-	
+
 	if(this.selectionStart){
 		// If we were selection, let's apply that selection
 		var tool = this;
@@ -3077,7 +3085,7 @@ dia.SelectionTool.prototype.mouseUp = function(sheet, x, y){
 			width: function(){ return tool.selectionEnd.x - tool.selectionStart.x; },
 			height: function(){ return tool.selectionEnd.y - tool.selectionStart.y; }
 		});
-		
+
 		for(var i = 0 ; i < this.currentSelection.length ; i++){
 			this.currentSelection[i].highlighted = false;
 		}
@@ -3090,7 +3098,7 @@ dia.SelectionTool.prototype.mouseUp = function(sheet, x, y){
 				sheet.elements[i].highlighted = true;
 			}
 		}
-	
+
 		this.selectionStart = null;
 		this.dispatch('selectionchange', { selection: this.currentSelection });
 	}else if(this.currentHandle){
@@ -3106,9 +3114,9 @@ dia.SelectionTool.prototype.mouseUp = function(sheet, x, y){
 			}
 		});
 	}
-	
+
 	if(!this.mouseMoved){
-		if(!this.previousClick 
+		if(!this.previousClick
 		   || x === this.previousClick.x
 		   && y === this.previousClick.y
 		   && Date.now() - this.previousClick.time < 500){
@@ -3117,7 +3125,7 @@ dia.SelectionTool.prototype.mouseUp = function(sheet, x, y){
 		}else{
 			this.clickCount = 1;
 		}
-		
+
 		this.previousClick = {
 			x: x,
 			y: y,
@@ -3128,7 +3136,7 @@ dia.SelectionTool.prototype.mouseUp = function(sheet, x, y){
 			element: (this.currentHandle ? this.currentHandle.element : this.currentSelection[0]) || null
 		});
 	}
-	
+
 	this.currentHandle = null;
 	this.currentPosition = {x: x, y: y};
 	this.selectionEnd = null;
@@ -3147,11 +3155,11 @@ dia.SelectionTool.prototype.keyDown = function(sheet, keyCode){
 			this.multipleKeyDown = true;
 			break;
 	}
-	
+
 	if(moveX || moveY){
 		moveX *= 10;
 		moveY *= 10;
-		
+
 		this.currentSelection.forEach(function(element){
 			var repr = element.getRepresentation();
 			if(repr && repr.moveHandle){
