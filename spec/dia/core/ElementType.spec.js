@@ -223,4 +223,32 @@ describe('an element type', function(){
 		var element = type.emptyElement();
 		expect(prop).toBe(undefined);
 	});
+
+	it('can copy an element', function(){
+		var dataType = new dia.DataType({
+			copyValue: function(v, matchMap){
+				return {
+					'refersTo': matchMap[v.refersTo]
+				};
+			}
+		});
+
+		var type = new dia.ElementType();
+		type.addProperty(new dia.Property({
+			id: 'myprop',
+			type: dataType
+		}));
+
+		var element = type.create({
+			'myprop': { 'refersTo': 'id1' }
+		});
+
+		var matchMap = {
+			'id1': 'id2'
+		};
+
+		var copy = type.copyElement(element, matchMap);
+
+		expect(copy.getProperty('myprop')).toEqual({ 'refersTo': 'id2' });
+	});
 });

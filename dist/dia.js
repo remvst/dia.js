@@ -506,7 +506,7 @@ dia.ElementType.prototype.copyElement = function(element, matchMap){
 		props[propId] = this.properties[i].type.copyValue(props[propId], matchMap);
 	}
 
-	return this.createElement(props);
+	return this.create(props);
 };
 
 dia.ElementType.register = function(type){
