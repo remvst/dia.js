@@ -2456,7 +2456,6 @@ dia.GUI = function(app){
 	}
 
 	this.app = app;
-	this.sheet = null;
 
 	this.sheetCanvases = {};
 
@@ -2487,10 +2486,16 @@ dia.GUI = function(app){
 	var saveButton = document.getElementById('button-save-sheet');
 	var newButton = document.getElementById('button-new-sheet');
 	var loadButton = document.getElementById('button-load-sheet');
+	var copyButton = document.getElementById('button-copy');
+	var cutButton = document.getElementById('button-cut');
+	var pasteButton = document.getElementById('button-paste');
 
 	if(saveButton) saveButton.addEventListener('click', this.saveSheet.bind(this), false);
 	if(newButton) newButton.addEventListener('click', this.newSheet.bind(this), false);
 	if(loadButton) loadButton.addEventListener('click', this.loadSheet.bind(this), false);
+	if(copyButton) copyButton.addEventListener('click', this.copy.bind(this), false);
+	if(cutButton) cutButton.addEventListener('click', this.cut.bind(this), false);
+	if(pasteButton) pasteButton.addEventListener('click', this.paste.bind(this), false);
 };
 
 dia.GUI.prototype.newAppSheet = function(e){
@@ -2795,6 +2800,27 @@ dia.GUI.prototype.newSheet = function(){
 	});
 };
 
+dia.GUI.prototype.copy = function(){
+	var selectionTool = this.app.toolbox.getTool('select');
+	if(selectionTool){
+		selectionTool.copy();
+	}
+};
+
+dia.GUI.prototype.cut = function(){
+	var selectionTool = this.app.toolbox.getTool('select');
+	if(selectionTool){
+		selectionTool.cut();
+	}
+};
+
+dia.GUI.prototype.paste = function(){
+	var selectionTool = this.app.toolbox.getTool('select');
+	if(selectionTool){
+		selectionTool.paste(this.app.sheet);
+	}
+};
+
 dia.ElementForm = function(element){
 	if(!element){
 		throw new Error('Cannot create ElementForm without element parameter.');
@@ -3035,7 +3061,7 @@ dia.SelectionTool = function(){
 	this.label = 'Selection';
 	this.down = false;
 	this.multipleKeyDown = false;
-	this.clipboard = null;
+	this.clipboard = new dia.Clipboard();
 
 	this.currentHandle = null;
 	this.currentPosition = {x: 0, y: 0};
@@ -3251,7 +3277,33 @@ dia.SelectionTool.prototype.copy = function(){
 		return;
 	}
 
-	
+	this.clipboard = new dia.Clipboard(this.currentSelection);
+};
+
+dia.SelectionTool.prototype.cut = function(){
+	this.copy();
+	this.currentSelection.forEach(function(element){
+		element.remove();
+	});
+};
+
+dia.SelectionTool.prototype.paste = function(sheet){
+	var pastable = this.clipboard.getPastableElements();
+
+	if(pastable.length === 0){
+		return;
+	}
+
+	for(var i = 0 ; i < this.currentSelection.length ; i++){
+		this.currentSelection[i].highlighted = false;
+	}
+
+	for(var i = 0 ; i < pastable.length ; i++){
+		pastable[i].highlighted = true;
+		sheet.addElement(pastable[i]);
+	}
+
+	this.currentSelection = pastable;
 };
 
 dia.Guide = function(){

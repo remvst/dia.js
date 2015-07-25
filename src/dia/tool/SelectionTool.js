@@ -10,7 +10,7 @@ dia.SelectionTool = function(){
 	this.label = 'Selection';
 	this.down = false;
 	this.multipleKeyDown = false;
-	this.clipboard = null;
+	this.clipboard = new dia.Clipboard();
 
 	this.currentHandle = null;
 	this.currentPosition = {x: 0, y: 0};
@@ -226,5 +226,31 @@ dia.SelectionTool.prototype.copy = function(){
 		return;
 	}
 
-	
+	this.clipboard = new dia.Clipboard(this.currentSelection);
+};
+
+dia.SelectionTool.prototype.cut = function(){
+	this.copy();
+	this.currentSelection.forEach(function(element){
+		element.remove();
+	});
+};
+
+dia.SelectionTool.prototype.paste = function(sheet){
+	var pastable = this.clipboard.getPastableElements();
+
+	if(pastable.length === 0){
+		return;
+	}
+
+	for(var i = 0 ; i < this.currentSelection.length ; i++){
+		this.currentSelection[i].highlighted = false;
+	}
+
+	for(var i = 0 ; i < pastable.length ; i++){
+		pastable[i].highlighted = true;
+		sheet.addElement(pastable[i]);
+	}
+
+	this.currentSelection = pastable;
 };
