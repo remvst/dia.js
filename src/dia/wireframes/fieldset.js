@@ -62,13 +62,13 @@ dia.wireframes.FIELDSET.setRepresentationFactory(function(element, representatio
 		c.fillStyle = '#000';
 
 		c.fillRect(padding, padding, width - 2 * padding, 1);
-		c.fillRect(padding, height - padding, width - 2 * padding, 1);
+		c.fillRect(padding, height - padding, width - 2 * padding + 1, 1);
 		c.fillRect(padding, padding, 1, height - 2 * padding);
 		c.fillRect(width - padding, padding, 1, height - 2 * padding);
 
 		var titleWidth = dia.measureFontWidth(font, element.getProperty('title'));
 		c.fillStyle = '#ffffff';
-		c.fillRect(2 * padding, 0, titleWidth, 2 * padding);
+		c.fillRect(2 * padding, 1, titleWidth, 2 * padding - 2);
 
 		c.fillStyle = '#000';
 		c.textBaseline = 'middle';
