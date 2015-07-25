@@ -63,7 +63,8 @@ module.exports = function(grunt) {
 					'src/dia/wireframes/window.js',
 					'src/dia/wireframes/fieldset.js',
 					'src/dia/wireframes/button.js',
-					'src/dia/wireframes/input.js'
+					'src/dia/wireframes/input.js',
+					'src/dia/wireframes/label.js'
 				],
 			dest: 'dist/<%= pkg.name %>.js'
 			}
