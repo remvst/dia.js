@@ -20,6 +20,7 @@ module.exports = function(grunt) {
 					'src/dia/core/DataType.js',
 					'src/dia/core/ArrayDataType.js',
 					'src/dia/core/EnumerationDataType.js',
+					'src/dia/core/Clipboard.js',
 
 					'src/dia/graphic/GraphicalRepresentation.js',
 					'src/dia/graphic/Renderable.js',

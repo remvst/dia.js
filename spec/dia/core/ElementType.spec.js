@@ -246,9 +246,11 @@ describe('an element type', function(){
 		var matchMap = {
 			'id1': 'id2'
 		};
+		matchMap[element.id] = 'copiedId';
 
 		var copy = type.copyElement(element, matchMap);
 
 		expect(copy.getProperty('myprop')).toEqual({ 'refersTo': 'id2' });
+		expect(copy.id).toBe('copiedId');
 	});
 });

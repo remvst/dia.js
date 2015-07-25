@@ -506,7 +506,10 @@ dia.ElementType.prototype.copyElement = function(element, matchMap){
 		props[propId] = this.properties[i].type.copyValue(props[propId], matchMap);
 	}
 
-	return this.create(props);
+	var copy = this.create(props);
+	copy.id = matchMap[element.id];
+
+	return copy;
 };
 
 dia.ElementType.register = function(type){
@@ -827,6 +830,37 @@ dia.EnumerationDataType.prototype.createHTMLInput = function(currentValue){
 
 dia.EnumerationDataType.prototype.getValueFromHTMLInput = function(html){
 	return html.options[html.selectedIndex].valueRef;
+};
+
+dia.Clipboard = function(elements){
+	elements = elements || [];
+
+	// Creating a map original element ID => new element ID
+	var matchMap = {};
+	for(var i = 0 ; i < elements.length ; i++){
+		matchMap[elements[i].id] = dia.uuid4();
+	}
+
+	// Copying elements
+	this.elements = [];
+	for(var i = 0 ; i < elements.length ; i++){
+		this.elements.push(elements[i].copy(matchMap));
+	}
+};
+
+dia.Clipboard.prototype.getPastableElements = function(element){
+	// Creating a map copied element ID => pasted element ID
+	var matchMap = {};
+	for(var i = 0 ; i < this.elements.length ; i++){
+		matchMap[this.elements[i].id] = dia.uuid4();
+	}
+
+	// Copying elements
+	var pastable = [];
+	for(var i = 0 ; i < this.elements.length ; i++){
+		pastable.push(this.elements[i].copy(matchMap));
+	}
+	return pastable;
 };
 
 dia.GraphicalRepresentation = function(element){

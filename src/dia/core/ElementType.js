@@ -154,7 +154,10 @@ dia.ElementType.prototype.copyElement = function(element, matchMap){
 		props[propId] = this.properties[i].type.copyValue(props[propId], matchMap);
 	}
 
-	return this.create(props);
+	var copy = this.create(props);
+	copy.id = matchMap[element.id];
+
+	return copy;
 };
 
 dia.ElementType.register = function(type){
