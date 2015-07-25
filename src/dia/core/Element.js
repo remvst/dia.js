@@ -99,6 +99,10 @@ dia.Element.prototype.execute = function(functionId){
 	fn.apply(this);
 };
 
+dia.Element.prototype.copy = function(matchMap){
+	return this.type.copyElement(this, matchMap);
+};
+
 dia.Element.fromJSON = function(json){
 	var type = dia.ElementType.lookupType(json.type);
 	if(type === null){

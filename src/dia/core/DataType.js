@@ -16,6 +16,7 @@ dia.DataType = function(options){
 		return html.value;
 	};
 	this.toString = options.toString || function(v) { return v.toString(); };
+	this.copyValue = options.copyValue || function(v, matchMap) { return v; };
 };
 
 dia.DataType.prototype.validateValue = function(value){
@@ -83,6 +84,14 @@ dia.DataType.ANCHOR = new dia.DataType({
 			&& typeof value.element === 'string'
 			&& typeof value.angle === 'number');
 
+	},
+	copyValue: function(value, matchMap){
+		return {
+			x: value.x,
+			y: value.y,
+			angle: value.angle,
+			element: matchMap[value.element] || value.element
+		};
 	}
 });
 

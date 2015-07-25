@@ -139,6 +139,24 @@ dia.ElementType.prototype.getTool = function(id){
 	return this.toolMap[id] || null;
 };
 
+dia.ElementType.prototype.copyElement = function(element, matchMap){
+	// Let's copy all properties as is
+	var props = {},
+		propId;
+	for(var i = 0 ; i < this.properties.length ; i++){
+		propId = this.properties[i].id;
+		props[propId] = element.getProperty(propId);
+	}
+
+	// Now let's adapt them
+	for(var i = 0 ; i < this.properties.length ; i++){
+		propId = this.properties[i].id;
+		props[propId] = this.properties[i].type.copyValue(props[propId], matchMap);
+	}
+
+	return this.createElement(props);
+};
+
 dia.ElementType.register = function(type){
 	if(!type.id){
 		throw new Error('Cannot register a type with no ID.');

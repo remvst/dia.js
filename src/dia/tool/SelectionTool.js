@@ -10,6 +10,7 @@ dia.SelectionTool = function(){
 	this.label = 'Selection';
 	this.down = false;
 	this.multipleKeyDown = false;
+	this.clipboard = null;
 
 	this.currentHandle = null;
 	this.currentPosition = {x: 0, y: 0};
@@ -218,4 +219,12 @@ dia.SelectionTool.prototype.getRenderable = function(){
 			)
 		}
 	}.bind(this));
+};
+
+dia.SelectionTool.prototype.copy = function(){
+	if(this.currentSelection.length === 0){
+		return;
+	}
+
+	
 };

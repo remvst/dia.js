@@ -334,6 +334,10 @@ dia.Element.prototype.execute = function(functionId){
 	fn.apply(this);
 };
 
+dia.Element.prototype.copy = function(matchMap){
+	return this.type.copyElement(this, matchMap);
+};
+
 dia.Element.fromJSON = function(json){
 	var type = dia.ElementType.lookupType(json.type);
 	if(type === null){
@@ -487,6 +491,24 @@ dia.ElementType.prototype.getTool = function(id){
 	return this.toolMap[id] || null;
 };
 
+dia.ElementType.prototype.copyElement = function(element, matchMap){
+	// Let's copy all properties as is
+	var props = {},
+		propId;
+	for(var i = 0 ; i < this.properties.length ; i++){
+		propId = this.properties[i].id;
+		props[propId] = element.getProperty(propId);
+	}
+
+	// Now let's adapt them
+	for(var i = 0 ; i < this.properties.length ; i++){
+		propId = this.properties[i].id;
+		props[propId] = this.properties[i].type.copyValue(props[propId], matchMap);
+	}
+
+	return this.createElement(props);
+};
+
 dia.ElementType.register = function(type){
 	if(!type.id){
 		throw new Error('Cannot register a type with no ID.');
@@ -569,6 +591,7 @@ dia.DataType = function(options){
 		return html.value;
 	};
 	this.toString = options.toString || function(v) { return v.toString(); };
+	this.copyValue = options.copyValue || function(v, matchMap) { return v; };
 };
 
 dia.DataType.prototype.validateValue = function(value){
@@ -636,6 +659,14 @@ dia.DataType.ANCHOR = new dia.DataType({
 			&& typeof value.element === 'string'
 			&& typeof value.angle === 'number');
 
+	},
+	copyValue: function(value, matchMap){
+		return {
+			x: value.x,
+			y: value.y,
+			angle: value.angle,
+			element: matchMap[value.element] || value.element
+		};
 	}
 });
 
@@ -2970,6 +3001,7 @@ dia.SelectionTool = function(){
 	this.label = 'Selection';
 	this.down = false;
 	this.multipleKeyDown = false;
+	this.clipboard = null;
 
 	this.currentHandle = null;
 	this.currentPosition = {x: 0, y: 0};
@@ -3178,6 +3210,14 @@ dia.SelectionTool.prototype.getRenderable = function(){
 			)
 		}
 	}.bind(this));
+};
+
+dia.SelectionTool.prototype.copy = function(){
+	if(this.currentSelection.length === 0){
+		return;
+	}
+
+	
 };
 
 dia.Guide = function(){
