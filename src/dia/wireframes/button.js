@@ -3,7 +3,7 @@ dia.wireframes = dia.wireframes || {};
 dia.wireframes.BUTTON = new dia.ElementType({
 	id: 'wireframes.BUTTON',
 	label: 'Button',
-	layer: 2
+	layer: 3
 });
 dia.wireframes.BUTTON.addProperty(new dia.Property({
 	id: 'x',

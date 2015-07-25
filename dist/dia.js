@@ -4526,7 +4526,7 @@ dia.wireframes = dia.wireframes || {};
 dia.wireframes.WINDOW = new dia.ElementType({
 	id: 'wireframes.WINDOW',
 	label: 'Window',
-	layer: 2
+	layer: 1
 });
 dia.wireframes.WINDOW.addProperty(new dia.Property({
 	id: 'x',
@@ -4758,7 +4758,7 @@ dia.wireframes = dia.wireframes || {};
 dia.wireframes.BUTTON = new dia.ElementType({
 	id: 'wireframes.BUTTON',
 	label: 'Button',
-	layer: 2
+	layer: 3
 });
 dia.wireframes.BUTTON.addProperty(new dia.Property({
 	id: 'x',
@@ -4870,7 +4870,7 @@ dia.wireframes = dia.wireframes || {};
 dia.wireframes.INPUT = new dia.ElementType({
 	id: 'wireframes.INPUT',
 	label: 'Input field',
-	layer: 2
+	layer: 3
 });
 dia.wireframes.INPUT.addProperty(new dia.Property({
 	id: 'x',

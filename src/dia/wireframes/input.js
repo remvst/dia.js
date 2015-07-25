@@ -3,7 +3,7 @@ dia.wireframes = dia.wireframes || {};
 dia.wireframes.INPUT = new dia.ElementType({
 	id: 'wireframes.INPUT',
 	label: 'Input field',
-	layer: 2
+	layer: 3
 });
 dia.wireframes.INPUT.addProperty(new dia.Property({
 	id: 'x',

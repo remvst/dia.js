@@ -3,7 +3,7 @@ dia.wireframes = dia.wireframes || {};
 dia.wireframes.WINDOW = new dia.ElementType({
 	id: 'wireframes.WINDOW',
 	label: 'Window',
-	layer: 2
+	layer: 1
 });
 dia.wireframes.WINDOW.addProperty(new dia.Property({
 	id: 'x',
